@@ -1,0 +1,70 @@
+https://stackabuse.com/adding-a-postgresql-database-to-a-node-js-app-on-heroku/
+
+Model:
+
+npx sequelize-cli model:generate --name User --attributes userId:string,role:string,approved:boolean
+
+---------------------------------------
+
+Migration:
+npx sequelize-cli db:migrate
+
+---------------------------------------
+
+rollback:
+
+npx sequelize-cli db:migrate:undo
+
+npx sequelize-cli db:migrate:undo:all
+
+---------------------------------------
+
+Seed:
+
+npx sequelize-cli seed:generate --name User
+
+create:
+npx sequelize-cli db:seed:all
+
+udo:
+npx sequelize-cli db:seed:undo
+npx sequelize-cli db:seed:undo --seed name-of-seed-as-in-data
+npx sequelize-cli db:seed:undo:all
+
+---------------------------------------
+
+Heroku
+
+heroku create
+
+
+heroku apps:rename newname
+
+
+heroku run bash
+sequelize db:migrate
+sequelize db:seed:all
+
+heroku run printenv
+This will print a list of config vars, including the current set PORT value, eg:
+PORT=9352
+
+heroku socket.io ---
+heroku features:enable http-session-affinity
+https://devcenter.heroku.com/articles/session-affinity
+
+https://lekkimworld.com/2017/11/16/websockets-in-an-express-node-js-app-on-heroku/
+https://stackoverflow.com/questions/25013735/socket-io-nodejs-doesnt-work-on-heroku
+https://stackoverflow.com/questions/52876352/websockets-with-node-js-express-heroku-adding-routes-breaks-web-socket-connec
+
+
+--------------
+
+bootstrap templates
+https://stackoverflow.com/questions/20134901/how-to-create-a-bootstrap-sticky-nav-that-is-below-a-marquee-but-then-pinned-to
+
+
+-------
+
+React
+npx create-react-app react-bootstrap-template-test
