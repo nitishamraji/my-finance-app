@@ -8,6 +8,8 @@ import StockDetail from './components/StockDetail/StockDetail';
 import NewsPage from './components/News/NewsPage';
 import Settings from './components/Settings/Settings';
 import Stocks from './components/Stocks/Stocks';
+import StocksLive from './components/Live/StocksLive';
+
 import UserProfile from './components/User/UserProfile';
 import Admin from './components/Admin/Admin';
 
@@ -66,6 +68,12 @@ export default class Router extends Component {
           path="/stocks"
         >
           {!this.state.isAuthed ? <Redirect to="/home" /> : <Stocks {...props} isAuthed={this.state.isAuthed} userId={this.state.userId} />}
+        </Route>
+
+        <Route
+          path="/live"
+        >
+          {!this.state.isAuthed ? <Redirect to="/home" /> : <StocksLive {...props} isAuthed={this.state.isAuthed} userId={this.state.userId} />}
         </Route>
 
         <Route
