@@ -73,7 +73,7 @@ export default class Router extends Component {
         <Route
           path="/live"
         >
-          {!this.state.isAuthed ? <Redirect to="/home" /> : <StocksLive {...props} isAuthed={this.state.isAuthed} userId={this.state.userId} />}
+           <StocksLive {...props} isAuthed={this.state.isAuthed} userId={this.state.userId} />
         </Route>
 
         <Route
