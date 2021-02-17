@@ -1,0 +1,57 @@
+.rbt-input-wrapper div {
+  display: inline-flex !important;
+}
+
+.rbt-token {
+  background-color: #e0e0e0;
+  color: rgba(0, 0, 0, 0.87);
+  font-size: 0.8125rem;
+  box-sizing: border-box;
+  transition: background-color 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+  align-items: center;
+  border-radius: 16px;
+  vertical-align: middle;
+  justify-content: center;
+  text-decoration: none;
+  font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+  height: 32px;
+  padding: 10px;
+  margin-right: 10px;
+  margin-bottom: 5px;
+}
+
+.rbt-token button {
+  padding-left: 5px;
+  font-size: 1.1rem;
+  position: relative;
+  top: -2px;
+}
+
+.rbt-input-multi, .rbt-input-wrapper {
+  height: auto !important;
+}
+
+#addStockForm .stock-div .rbt-close {
+  position: relative;
+  top: -32px;
+  padding-right: 5px;
+}
+
+#addStockForm .category-div {
+  margin-top: 20px;
+}
+
+#addStockForm .category-div .rbt-aux .rbt-close {
+  position: relative;
+  top: -40px;
+  padding-right: 5px;
+}
+
+#addStockForm .category-div .rbt-menu-custom-option {
+  font-weight: 600;
+  color: rgb(59 70 216);
+}
+
+#addStockForm .rbt-input-wrapper div:last-child input {
+  width: 200px !important;
+}

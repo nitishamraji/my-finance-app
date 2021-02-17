@@ -11,6 +11,7 @@ exports.devErrorHandler = (err, req, res, next) => {
   err.stack = err.stack || ''
   const status = err.status || 500
   // const error = { success: false, msg: err }
+  console.log(err)
   res.status(status)
   res.json({ status, success: false, msg: err.stack  })
 }

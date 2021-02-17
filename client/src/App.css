@@ -1,5 +1,5 @@
 .App {
-  text-align: center;
+  /* text-align: center; */
 }
 
 .App-logo {
@@ -35,4 +35,45 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+.ellipsis {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.tradingview-financial-widget-container > .tv-feed-widget__scroll-wrapper {
+  min-height: 630px !important;
+}
+
+.react-bootstrap-table .sortable {
+  cursor: pointer;
+}
+
+.react-bootstrap-table th:focus {
+  border: 0;
+  outline: none;
+}
+
+.td-popup:hover {
+  text-decoration: underline;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.btn:focus, .btn.focus, .btn-link:focus {
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.popup-content {
+    background: #fff;
+    width: 1100px;
+    height: 600px;
+		overflow: scroll;
+    border: 1px solid #ccc;
+		padding: 10px 20px;
 }

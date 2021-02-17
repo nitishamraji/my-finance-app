@@ -1,0 +1,3 @@
+.tradingview-financial-widget-container > .tv-feed-widget__scroll-wrapper {
+  min-height: 630px !important;
+}

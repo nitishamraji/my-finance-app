@@ -10,6 +10,7 @@ const StocksDataService = require('../services/StocksDataService')
 const RssService = require('../services/RssService')
 const StocksService = require('../services/StocksService')
 const UserService = require('../services/UserService')
+const HeatMapService = require('../services/HeatMapService')
 
 router.post('/stocks', cors(), async (req, res, next) => {
   // db
@@ -106,6 +107,48 @@ router.post('/stocks', cors(), async (req, res, next) => {
   res.send("success");
 });
 
+router.get('/getUserWatchList/:userId', cors(),  catchErrors( async (req, res, next) => {
+    const service = new UserService();
+    const result = await service.getUserWatchList(req.params.userId);
+    res.send({success: result.success, msg: result.msg, data: result.data});
+}));
+
+router.post('/saveUserWatchList', cors(),  catchErrors( async (req, res, next) => {
+    const service = new UserService();
+    const result = await service.saveUserWatchList(req.body);
+    res.send({success: result.success, msg: result.msg});
+}));
+
+router.get('/createAdminUser', cors(),  catchErrors( async (req, res, next) => {
+    const service = new UserService();
+    const result = await service.createAdminUser();
+    res.send({success: result.success, msg: result.msg});
+}));
+
+router.get('/getAllUsersInfo/:reqUserId', cors(),  catchErrors( async (req, res, next) => {
+    const service = new UserService();
+    const result = await service.getAllUsersInfo(req.params.reqUserId);
+    res.send({success: result.success, msg: result.msg, data: result.data});
+}));
+
+router.get('/getUserInfo/:userId', cors(),  catchErrors( async (req, res, next) => {
+    const service = new UserService();
+    const result = await service.getUserInfo(req.params.userId);
+    res.send({success: result.success, msg: result.msg, data: result.data});
+}));
+
+router.post('/updateUserApproval', cors(),  catchErrors( async (req, res, next) => {
+    const service = new UserService();
+    const result = await service.updateUserApproval(req.body);
+    res.send({success: result.success, msg: result.msg});
+}));
+
+router.post('/updateUserProfile', cors(),  catchErrors( async (req, res, next) => {
+    const service = new UserService();
+    const result = await service.updateUserProfile(req.body);
+    res.send({success: result.success, msg: result.msg});
+}));
+
 router.post('/loginUser', cors(),  catchErrors( async (req, res, next) => {
     const service = new UserService();
     const result = await service.loginUser(req.body);
@@ -118,10 +161,35 @@ router.post('/registerUser', cors(),  catchErrors( async (req, res, next) => {
     res.send({success: result.success, msg: result.msg});
 }));
 
+router.get('/getAllStocksData', cors(),  catchErrors( async (req, res, next) => {
+    console.log('/getAllStocksData')
+    const service = new StocksDataService();
+    const result = await service.getAllStocksData();
+    res.send({success: result.success, msg: result.msg, data: result.data});
+}));
+
+router.get('/updateAllStocksData', cors(),  catchErrors( async (req, res, next) => {
+    const service = new StocksDataService();
+    const result = await service.updateAllStocksData();
+    res.send({success: true, msg: result.msg});
+}));
+
 router.post('/addStock', cors(),  catchErrors( async (req, res, next) => {
     const service = new StocksService();
     const result = await service.addOrUpdateStock(req.body);
     res.send({success: true, msg: result.msg});
+}));
+
+router.get('/getCategoryStocksMapper', cors(),  catchErrors( async (req, res, next) => {
+    const service = new StocksService();
+    const categoryStocksMapper = await service.getCategoryStocksMapper();
+    res.send({success: true, msg: '', data: categoryStocksMapper});
+}));
+
+router.get('/getAllAddedStocks', cors(),  catchErrors( async (req, res, next) => {
+    const service = new StocksService();
+    const allAddedStocks = await service.getAllAddedStocks();
+    res.send({success: true, msg: '', data: allAddedStocks});
 }));
 
 router.get('/getStockCategories/:symbol', cors(),  catchErrors( async (req, res, next) => {
@@ -155,16 +223,46 @@ router.get('/testTda', cors(),  catchErrors( async (req, res, next) => {
     res.send({success: true, msg: '', data: data});
 }));
 
+router.get('/getCnbcNews/:option', cors(),  catchErrors( async (req, res, next) => {
+    const service = new RssService();
+    const data = await service.getCnbcNews(req.params.option);
+    res.send({success: true, msg: '', data: data});
+}));
+
 router.get('/getGoogleNews', cors(),  catchErrors( async (req, res, next) => {
     const service = new RssService();
     const data = await service.getGoogleNews();
     res.send({success: true, msg: '', data: data});
 }));
 
-router.get('/getStockNews/:symbol', cors(),  catchErrors( async (req, res, next) => {
+router.get('/getGoogleNews/:symbol', cors(),  catchErrors( async (req, res, next) => {
     const service = new RssService();
-    const data = await service.getStockNews(req.params.symbol);
+    const data = await service.getGoogleNews(req.params.symbol);
     res.send({success: true, msg: '', data: data});
+}));
+
+router.get('/getRedditNews', cors(),  catchErrors( async (req, res, next) => {
+    const service = new RssService();
+    const data = await service.getRedditNews();
+    res.send({success: true, msg: '', data: data});
+}));
+
+router.get('/getRedditNews/:symbol', cors(),  catchErrors( async (req, res, next) => {
+    const service = new RssService();
+    const data = await service.getRedditNews(req.params.symbol);
+    res.send({success: true, msg: '', data: data});
+}));
+
+router.get('/getFinvizNews/:symbol', cors(),  catchErrors( async (req, res, next) => {
+    const service = new RssService();
+    const data = await service.getFinvizNews(req.params.symbol);
+    res.send({success: true, msg: '', data: data});
+}));
+
+router.get('/getHeatMapUrl', cors(),  catchErrors( async (req, res, next) => {
+    const service = new HeatMapService();
+    const url = await service.getHeatMapUrl();
+    res.send({success: true, msg: '', url: url});
 }));
 
 module.exports = router

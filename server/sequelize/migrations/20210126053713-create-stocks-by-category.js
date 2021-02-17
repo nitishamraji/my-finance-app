@@ -8,7 +8,7 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      doc: {
+      data: {
         type: Sequelize.JSON
       },
       createdAt: {

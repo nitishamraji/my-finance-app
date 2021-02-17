@@ -1,0 +1,24 @@
+.news-card .card-header h6 {
+  color: #007bff !important;
+}
+
+.news-title h6{
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.news-title a{
+  color: #24292e !important;
+  font-weight: 550;
+}
+
+.news-title a:hover{
+  text-decoration: underline !important;
+}
+
+.rss-news-modal .modal-content {
+  width: 700px;
+  max-height: 600px;
+  overflow:'scroll'
+}

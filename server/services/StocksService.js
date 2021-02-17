@@ -1,4 +1,5 @@
 const db = require('../sequelize/models')
+const StocksDataService = require('./StocksDataService')
 
 const checkCategoryExists = (existingCategories, categoryToAdd) => {
   let hasCategory = false;
@@ -34,20 +35,20 @@ class Stocks {
         stockToAddCategories.forEach(category => {
           obj[category] = [stockToAdd];
         });
-        await db.StocksByCategory.create({doc: obj});
+        await db.StocksByCategory.create({data: obj});
       } else {
 
         const existingStockCategories = await this.getStockCategories(stockToAdd);
-        const existingCategories = Object.keys(stocksByCategory.doc);
+        const existingCategories = Object.keys(stocksByCategory.data);
 
         if( existingStockCategories.stockExists ) {
           stockExists = true;
 
           existingCategories.forEach((category, i) => {
-            const categoryStocks = stocksByCategory.doc[category];
+            const categoryStocks = stocksByCategory.data[category];
             const hasStock = categoryStocks.map((s) => { return s.toLowerCase() }).includes(stockToAdd.toLowerCase());
             if( hasStock ){
-              stocksByCategory.doc[category].splice(categoryStocks.indexOf(category), 1);
+              stocksByCategory.data[category].splice(categoryStocks.indexOf(category), 1);
             }
           });
 
@@ -57,18 +58,24 @@ class Stocks {
           const checkCategoryExistsObj  = checkCategoryExists(existingCategories, category);
 
           if( checkCategoryExistsObj.hasCategory ) {
-            stocksByCategory.doc[checkCategoryExistsObj.categoryName].push(stockToAdd);
+            stocksByCategory.data[checkCategoryExistsObj.categoryName].push(stockToAdd);
           } else {
-            stocksByCategory.doc[category] = [stockToAdd];
+            stocksByCategory.data[category] = [stockToAdd];
           }
         });
 
-        await stocksByCategory.setDataValue('doc', stocksByCategory.doc);
-        stocksByCategory.changed('doc', true);
+        await stocksByCategory.setDataValue('data', stocksByCategory.data);
+        stocksByCategory.changed('data', true);
         stocksByCategory.save();
       }
 
       return { msg: stockExists ? 'Stock updated' : 'Stock added' }
+  }
+
+  async getCategoryStocksMapper() {
+    const stocksByCategoryRow = await db.StocksByCategory.findOne()
+    const categoryStocksMapper = await stocksByCategoryRow.data
+    return categoryStocksMapper
   }
 
   async getStockCategories(symbol) {
@@ -76,10 +83,10 @@ class Stocks {
     let stockCategories = [];
 
     if( stocksByCategory ) {
-      const existingCategories = Object.keys(stocksByCategory.doc);
+      const existingCategories = Object.keys(stocksByCategory.data);
 
       existingCategories.map( (category) => {
-        const categoryStocks = stocksByCategory.doc[category];
+        const categoryStocks = stocksByCategory.data[category];
         const hasStock = categoryStocks.map((s) => { return s.toLowerCase() }).includes(symbol.toLowerCase());
         if( hasStock ){
           stockCategories.push(category);
@@ -95,9 +102,52 @@ class Stocks {
     let categories = [];
     const stocksByCategory = await db.StocksByCategory.findOne()
     if( stocksByCategory ) {
-      categories = Object.keys(stocksByCategory.doc).sort();
+      categories = Object.keys(stocksByCategory.data).sort();
     }
     return categories;
+  }
+
+  async getAllAddedStocks() {
+    const allAddedStocksInfo = [];
+    const allAddedStocks = [];
+    const stocksByCategory = await db.StocksByCategory.findOne()
+
+    if( !stocksByCategory ) {
+      return allAddedStocks;
+    }
+
+    const data = await stocksByCategory.data;
+    const existingCategories = Object.keys(data);
+
+    existingCategories.map( (category) => {
+      const categoryStocks = data[category];
+      if( !categoryStocks || categoryStocks.length <= 0 ) {
+        return false;
+      }
+      categoryStocks.forEach((stock) => {
+        if( !allAddedStocks.includes(stock) ) {
+          allAddedStocks.push(stock)
+        }
+      })
+
+    })
+
+    if( allAddedStocks.length > 0 ) {
+      const stocksDataService = new StocksDataService();
+      const supportedStocks = await stocksDataService.getSupportedStocks();
+
+      allAddedStocks.forEach((symbol, i) => {
+        supportedStocks.forEach((stockInfo, i) => {
+          if( stockInfo.symbol === symbol ) {
+              allAddedStocksInfo.push({
+                symbol: symbol,
+                name: stockInfo.name
+              })
+          }
+        });
+      });
+    }
+    return allAddedStocksInfo;
   }
 
 }

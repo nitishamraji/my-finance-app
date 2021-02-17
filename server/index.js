@@ -3,8 +3,9 @@ const cors = require('cors')
 var bodyParser = require('body-parser')
 require('dotenv').config()
 const path = require('path')
-
 const app = express()
+
+process.env.TZ = 'America/Chicago';
 
 // Serve static files from the React app
 if (process.env.NODE_ENV === 'production') {

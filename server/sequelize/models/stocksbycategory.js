@@ -14,7 +14,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
   StocksByCategory.init({
-    doc: DataTypes.JSON
+    data: DataTypes.JSON
   }, {
     sequelize,
     modelName: 'StocksByCategory',

@@ -1,0 +1,36 @@
+iframe {
+	border: 0px;
+}
+
+.stock-detail-container {
+
+	margin: 30px;
+}
+
+.card-filter {
+	border-radius: 0 !important;
+}
+
+.card-filter .btn-link {
+	font-weight: 500 !important;
+}
+
+.card-filter .btn {
+	font-size: 0.9rem !important;
+}
+
+.category-selection-span {
+
+	display: inline-block;
+	padding-right: 20px;
+}
+
+.list-inline-item.All {
+
+	display: block;
+}
+
+.category-items-section {
+	padding-left: 20px;
+	padding-right: 20px;
+}

@@ -31,19 +31,19 @@ const reloadIFrame = () => {
 }
 export default class Crypto extends React.Component {
 
-  constructor(props) {
-    super(props);
-  }
+  // constructor(props) {
+  //   super(props);
+  // }
 
   componentDidMount() {
-    window.setInterval(reloadIFrame, 1000 * 60);
+    window.setInterval(reloadIFrame, 1000 * 2 * 60);
   }
 
   render() {
     return (
-      <React.Fragment>
+      <div style={{textAlign: 'center'}}>
         <CustomIframe iframe={iframeMiniChart()} />
-      </React.Fragment>
+      </div>
     );
   }
 }

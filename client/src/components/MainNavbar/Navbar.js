@@ -2,8 +2,12 @@ import React from 'react';
 import { Link, NavLink } from 'react-router-dom'
 
 import { Navbar, Nav, NavDropdown, Form, Button, FormControl, Modal } from 'react-bootstrap';
-import { BarChartFill, PersonFill, BoxArrowRight, Sliders, ChatDotsFill } from 'react-bootstrap-icons';
+import { BarChartFill, PersonFill, BoxArrowRight, Sliders, ChatDotsFill, GraphUp } from 'react-bootstrap-icons';
 import { USER_DATA } from './../Common/UserData';
+import NavbarSearch from './NavbarSearch';
+
+import './styles.css';
+
 
 export default class MainNavbar extends React.Component {
   constructor(props) {
@@ -150,10 +154,10 @@ export default class MainNavbar extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <Navbar style={{borderBottom: '1px solid #ccc', backgroundColor:"#3f5c80"}}  variant="dark" expand="lg">
-          <Navbar.Brand className="pl-2" as={Link} to="/home">
+        <Navbar id="main-navbar" style={{borderBottom: '1px solid #ccc', backgroundColor:"#3f5c80"}}  variant="dark" expand="lg">
+          <Navbar.Brand className="pl-2 mr-4" as={Link} to="/home">
             <BarChartFill style={{fontSize:'1.6rem',position:'relative', top:'-1px'}} className="pr-2"/>
-            <span style={{fontWeight:'600'}}>MyFinanceApp</span>
+            <span style={{fontWeight:'600'}}>1Stop</span>
           </Navbar.Brand>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
@@ -169,17 +173,15 @@ export default class MainNavbar extends React.Component {
             {
               this.state.isUserLoggedIn &&
               <Nav className="mr-auto">
-                <Nav.Link as={NavLink} to="/screener">Screener</Nav.Link>
-                <Nav.Link as={NavLink} to="/watchlist">Watchlist</Nav.Link>
+                <Nav.Link as={NavLink} to="/stocks">Stocks</Nav.Link>
                 <Nav.Link as={NavLink} to="/live">Live</Nav.Link>
                 <Nav.Link as={NavLink} to="/crypto">Crypto</Nav.Link>
                 <Nav.Link as={NavLink} to="/settings">Settings</Nav.Link>
                 <Nav.Link as={NavLink} to="/news">News</Nav.Link>
               </Nav>
             }
-            <Form inline className="w-50">
-              <FormControl type="text" placeholder="Search" className="w-100" />
-            </Form>
+
+            <NavbarSearch />
 
             {
               !this.state.isUserLoggedIn &&
@@ -194,7 +196,7 @@ export default class MainNavbar extends React.Component {
                 <Nav.Link href="#link"><ChatDotsFill /></Nav.Link>
                 <NavDropdown alignRight
                   title={<div style={{display: "inline-block"}}> <PersonFill/> </div>}>
-                  <NavDropdown.Item href="#action/3.1">
+                  <NavDropdown.Item as={NavLink} to="/user-profile">
                     <Sliders style={{top:'-2px'}} className="mr-2 position-relative"/>Profile
                   </NavDropdown.Item>
                   <NavDropdown.Divider />

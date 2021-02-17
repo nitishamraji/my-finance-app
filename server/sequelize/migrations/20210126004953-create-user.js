@@ -7,6 +7,10 @@ module.exports = {
         primaryKey: true,
         allowNull: false
       },
+      userName: {
+        type: Sequelize.STRING,
+        allowNull: false
+      },
       role: {
         type: Sequelize.STRING
       },
@@ -14,6 +18,10 @@ module.exports = {
         type: Sequelize.BOOLEAN,
         allowNull: true,
         defaultValue: false
+      },
+      data: {
+        type: Sequelize.JSON,
+        allowNull: true,
       },
       createdAt: {
         allowNull: false,

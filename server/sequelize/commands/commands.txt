@@ -3,6 +3,7 @@ https://stackabuse.com/adding-a-postgresql-database-to-a-node-js-app-on-heroku/
 Model:
 
 npx sequelize-cli model:generate --name User --attributes userId:string,role:string,approved:boolean
+npx sequelize-cli model:generate --name StocksLive --attributes data:json,status:string,statusMsg:string
 
 ---------------------------------------
 
@@ -64,7 +65,12 @@ bootstrap templates
 https://stackoverflow.com/questions/20134901/how-to-create-a-bootstrap-sticky-nav-that-is-below-a-marquee-but-then-pinned-to
 
 
--------
+---------------------
 
 React
 npx create-react-app react-bootstrap-template-test
+
+-------------------
+Reddit
+
+https://github.com/reznorhurt/reddit-rss-bot/blob/master/rss-bot.js

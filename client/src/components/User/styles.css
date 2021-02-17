@@ -1,0 +1,9 @@
+#watchlist-container .rbt-aux {
+  position: relative !important;
+  top: -30px !important;
+  display: inline !important;
+}
+
+#watchlist-container .react-bootstrap-table td {
+  font-size: 15px !important;
+}

@@ -15,8 +15,10 @@ module.exports = (sequelize, DataTypes) => {
   };
   User.init({
     userId: { type: DataTypes.STRING, allowNull: false, primaryKey: true },
+    userName: { type: DataTypes.STRING, allowNull: false },
     role: {type: DataTypes.STRING, allowNull: false, defaultValue: 'standard' },
-    approved: {type: DataTypes.BOOLEAN, allowNull: true, defaultValue: false }
+    approved: {type: DataTypes.BOOLEAN, allowNull: true, defaultValue: false },
+    data: {type: DataTypes.JSON },
   }, {
     sequelize,
     modelName: 'User',

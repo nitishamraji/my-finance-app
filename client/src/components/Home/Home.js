@@ -1,117 +1,88 @@
 import React, { Component } from 'react';
-import { Tabs, Tab, TabContent } from 'react-bootstrap';
-
-import Iframe from 'react-iframe';
+import { Tabs, Tab, TabContent, Spinner } from 'react-bootstrap';
 
 import CustomIframe from './../Common/CustomIframe';
+import InnerImageZoom from 'react-inner-image-zoom';
 
-const miniChartDoc = (symbol) => {
-return `
-<!-- TradingView Widget BEGIN -->
-<div class="tradingview-widget-container">
-  <div class="tradingview-widget-container__widget"></div>
-
-  <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-market-overview.js" async>
-  {
-  "colorTheme": "dark",
-  "dateRange": "12M",
-  "showChart": true,
-  "locale": "en",
-  "largeChartUrl": "",
-  "isTransparent": false,
-  "showSymbolLogo": true,
-  "width": "400",
-  "height": "500",
-  "plotLineColorGrowing": "rgba(25, 118, 210, 1)",
-  "plotLineColorFalling": "rgba(25, 118, 210, 1)",
-  "gridLineColor": "rgba(42, 46, 57, 1)",
-  "scaleFontColor": "rgba(120, 123, 134, 1)",
-  "belowLineFillColorGrowing": "rgba(33, 150, 243, 0.12)",
-  "belowLineFillColorFalling": "rgba(33, 150, 243, 0.12)",
-  "symbolActiveColor": "rgba(33, 150, 243, 0.12)",
-  "tabs": [
-    {
-      "title": "Indices",
-      "symbols": [
-        {
-          "s": "FOREXCOM:SPXUSD",
-          "d": "S&P 500"
-        },
-        {
-          "s": "FOREXCOM:NSXUSD",
-          "d": "Nasdaq 100"
-        },
-        {
-          "s": "FOREXCOM:DJI",
-          "d": "Dow 30"
-        },
-        {
-          "s": "AMEX:IWM",
-          "d": "RUSSELL 2000"
-        }
-      ],
-      "originalTitle": "Indices"
-    },
-    {
-      "title": "Commodities",
-      "symbols": [
-        {
-          "s": "CME_MINI:ES1!",
-          "d": "S&P 500"
-        },
-        {
-          "s": "CME:6E1!",
-          "d": "Euro"
-        },
-        {
-          "s": "COMEX:GC1!",
-          "d": "Gold"
-        },
-        {
-          "s": "NYMEX:CL1!",
-          "d": "Crude Oil"
-        },
-        {
-          "s": "NYMEX:NG1!",
-          "d": "Natural Gas"
-        },
-        {
-          "s": "CBOT:ZC1!",
-          "d": "Corn"
-        }
-      ],
-      "originalTitle": "Commodities"
-    }
-  ]
-}
-  </script>
-</div>
-`;
-};
-
-const iframeMiniChart = (symbol) => {
-  return `<iframe src='data:text/html,`+miniChartDoc(symbol)+`' width='450'
-        height='540' ></iframe>`;
-};
-
+import { HOME_HTML } from './Constants';
 
 class Home extends Component {
+
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      isAuthed: this.props.isAuthed,
+      heatmapUrl: '',
+      loadingHeatMap: false
+    };
+
+    this.handleTabsSelect = this.handleTabsSelect.bind(this);
+    this.handleHeatMapOnClick = this.handleHeatMapOnClick.bind(this);
+  }
+
+  async componentDidMount() {
+  }
+
+  async handleTabsSelect(key) {
+    if (key === "heatmap") {
+      this.handleHeatMapOnClick();
+    }
+  }
+
+  async handleHeatMapOnClick() {
+    if( !this.state.isAuthed ) {
+      return false;
+    }
+
+    const hasHeatMapUrl = this.state.heatmapUrl && this.state.heatmapUrl.length > 0;
+    if( hasHeatMapUrl ) {
+      return;
+    }
+    this.setState({loadingHeatMap: true})
+    try {
+      const response = await fetch(`/api/getHeatMapUrl`)
+      const heatmapUrlJson = await response.json()
+      this.setState({heatmapUrl: heatmapUrlJson.url})
+    } catch(error) {
+
+    }
+    this.setState({loadingHeatMap: false});
+  }
 
   render() {
 
     return (
 
-      <Tabs defaultActiveKey="overview" >
-        <Tab eventKey="overview" title="Market Overview">
-          <TabContent>
-            <CustomIframe iframe={iframeMiniChart('AAPL')} />
+      <Tabs defaultActiveKey={"overview"} onSelect={this.handleTabsSelect}>
+        <Tab eventKey={"overview"} title="Market Overview">
+          <TabContent className="p-2">
+            <CustomIframe iframe={`<iframe src='data:text/html,`+ HOME_HTML.overview() +`' width='450' height='550' ></iframe>`} />
           </TabContent>
         </Tab>
-        <Tab eventKey="topActive" title="Top Active">
-
+        <Tab eventKey={"topActive"} title="Top Active">
+          <TabContent className="p-2">
+            <CustomIframe iframe={`<iframe src='data:text/html,`+ HOME_HTML.topActive() +`' width='420' height='580' ></iframe>`} />
+          </TabContent>
+        </Tab>
+        <Tab eventKey={"heatmap"} title="Heat Map" tabClassName={this.props.isAuthed ? 'd-block' : 'd-none'}>
+          <TabContent className="p-2">
+            {
+              this.state.loadingHeatMap && this.props.isAuthed &&
+              <Spinner style={{margin: '150px 0px 0px 200px'}} animation="border" role="status" className="d-flex text-primary">
+                <span className="sr-only">Loading...</span>
+              </Spinner>
+            }
+            {
+              this.state.heatmapUrl && this.state.heatmapUrl.length > 0 && (
+                <img alt="Heatmap"
+                src={this.state.heatmapUrl}
+                />
+              )
+            }
+          </TabContent>
         </Tab>
       </Tabs>
-
     	);
   }
 }
