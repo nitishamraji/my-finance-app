@@ -359,7 +359,7 @@ class Settings extends React.Component {
                     type="checkbox"
                     className="form-check-input cursor-pointer mr-2"
                     id="cbx-global-watchlist"/>
-                  <label style={{position:'relative', top:'-2px'}} className="form-check-label small cursor-pointer" htmlFor="cbx-global-watchlist">Add to Watchlist</label>
+                  <label style={{position:'relative', top:'-2px'}} className="form-check-label small cursor-pointer" htmlFor="cbx-global-watchlist">Add to Global Watchlist</label>
                   <Form.Control
                     className="d-inline w-75 ml-3"
                     type="text"
@@ -393,7 +393,7 @@ class Settings extends React.Component {
 
 
               <Card>
-                <Card.Header><h6 className="m-0">Add/Update stocks</h6></Card.Header>
+                <Card.Header><h6 className="m-0">Add/Update Stocks</h6></Card.Header>
                 <Card.Body>
                   <div>
                   {

@@ -39,3 +39,11 @@ iframe {
 	max-width: none;
 	width: 80% !important;
 }
+
+#categories-tab-content .card-header, #categories-tab-content .card-body {
+	padding: 0.5rem 0.6rem !important;
+}
+
+#categories-tab-content .card-header .btn {
+	padding: 0 0.5rem !important;
+}

@@ -68,6 +68,10 @@ export default class UserProfile extends React.Component {
     this.setState({
       formMsg: formMsg
     })
+
+    setTimeout(()=>{
+      this.setState({ formMsg: '' })
+    }, 3000)
   }
 
   async handleTabsSelect(key) {
@@ -92,7 +96,7 @@ export default class UserProfile extends React.Component {
 
                   <Form.Group controlId="formUserId">
                     <Form.Label>User ID</Form.Label>
-                    <Form.Control type="text" onFocus={this.handleOnFocus} onChange = {(event) => this.setState({userId: event.target.value })} value={this.state.userId}/>
+                    <Form.Control type="text" onFocus={this.handleOnFocus} onChange = {(event) => this.setState({userId: event.target.value })} value={this.state.userId} disabled/>
                     <Form.Text maxLength="25" className='text-danger'>{this.state.userIdErrMsg}</Form.Text>
                   </Form.Group>
                   <Button variant="primary" type="submit">

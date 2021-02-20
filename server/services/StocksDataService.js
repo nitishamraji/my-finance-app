@@ -107,6 +107,33 @@ class StocksData {
     return returnObj;
   }
 
+  async addStockData(symbol) {
+    await sleep(500)
+    const stockDataJson = await this.getStockData(symbol)
+    if(Object.keys(stockDataJson).length <= 0){
+      return false;
+    }
+
+    const alldata = await db.StocksData.findAll({
+      order: [['id', 'DESC']]
+    });
+
+    if( !alldata || alldata.length <= 0 ) {
+      const dbStocksJson = {}
+      dbStocksJson[symbol] = stockDataJson
+      await db.StocksData.create({ data: { stocks: dbStocksJson, lastUpdated: moment() } });
+      return;
+    }
+
+    const recentDbStocksDataRow = await alldata[0]
+    const dbStocksData = await recentDbStocksDataRow.data
+
+    dbStocksData.stocks[stockDataJson.symbol] = stockDataJson;
+
+    recentDbStocksDataRow.changed('data', true);
+    await recentDbStocksDataRow.save();
+  }
+
   async updateAllStocksData() {
     // var start = moment();
 
@@ -215,6 +242,7 @@ class StocksData {
           return false;
         }
         dbStocksData.stocks[stockDataJson.symbol] = stockDataJson;
+        dbStocksData.lastUpdated = moment()
       });
 
       recentDbStocksDataRow.changed('data', true);

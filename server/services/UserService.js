@@ -97,7 +97,6 @@ class UserService {
 
       const userInfo = await db.User.findOne({ where: { userId: userId } });
       await userInfo.update({
-        userId: userIdUpdated,
         userName: userName
       });
 

@@ -83,9 +83,17 @@ class Stocks {
 
         const userService = new UserService()
         userService.updateToWatchList(addStockJson.userId, addStockJson.addToMyWatchList, stockToAdd)
+
+        if( !stockExists ) {
+          const stocksDataService = new StocksDataService ()
+          stocksDataService.addStockData(stockToAdd)
+        }
+        
       } catch(e) {
         console.log(e)
       }
+
+
       return { msg: stockExists ? 'Stock updated' : 'Stock added' }
   }
 

@@ -199,13 +199,13 @@ export default class Stocks extends React.Component {
                 this.state.categoryStocksMapper && Object.keys(this.state.categoryStocksMapper).length > 0 &&
                 <Accordion defaultActiveKey="0">
                 <Card className="mb-3">
-                  <Card.Header className="py-1">
+                  <Card.Header>
                     <Accordion.Toggle as={Button} variant="link" eventKey="0">
-                      <b>Filter</b>
+                      Filter
                     </Accordion.Toggle>
                   </Card.Header>
                   <Accordion.Collapse eventKey="0">
-                    <Card.Body>
+                    <Card.Body className="ml-3 mt-2">
                       <React.Fragment>
                       <button type="button" className={ `btn mb-2 btn-sm ${this.state.showAll ? 'btn-secondary' : 'btn-primary'}`}  onClick={this.handleToggleAll}>{this.state.showAll ? 'Hide All' : 'Show All'}</button>
                       <div className="category-items-section">
@@ -235,9 +235,9 @@ export default class Stocks extends React.Component {
                 Object.keys(this.state.categoryStocksMapper).map(category => (
                   <Accordion defaultActiveKey="0" key={category}>
                   <Card key={category} className={ `mb-3 ${this.state.checkedCategories.get(category) ? 'd-block': 'd-none'}`} data-category={category}>
-                    <Card.Header className="py-1">
+                    <Card.Header>
                       <Accordion.Toggle as={Button} variant="link" eventKey="0">
-                        <b>{category}</b>
+                        {category}
                       </Accordion.Toggle>
                     </Card.Header>
                     <Accordion.Collapse eventKey="0">
@@ -256,7 +256,7 @@ export default class Stocks extends React.Component {
               </React.Fragment>
             </TabContent>
          </Tab>
-         <Tab eventKey={"appWatchlist"} title="Watchlist">
+         <Tab eventKey={"appWatchlist"} title="Global Watchlist">
            <TabContent className="mt-3">
                {
                // <Popup trigger={<Gear className="cursor-pointer" />} modal nested>
@@ -305,7 +305,7 @@ export default class Stocks extends React.Component {
        >
        <Modal.Header>
        <h5 className="mb-0 text-primary">
-       {this.state.showWatchLisDialogFor === 'mywatchlist' ? 'My Watchlist' : 'Watchlist'}
+       {this.state.showWatchLisDialogFor === 'mywatchlist' ? 'My Watchlist' : 'Global Watchlist'}
        </h5>
        </Modal.Header>
        <Modal.Body style={{padding: '25px', width: '80% !important', maxWidth: 'none !important'}}>

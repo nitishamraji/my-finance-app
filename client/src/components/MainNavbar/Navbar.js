@@ -195,6 +195,7 @@ export default class MainNavbar extends React.Component {
             {
               this.state.isUserLoggedIn &&
               <Nav className="mr-auto">
+                <Nav.Link as={NavLink} to="/home">Home</Nav.Link>
                 <Nav.Link as={NavLink} to="/stocks">Stocks</Nav.Link>
                 <Nav.Link as={NavLink} to="/live">Live</Nav.Link>
                 <Nav.Link as={NavLink} to="/crypto">Crypto</Nav.Link>

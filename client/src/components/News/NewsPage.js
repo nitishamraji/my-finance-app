@@ -127,9 +127,9 @@ export default class NewsPage extends React.Component {
                   }
                 </TabContent>
               </Tab>
-              <Tab eventKey={"optionsAction"} title="Options Action">
+              <Tab tabClassName="d-none" ventKey={"optionsAction"} title="Options Action">
                 <TabContent className="p-2">
-                  { this.state.loadCnbcOptionsAction && this.state.isAuthed &&
+                  { this.state.loadCnbcOptionsAction && this.state.isAuthed && false &&
                   <News newsListSize={15} newsSource={'cnbcOptionsAction'}/>
                   }
                 </TabContent>
