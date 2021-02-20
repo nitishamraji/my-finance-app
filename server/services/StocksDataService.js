@@ -127,34 +127,100 @@ class StocksData {
       await sleep(i * 2000)
       const stockDataJson = await this.getStockData(symbol)
       return stockDataJson;
-      // setTimeout(async () => {
-      //   stocksDataJson[symbol] = await this.getStockData(symbol)
-      // }, i * 3000);
     })).then(async (allStocksJson) => {
-      if( allStocksJson && allStocksJson.length > 0 ) {
-        let dbStocksJson = {}
-        allStocksJson.forEach((stockDataJson) => {
-          if(Object.keys(stockDataJson).length <= 0){
-            return false;
-          }
-          dbStocksJson[stockDataJson.symbol] = stockDataJson;
-        });
-        await db.StocksData.create({ data: { stocks: dbStocksJson, lastUpdated: moment() } });
-        const alldata = await db.StocksData.findAll({
-          order: [['id', 'ASC']],
-          attributes: ['id']
-        })
-        if( alldata.length > 3 ) {
-          db.StocksData.destroy({
-              where: {
-                id: alldata[0].id
-              }
-          })
-        }
+      if( !allStocksJson || allStocksJson.length <= 0 ) {
+        return;
       }
+
+      let dbStocksJson = {}
+      allStocksJson.forEach((stockDataJson) => {
+        if(Object.keys(stockDataJson).length <= 0){
+          return false;
+        }
+        dbStocksJson[stockDataJson.symbol] = stockDataJson;
+      });
+
+      await db.StocksData.create({ data: { stocks: dbStocksJson, lastUpdated: moment() } });
+      const alldata = await db.StocksData.findAll({
+        order: [['id', 'ASC']],
+        attributes: ['id']
+      })
+
+      if( alldata.length > 3 ) {
+        db.StocksData.destroy({
+            where: {
+              id: alldata[0].id
+            }
+        })
+      }
+
+      this.retryUpdateMissedStocks()
+
     })
     // const msg = 'It took ' + moment.duration(moment().diff(start)).asSeconds();
     return {msg: 'processing'}
+  }
+
+  async retryUpdateMissedStocks() {
+
+    const stocksService = new StocksService();
+    const allAddedStocksInfo = await stocksService.getAllAddedStocks();
+
+    if( !allAddedStocksInfo || allAddedStocksInfo.length <= 0 ) {
+      return {msg: "No stocks found"};
+    }
+
+    const allStocksDataJson = await this.getAllStocksData();
+    const allStocksData = allStocksDataJson.data
+
+    if( !allStocksData || !allStocksData.stocks ) {
+      return
+    }
+
+    const prevUpdatedStocks = Object.keys(allStocksData.stocks)
+    const stocksToRetry = []
+
+    allAddedStocksInfo.forEach((stockInfo, i) => {
+      if( !prevUpdatedStocks.includes(stockInfo.symbol) ) {
+        stocksToRetry.push(stockInfo.symbol)
+      }
+    });
+
+    if( stocksToRetry.length <= 0 ) {
+      console.log("retryUpdateMissedStocks: No stocks to retry. all stocks updated");
+      return;
+    }
+
+    console.log('retryUpdateMissedStocks: ' + stocksToRetry)
+
+    Promise.all(stocksToRetry.map(async (symbol, i) => {
+      await sleep(i * 2000)
+      const stockDataJson = await this.getStockData(symbol)
+      return stockDataJson;
+    })).then(async (allStocksJson) => {
+      if( !allStocksJson || allStocksJson.length <= 0 ) {
+        return;
+      }
+
+      const alldata = await db.StocksData.findAll({
+        order: [['id', 'DESC']]
+      });
+
+      const recentDbStocksDataRow = await alldata[0]
+      const dbStocksData = await recentDbStocksDataRow.data
+
+      let dbStocksJson = {}
+      allStocksJson.forEach((stockDataJson) => {
+        if(Object.keys(stockDataJson).length <= 0){
+          return false;
+        }
+        dbStocksData.stocks[stockDataJson.symbol] = stockDataJson;
+      });
+
+      recentDbStocksDataRow.changed('data', true);
+      await recentDbStocksDataRow.save();
+    });
+
   }
 
   async testTda(){
@@ -173,9 +239,9 @@ class StocksData {
       change: tdaclient.movers.CHANGE.PERCENT,
       apikey: ''
     };
-    const getMoversResult = await tdaclient.movers.getMovers(moversConfig);
-    console.log('test tda movers result');
-    console.log(getMoversResult);
+    // const getMoversResult = await tdaclient.movers.getMovers(moversConfig);
+    // console.log('test tda movers result');
+    // console.log(getMoversResult);
 
     // const getQuoteConfig = {
     //   symbol: 'ABCDE',
@@ -185,13 +251,13 @@ class StocksData {
     // console.log('test tda result');
     // console.log(getQuoteResult);
     //
-    // const getQuotesConfig = {
-    //   symbol: "A,AA,AAA,AAAU,AACG,AACQ,AACQW,AADR,AAIC,AAIC-B,AAIC-C,AAL,AAMC,AAME,AAN,AAOI,AAON,AAP,AAPL,AAT,AAU,AAWW,AAXJ,AAXN,AB,ABB,ABBV,ABC,ABCB,ABCL,ABCM,ABEO,ABEQ,ABEV,ABG,ABIO,ABM,ABMD,ABNB,ABR,ABR-A,ABR-B,ABR-C,ABST,ABT,ABTX,ABUS,AC,ACA,ACAC,ACACW,ACAD,ACAM,ACAMW,ACB,ACBI,ACC,ACCD,ACCO,ACEL,ACER,ACES,ACET,ACEV,ACEVW,ACGL,ACGLO,ACGLP,ACH,ACHC,ACHV,ACI,ACIA,ACIC,ACIC+,ACIC=,ACIO,ACIU,ACIW,ACLS,ACM,ACMR,ACN,ACNB,ACND,ACND+,ACND=,ACOR,ACP,ACRE,ACRS,ACRX,ACSG,ACSI,ACST,ACTC,ACTCW,ACTG,ACTV,ACU,ACV,ACVF,ACWF,ACWI,ACWV,ACWX,ACY,ADAP,ADBE,ADC,ADCT,ADES,ADFI,ADI,ADIL,ADILW,ADM,ADMA,ADME,ADMP,ADMS,BA,TSLA,MSFT",
-    //   apikey: ''
-    // };
-    // const getQuotesResult = await tdaclient.quotes.getQuotes(getQuotesConfig);
-    // console.log('test tda result');
-    // console.log(getQuotesResult);
+    const getQuotesConfig = {
+      symbol: "A,AA,AAA,AAAU,AACG,AACQ,AACQW,AADR,AAIC,AAIC-B,AAIC-C,AAL,AAMC,AAME,AAN,AAOI,AAON,AAP,AAPL,AAT,AAU,AAWW,AAXJ,AAXN,AB,ABB,ABBV,ABC,ABCB,ABCL,ABCM,ABEO,ABEQ,ABEV,ABG,ABIO,ABM,ABMD,ABNB,ABR,ABR-A,ABR-B,ABR-C,ABST,ABT,ABTX,ABUS,AC,ACA,ACAC,ACACW,ACAD,ACAM,ACAMW,ACB,ACBI,ACC,ACCD,ACCO,ACEL,ACER,ACES,ACET,ACEV,ACEVW,ACGL,ACGLO,ACGLP,ACH,ACHC,ACHV,ACI,ACIA,ACIC,ACIC+,ACIC=,ACIO,ACIU,ACIW,ACLS,ACM,ACMR,ACN,ACNB,ACND,ACND+,ACND=,ACOR,ACP,ACRE,ACRS,ACRX,ACSG,ACSI,ACST,ACTC,ACTCW,ACTG,ACTV,ACU,ACV,ACVF,ACWF,ACWI,ACWV,ACWX,ACY,ADAP,ADBE,ADC,ADCT,ADES,ADFI,ADI,ADIL,ADILW,ADM,ADMA,ADME,ADMP,ADMS,BA,TSLA,EBON",
+      apikey: ''
+    };
+    const getQuotesResult = await tdaclient.quotes.getQuotes(getQuotesConfig);
+    console.log('test tda result');
+    console.log(getQuotesResult);
   }
 }
 

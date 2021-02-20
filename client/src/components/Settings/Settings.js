@@ -1,8 +1,8 @@
 import React, { Component, useRef } from 'react';
-
 import { Typeahead, TypeaheadMenu, Menu, MenuItem } from 'react-bootstrap-typeahead';
+import { Row, Col, Card, Tabs, Tab, TabContent, Spinner, Container, Form } from 'react-bootstrap';
 
-import { Row, Col, Card, Tabs, Tab, TabContent, Spinner, Container } from 'react-bootstrap';
+import { COMMON_UTIL } from './../Common/Util';
 
 import './styles.css';
 
@@ -14,6 +14,7 @@ class Settings extends React.Component {
 		super(props);
 
     this.state = {
+      userId: this.props.userId,
       supportedStocksData: [],
       existingCategories: [],
       stockToAdd: '',
@@ -22,9 +23,11 @@ class Settings extends React.Component {
       isFormSuccess: true,
       formValidationMsg: '',
       selectedCategories: [],
-      isExistingStock: false
+      isExistingStock: false,
+      watchlistComment: ''
     };
 
+    this.watchlistCommentRef = React.createRef();
     this.adStockTypeaheadRef = React.createRef();
     this.categoriesTypeaheadRef = React.createRef();
 
@@ -37,6 +40,7 @@ class Settings extends React.Component {
     this.getAllCategories = this.getAllCategories.bind(this);
     this.clearFormMessages = this.clearFormMessages.bind(this);
     this._renderMenu = this._renderMenu.bind(this);
+    this.handleAppWatchlistChange = this.handleAppWatchlistChange.bind(this);
 	}
 
   async getAllCategories(){
@@ -58,23 +62,13 @@ class Settings extends React.Component {
   async componentDidMount() {
     this._isMounted = true;
     try {
-      let supportedStocksDataSessionStorage = sessionStorage.getItem('supportedStocksJson');
-      if( !supportedStocksDataSessionStorage || supportedStocksDataSessionStorage.length < 3000 ) {
-        const res = await fetch('/api/getSupportedStocks');
-        const supportedStocksJson = await res.json();
-        sessionStorage.setItem("supportedStocksJson", JSON.stringify(supportedStocksJson.data));
-        if( this._isMounted ) {
-          this.setState({
-            supportedStocksData: supportedStocksJson.data,
-          });
-        }
-      } else {
+      if( this._isMounted ) {
+        const supportedStocksData = await COMMON_UTIL.getSupportedStocksJson();
         this.setState({
-          supportedStocksData: JSON.parse(supportedStocksDataSessionStorage)
-        });
+          supportedStocksData: supportedStocksData
+        })
+        this.getAllCategories();
       }
-
-      this.getAllCategories();
     } catch (error) {
       console.log(error);
     }
@@ -90,9 +84,15 @@ class Settings extends React.Component {
   }
 
   async handleStockSelectionChange(selectedOptions) {
+
+    document.getElementById('cbx-global-watchlist').checked = false
+    document.getElementById('cbx-my-watchlist').checked = false
+
     const selectedStockOption = selectedOptions[0];
     this.setState({
-      isExistingStock: false
+      isExistingStock: false,
+      selectedCategories: [],
+      watchlistComment: ''
     });
     if( !selectedStockOption ) {
       return;
@@ -100,7 +100,16 @@ class Settings extends React.Component {
     this.setState({ stockToAdd: selectedStockOption.symbol });
 
     try {
-      const res = await fetch(`/api/getStockCategories/${selectedStockOption.symbol}`);
+      const requestOptions = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: this.state.userId,
+          symbol: selectedStockOption.symbol
+        })
+      };
+
+      const res = await fetch(`/api/getAddedStockInfo`, requestOptions);
       const resJson = await res.json();
       console.log(resJson);
       if( resJson.success && resJson.data.stockExists ){
@@ -113,8 +122,13 @@ class Settings extends React.Component {
 
         this.setState({
           isExistingStock: true,
-          selectedCategories: selectedCategories
+          selectedCategories: selectedCategories,
+          stockToAddCategories: [...selectedCategories]
         });
+
+        document.getElementById('cbx-global-watchlist').checked = resJson.data.isInAppWatchlist
+        document.getElementById('cbx-my-watchlist').checked = resJson.data.isInUserWatchlist
+        this.setState({watchlistComment: resJson.data.watchlistComment})
       }
     } catch (e) {
       console.log(e);
@@ -157,8 +171,12 @@ class Settings extends React.Component {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          userId: this.state.userId,
           stockToAdd: this.state.stockToAdd.trim(),
-          categories: categories
+          categories: categories,
+          addToGlobalWatchList: document.getElementById('cbx-global-watchlist').checked,
+          watchlistComment: this.state.watchlistComment,
+          addToMyWatchList: document.getElementById('cbx-my-watchlist').checked,
         })
       };
 
@@ -176,8 +194,16 @@ class Settings extends React.Component {
         stockToAdd: '',
         stockToAddCategories: [],
         selectedCategories: [],
-        isExistingStock: false
+        isExistingStock: false,
+        watchlistComment: ''
       });
+
+      document.getElementById('cbx-global-watchlist').checked = false;
+      document.getElementById('cbx-my-watchlist').checked = false;
+
+      setTimeout(() => {
+        this.setState({formValidationMsg: ''})
+      }, 3000);
 
       this.getAllCategories();
     } catch (e) {
@@ -256,6 +282,14 @@ class Settings extends React.Component {
     }
   }
 
+  handleAppWatchlistChange(event) {
+    if( !event.target.checked ) {
+      this.setState({watchlistComment: '' })
+    } else {
+      this.watchlistCommentRef.current.focus();
+    }
+  }
+
   addStockFrom() {
     return (
 
@@ -318,7 +352,30 @@ class Settings extends React.Component {
                   />
                 </div>
 
-                <div className="form-group">
+                <div className="form-check mt-4">
+                  <input
+                    onChange={this.handleAppWatchlistChange}
+                    style={{position:'relative', top:'-2px'}}
+                    type="checkbox"
+                    className="form-check-input cursor-pointer mr-2"
+                    id="cbx-global-watchlist"/>
+                  <label style={{position:'relative', top:'-2px'}} className="form-check-label small cursor-pointer" htmlFor="cbx-global-watchlist">Add to Watchlist</label>
+                  <Form.Control
+                    className="d-inline w-75 ml-3"
+                    type="text"
+                    id="global-watchlist-comment"
+                    ref={this.watchlistCommentRef}
+                    onChange = {(event) => this.setState({watchlistComment: event.target.value })}
+                    value={this.state.watchlistComment}
+                    placeholder="comments" />
+                </div>
+
+                <div className="form-check mt-4">
+                  <input type="checkbox" className="form-check-input cursor-pointer" id="cbx-my-watchlist"/>
+                  <label style={{position:'relative', top:'-2px'}} className="form-check-label small cursor-pointer" htmlFor="cbx-my-watchlist">Add to My Watchlist</label>
+                </div>
+
+                <div className="mt-4 form-group">
                   <button className="btn btn-primary w-25" type="button" onClick={this.handleAddStockSubmit}>{this.state.isExistingStock ? 'Update Stock' : 'Add Stock'}</button>
                 </div>
 

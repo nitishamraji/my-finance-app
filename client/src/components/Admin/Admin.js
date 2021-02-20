@@ -57,7 +57,8 @@ export default class Admin extends React.Component {
                     <span>{user.userId}</span>
                     <span className="pl-3">{user.userName}</span>
                     </div>
-                    <input type="checkbox" id={`cbx-approv-${user.userId}`} defaultChecked={user.approved} />
+                    <input className="cursor-pointer" type="checkbox" id={`cbx-approv-${user.userId}`} defaultChecked={user.approved} />
+                    <label className="mx-2 cursor-pointer" htmlFor={`cbx-approv-${user.userId}`}>Approved</label>
                     <Button type="button" className="ml-3" onClick={ () => this.updateUserApproval(user.userId)}>Update</Button>
                   </ListGroup.Item>
 

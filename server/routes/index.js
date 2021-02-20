@@ -11,6 +11,8 @@ const RssService = require('../services/RssService')
 const StocksService = require('../services/StocksService')
 const UserService = require('../services/UserService')
 const HeatMapService = require('../services/HeatMapService')
+const MessagesService = require('../services/MessagesService')
+const AppDataService = require('../services/AppDataService')
 
 router.post('/stocks', cors(), async (req, res, next) => {
   // db
@@ -107,6 +109,54 @@ router.post('/stocks', cors(), async (req, res, next) => {
   res.send("success");
 });
 
+router.get('/updateUserLastSeenMessages/:userId', cors(),  catchErrors( async (req, res, next) => {
+    const service = new MessagesService();
+    await service.updateUserLastSeenMessages(req.params.userId);
+    res.send({success: true, msg: ''});
+}));
+
+router.get('/getNumUnseenMessages/:userId', cors(),  catchErrors( async (req, res, next) => {
+    const service = new MessagesService();
+    const result = await service.getNumUnseenMessages(req.params.userId);
+    res.send({success: true, msg: '', data: result});
+}));
+
+router.post('/removeMessage/:userId', cors(),  catchErrors( async (req, res, next) => {
+    const service = new MessagesService();
+    const result = await service.removeMessage(req.params.userId, req.body);
+    res.send({success: result.success, msg: result.msg});
+}));
+
+router.post('/updateMessage/:userId', cors(),  catchErrors( async (req, res, next) => {
+    const service = new MessagesService();
+    const result = await service.updateMessage(req.params.userId, req.body);
+    res.send({success: result.success, msg: result.msg});
+}));
+
+router.post('/addMessage', cors(),  catchErrors( async (req, res, next) => {
+    const service = new MessagesService();
+    const result = await service.addMessage(req.body);
+    res.send({success: result.success, msg: result.msg});
+}));
+
+router.get('/getMessages/:userId', cors(),  catchErrors( async (req, res, next) => {
+    const service = new MessagesService();
+    const result = await service.getMessages(req.params.userId);
+    res.send({success: result.success, msg: result.msg, data: result.data});
+}));
+
+router.post('/saveAppWatchlist', cors(),  catchErrors( async (req, res, next) => {
+    const service = new AppDataService();
+    const data = await service.saveWatchList(req.body);
+    res.send({success: true, msg: ''});
+}));
+
+router.get('/getAppWatchlist', cors(),  catchErrors( async (req, res, next) => {
+    const service = new AppDataService();
+    const data = await service.getWatchlist();
+    res.send({success: true, msg: '', data: data});
+}));
+
 router.get('/getUserWatchList/:userId', cors(),  catchErrors( async (req, res, next) => {
     const service = new UserService();
     const result = await service.getUserWatchList(req.params.userId);
@@ -197,6 +247,12 @@ router.get('/getStockCategories/:symbol', cors(),  catchErrors( async (req, res,
     console.log('testing getStockCategories: ' + req.params.symbol)
     const stockCategories = await service.getStockCategories(req.params.symbol);
     res.send({success: true, msg: '', data: stockCategories});
+}));
+
+router.post('/getAddedStockInfo', cors(),  catchErrors( async (req, res, next) => {
+    const service = new StocksService();
+    const addedStockInfo = await service.getAddedStockInfo(req.body);
+    res.send({success: true, msg: '', data: addedStockInfo});
 }));
 
 router.get('/getAllCategories', cors(),  catchErrors( async (req, res, next) => {

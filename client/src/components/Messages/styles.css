@@ -1,0 +1,12 @@
+#messages-container tbody {
+  background-color: #f8f8f8;
+}
+
+#messages-container td {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.125) !important;
+  font-size: 14px !important;
+}
+
+#messages-container td .text-muted {
+  font-size: 11px !important;
+}

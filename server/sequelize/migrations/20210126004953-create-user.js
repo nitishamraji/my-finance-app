@@ -2,9 +2,14 @@
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     await queryInterface.createTable('Users', {
+      id: {
+          type: Sequelize.INTEGER,
+          autoIncrement: true,
+          primaryKey: true
+      },
       userId: {
         type: Sequelize.STRING,
-        primaryKey: true,
+        unique: true,
         allowNull: false
       },
       userName: {
@@ -32,6 +37,10 @@ module.exports = {
         type: Sequelize.DATE
       }
     });
+
+    await queryInterface.sequelize.query(`
+      ALTER SEQUENCE "Users_id_seq" RESTART WITH 1323
+    `);
   },
   down: async (queryInterface, Sequelize) => {
     await queryInterface.dropTable('Users');

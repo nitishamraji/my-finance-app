@@ -1,8 +1,13 @@
 import React, { Component } from 'react';
 
 import Table from './../../components/Common/Table/Table';
-import { Tabs, Tab, TabContent, Button, Card, Accordion, Form } from 'react-bootstrap';
+import MyWatchlist from './../../components/User/MyWatchlist';
+import AppWatchlist from './../../components/User/AppWatchlist';
+
+import { Tabs, Tab, TabContent, Button, Card, Accordion, Form, Modal } from 'react-bootstrap';
 import $ from "jquery";
+import { Bag, Gear } from 'react-bootstrap-icons';
+import Popup from 'reactjs-popup';
 
 import './styles.css';
 
@@ -19,12 +24,23 @@ export default class Stocks extends React.Component {
       filterCategories: [],
       showAll: true,
       showCategoriesFilter: false,
-      myWatchlistStocks: ['test'],
+      myWatchlistStocks: [],
       loadMyWatchlist: false,
+      loadAppWatchlist: false,
+      appWatchlistStocks: [],
+      appWatchlistStocksInfo: [],
+      showModal: false,
+      reRenderMyWatchlistTriggerKey: '',
+      reRenderAppWatchlistTriggerKey: ''
     };
     this.handleCategoryFilterChange = this.handleCategoryFilterChange.bind(this);
     this.handleToggleAll = this.handleToggleAll.bind(this);
     this.handleTabsSelect = this.handleTabsSelect.bind(this);
+    this.showModal = this.showModal.bind(this);
+    this.hideModal = this.hideModal.bind(this);
+    this.myWatchlistSaveCallback = this.myWatchlistSaveCallback.bind(this);
+    this.appWatchlistSaveCallback = this.appWatchlistSaveCallback.bind(this);
+
   }
 
   async componentDidMount() {
@@ -89,17 +105,26 @@ export default class Stocks extends React.Component {
       if( !this.state.loadMyWatchlist ) {
         const watchlistRes = await fetch('/api/getUserWatchList/'+ this.state.userId);
         const watchlistResJson = await watchlistRes.json();
-        console.log('watchlistResJson ' + watchlistResJson)
-        const myWatchlistStocks = [];
 
         if( watchlistResJson.success ) {
-          watchlistResJson.data.forEach((item, i) => {
-            myWatchlistStocks.push(item.symbol)
-          });
-
           this.setState({
-            myWatchlistStocks: myWatchlistStocks,
-            loadMyWatchlist: true,
+            myWatchlistStocks: watchlistResJson.data,
+            nonUsedKey: new Date()
+          })
+        }
+
+      }
+    }
+
+    if( key === 'appWatchlist' ) {
+      if( !this.state.loadAppWatchlist ) {
+        const watchlistRes = await fetch('/api/getAppWatchlist');
+        const watchlistResJson = await watchlistRes.json();
+        console.log('app watchlist: ' + JSON.stringify(watchlistResJson));
+        if( watchlistResJson.success ) {
+          this.setState({
+            appWatchlistStocks: watchlistResJson.data.map(symbolInfo => symbolInfo.symbol),
+            appWatchlistStocksInfo: watchlistResJson.data,
             nonUsedKey: new Date()
           })
         }
@@ -108,8 +133,52 @@ export default class Stocks extends React.Component {
     }
   }
 
+  hideModal(e) {
+    // this.clearLoginForm();
+    this.setState({
+      showModal: false,
+      showWatchLisDialogFor: ''
+    });
+  }
+
+  showModal(watchlistType) {
+    this.setState({
+      showModal: true,
+      showWatchLisDialogFor:  watchlistType
+    });
+  }
+
+  myWatchlistSaveCallback(hasChanged, myWatchListChangedData){
+    console.log('hasChanged: ' + hasChanged )
+    console.log('myWatchListChangedData: ' + JSON.stringify(myWatchListChangedData) )
+    try {
+      this.setState({
+        myWatchlistStocks: myWatchListChangedData.map(stockInfo => stockInfo.symbol),
+        reRenderMyWatchlistTriggerKey: new Date()
+      });
+    } catch(e) {
+      console.log(e)
+    }
+  }
+
+  appWatchlistSaveCallback(hasChanged, appWatchListChangedData){
+    console.log('hasChanged: ' + hasChanged )
+    console.log('appWatchListChangedData: ' + JSON.stringify(appWatchListChangedData) )
+    try {
+      this.setState({
+        appWatchlistStocks: appWatchListChangedData.map(stockInfo => stockInfo.symbol),
+        appWatchlistStocksInfo: appWatchListChangedData,
+        reRenderAppWatchlistTriggerKey: new Date()
+      });
+    } catch(e) {
+      console.log(e)
+    }
+  }
+
+
   render() {
     return (
+      <React.Fragment>
       <Tabs defaultActiveKey={"all"} onSelect={this.handleTabsSelect}>
           <Tab eventKey={"all"} title="All">
             <TabContent className="mt-3">
@@ -187,23 +256,72 @@ export default class Stocks extends React.Component {
               </React.Fragment>
             </TabContent>
          </Tab>
-         <Tab eventKey={"watchlist"} title="Watchlist">
+         <Tab eventKey={"appWatchlist"} title="Watchlist">
            <TabContent className="mt-3">
+               {
+               // <Popup trigger={<Gear className="cursor-pointer" />} modal nested>
+               //     <MyWatchlist userId={this.state.userId} isAuthed={this.state.isAuthed}/>
+               // </Popup>
+              }
+               <Gear className="cursor-pointer" onClick={() => this.showModal('appWatchlist')}/>
+             {
+               this.state.appWatchlistStocks.length > 0  &&
+               <Table
+                stocksList={ this.state.appWatchlistStocks }
+                allStocksData={ this.state.allStocksData }
+                showSearch={false}
+                key={this.state.reRenderAppWatchlistTriggerKey}
+                addInfoColumn={true}
+                infoColumnData={this.state.appWatchlistStocksInfo}
+               />
+             }
+             {
+               this.state.appWatchlistStocks.length <= 0  &&
+               <Bag style={{fontSize:'25px'}} className={`m-auto ${this.state.appWatchlistStocks.length <= 0 ? 'd-block' : 'd-none'} `}/>
+             }
            </TabContent>
          </Tab>
          <Tab eventKey={"mywatchlist"} title="My Watchlist">
            <TabContent className="mt-3">
+              <Gear className="cursor-pointer" onClick={() => this.showModal('mywatchlist')}/>
              {
-               this.state.loadMyWatchlist && this.state.myWatchlistStocks.length > 0  &&
+               this.state.myWatchlistStocks.length > 0  &&
                <Table
                 stocksList={ this.state.myWatchlistStocks }
                 allStocksData={ this.state.allStocksData }
                 showSearch={false}
+                key={this.state.reRenderMyWatchlistTriggerKey}
                />
+             }
+             {
+               this.state.myWatchlistStocks.length <= 0  &&
+               <Bag style={{fontSize:'25px'}} className={`m-auto ${this.state.myWatchlistStocks.length > 0 ? 'd-block' : 'd-none'}`}/>
              }
            </TabContent>
          </Tab>
      </Tabs>
+     <Modal dialogClassName='stocks-dialog'
+       show={this.state.showModal} onHide={(e)=> this.hideModal(e)}
+       >
+       <Modal.Header>
+       <h5 className="mb-0 text-primary">
+       {this.state.showWatchLisDialogFor === 'mywatchlist' ? 'My Watchlist' : 'Watchlist'}
+       </h5>
+       </Modal.Header>
+       <Modal.Body style={{padding: '25px', width: '80% !important', maxWidth: 'none !important'}}>
+          { this.state.showWatchLisDialogFor === 'mywatchlist' &&
+            <MyWatchlist onSaveCallback={this.myWatchlistSaveCallback} userId={this.state.userId} isAuthed={this.state.isAuthed}/>
+          }
+
+          { this.state.showWatchLisDialogFor === 'appWatchlist' &&
+            <AppWatchlist onSaveCallback={this.appWatchlistSaveCallback} userId={this.state.userId} isAuthed={this.state.isAuthed}/>
+          }
+       </Modal.Body>
+       <Modal.Footer>
+         <Button variant="secondary" onClick={this.hideModal}>Close</Button>
+       </Modal.Footer>
+     </Modal>
+     </React.Fragment>
     );
   }
 }

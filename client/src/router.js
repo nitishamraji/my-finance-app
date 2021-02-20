@@ -9,6 +9,7 @@ import NewsPage from './components/News/NewsPage';
 import Settings from './components/Settings/Settings';
 import Stocks from './components/Stocks/Stocks';
 import StocksLive from './components/Live/StocksLive';
+import Messages from './components/Messages/Messages';
 
 import UserProfile from './components/User/UserProfile';
 import Admin from './components/Admin/Admin';
@@ -21,7 +22,7 @@ export default class Router extends Component {
 
     this.state = {
       userId: USER_DATA.myAppUser(),
-      isAuthed: USER_DATA.isUserLoggedIn() ? true : false,
+      isAuthed: this.props.isAuthed
     };
 
     // this.handleFormChange = this.handleFormChange.bind(this);
@@ -53,6 +54,12 @@ export default class Router extends Component {
         </Route>
 
         <Route
+          path="/messages"
+        >
+          {!this.state.isAuthed ? <Redirect to="/home" /> : <Messages {...props} isAuthed={this.state.isAuthed} userId={this.state.userId} />}
+        </Route>
+
+        <Route
           path="/user-profile"
         >
           {!this.state.isAuthed ? <Redirect to="/home" /> : <UserProfile {...props} isAuthed={this.state.isAuthed} userId={this.state.userId} />}
@@ -73,7 +80,7 @@ export default class Router extends Component {
         <Route
           path="/live"
         >
-           <StocksLive {...props} isAuthed={this.state.isAuthed} userId={this.state.userId} />
+          {!this.state.isAuthed ? <Redirect to="/home" /> : <StocksLive {...props} isAuthed={this.state.isAuthed} userId={this.state.userId} />}
         </Route>
 
         <Route

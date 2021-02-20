@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
 import { Link } from "react-router-dom";
-import { Modal, Button } from 'react-bootstrap';
+import { Modal, Button, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import BootstrapTable from 'react-bootstrap-table-next';
 import Popup from 'reactjs-popup';
 import TradingViewWidget, { Themes, BarStyles } from 'react-tradingview-widget';
 import ToolkitProvider, { Search } from 'react-bootstrap-table2-toolkit';
 import paginationFactory from 'react-bootstrap-table2-paginator';
 import { DynamicModal,ModalManager,Effect} from 'react-dynamic-modal';
+import { InfoCircle } from 'react-bootstrap-icons';
 
 import StockDetail from './../../StockDetail/StockDetail';
 
@@ -120,6 +121,7 @@ const symbolFormat = (symbol) => {
     );
 }
 
+const getColumns = (customInfo) => {
 const columns = [
   {
     dataField: 'symbol',
@@ -214,23 +216,39 @@ const columns = [
   // }
 ];
 
+if( customInfo && customInfo.addInfoColumn ) {
+  columns.push({
+    dataField: 'info',
+    text: '',
+    sort: false,
+    formatter: (c) => { return (
+
+      <OverlayTrigger
+        placement={'left'}
+        overlay={
+          <Tooltip>
+            {c}
+          </Tooltip>
+        }
+      >
+        <InfoCircle className={`cursor-pointer ${c && c.length > 0 ? '' : 'd-none'}`}/>
+      </OverlayTrigger>
+
+    )}
+  })
+}
+
+return columns;
+}
 const defaultSorted = [{
   dataField: 'symbol',
   order: 'desc'
 }];
 
-const tableProps = (stocksList) => {
-  return {
-    defaultSorted: defaultSorted,
-    columns: columns,
-    products: stocksList,
-    columnTitle: columnHover
-  }
-}
-
-function constructStockJson(data){
+function constructStockJson(data, addInfoColumn, infoColumnData){
+  const symbol = data.symbol;
   const dataJson = {
-      symbol: data.symbol,
+      symbol: symbol,
       companyName: data.companyName,
       low: data.low,
       high: data.high,
@@ -245,6 +263,17 @@ function constructStockJson(data){
       pct14d: data,
       pct1m: data,
       pct3m: data
+  }
+
+  if( addInfoColumn ) {
+    let info = '';
+    try {
+      const symbolInfo = infoColumnData.find(symInfo => symInfo.symbol === symbol)
+      info = symbolInfo.comment
+    } catch(e) {
+      console.log(e)
+    }
+    dataJson.info = info;
   }
   return dataJson;
 }
@@ -282,7 +311,9 @@ class Table extends Component {
     this.state = {
       tableData: [],
       stocksList: props.stocksList && props.stocksList.length > 0 ? props.stocksList : [],
-      allStocksData: props.allStocksData
+      allStocksData: props.allStocksData,
+      addInfoColumn: props.addInfoColumn,
+      infoColumnData: props.infoColumnData
     };
   }
 
@@ -290,9 +321,9 @@ class Table extends Component {
     const tableData = []
     this.state.stocksList.forEach((symbol) => {
       try {
-        tableData.push(constructStockJson(this.state.allStocksData[symbol]))
+        tableData.push(constructStockJson(this.state.allStocksData[symbol], this.state.addInfoColumn, this.state.infoColumnData))
       } catch(e) {
-        console.log('Error processing symbol:' + symbol)
+        console.log('Error processing symbol:' + symbol + ' ' + e)
       }
     });
     this.setState({
@@ -306,7 +337,7 @@ class Table extends Component {
 						<ToolkitProvider
 						  keyField="symbol"
 						  data={ this.state.tableData }
-						  columns={ columns }
+						  columns={ getColumns({addInfoColumn: this.state.addInfoColumn, infoColumnData: this.state.infoColumnData}) }
 						  search
 						>
 						  {

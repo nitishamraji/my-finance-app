@@ -34,3 +34,8 @@ iframe {
 	padding-left: 20px;
 	padding-right: 20px;
 }
+
+.stocks-dialog {
+	max-width: none;
+	width: 80% !important;
+}

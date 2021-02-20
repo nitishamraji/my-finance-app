@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {  Button } from 'react-bootstrap';
+import {  Button, Form } from 'react-bootstrap';
 import { Typeahead } from 'react-bootstrap-typeahead'; // ES2015
 import BootstrapTable from 'react-bootstrap-table-next';
 import ToolkitProvider, { Search } from 'react-bootstrap-table2-toolkit';
@@ -38,7 +38,7 @@ const pagination = paginationFactory({
   )
 });
 
-export default class MyWatchlist extends Component {
+export default class AppWatchlist extends Component {
 
   constructor(props) {
     super(props);
@@ -61,6 +61,7 @@ export default class MyWatchlist extends Component {
     this.handleSearchFocus = this.handleSearchFocus.bind(this);
     this.handleSave = this.handleSave.bind(this);
     this.handleSaveEnable = this.handleSaveEnable.bind(this);
+    this.createTableData = this.createTableData.bind(this);
   }
 
   addTableColumns() {
@@ -74,14 +75,29 @@ export default class MyWatchlist extends Component {
         dataField: 'name',
         text: 'Name',
         formatter: (n) => { return (
-          <span
+          <span title={n}
           style={{
-            width:'400px',overflow: 'hidden', whiteSpace: 'nowrap', textOverflow:'ellipsis', display: 'inline-block'
+            width:'200px',overflow: 'hidden', whiteSpace: 'nowrap', textOverflow:'ellipsis', display: 'inline-block'
           }}
           >
           {n}
           </span>
         )},
+      },
+      {
+        dataField: 'comment',
+        text: 'Comments',
+        sort: false,
+        formatter: (stockInfo) => { return (
+          <Form.Control
+            style={{width:'400px'}}
+            className="d-inline"
+            onChange={()=>{ this.setState({isFormButtonDisabled: false}) }}
+            type="text"
+            id={`comment-sym-${stockInfo.symbol}`}
+            defaultValue={stockInfo.comment ? stockInfo.comment : ''}
+            placeholder="comments" />
+        )}
       },
       {
         dataField: 'settings',
@@ -112,7 +128,10 @@ export default class MyWatchlist extends Component {
     try {
       const watchlist = []
       this.state.tableData.forEach(item => {
-        watchlist.push(item.symbol)
+        watchlist.push({
+          symbol:item.symbol,
+          comment: document.getElementById('comment-sym-' + item.symbol).value
+        })
       });
 
       const requestOptions = {
@@ -123,18 +142,18 @@ export default class MyWatchlist extends Component {
           watchlist: watchlist
         })
       };
-      const res = await fetch('/api/saveUserWatchList', requestOptions)
+      const res = await fetch('/api/saveAppWatchlist', requestOptions)
       const resJson = await res.json();
 
       this.setState({
-        saveMsg: resJson.msg,
+        saveMsg: resJson.success ? 'Saved' : 'Error',
         hasSaveError: !resJson.success,
         initalTableData: [...this.state.tableData],
         isFormButtonDisabled: true
       })
 
       if( resJson.success && this.props.onSaveCallback ) {
-        this.props.onSaveCallback(true, [...this.state.tableData])
+        this.props.onSaveCallback(true, watchlist )
       }
 
     } catch (e) {
@@ -150,6 +169,23 @@ export default class MyWatchlist extends Component {
     }, 3000)
   }
 
+  createTableData(appWatchlist){
+    const tableData = [];
+    appWatchlist.forEach((symbolInfo) => {
+      try {
+        tableData.push({
+          settings: symbolInfo.symbol,
+          symbol: symbolInfo.symbol,
+          comment: symbolInfo,
+          name: this.state.allAddedStocksData.find(item => item.symbol === symbolInfo.symbol).name
+        })
+      } catch(e) {
+        console.log('error processing  watchlist symbol: ' + symbolInfo.symbol)
+      }
+    });
+    return tableData;
+  }
+
   componentWillUnmount() {
     // fix Warning: Can't perform a React state update on an unmounted component
     //https://stackoverflow.com/questions/53949393/cant-perform-a-react-state-update-on-an-unmounted-component
@@ -157,7 +193,7 @@ export default class MyWatchlist extends Component {
         return;
     };
   }
-  
+
   async componentDidMount() {
     try {
 
@@ -172,23 +208,12 @@ export default class MyWatchlist extends Component {
         return;
       }
 
-      const watchlistRes = await fetch('/api/getUserWatchList/'+ this.state.userId);
+      const watchlistRes = await fetch('/api/getAppWatchlist');
       const watchlistResJson = await watchlistRes.json();
-      const userWatchlist = watchlistResJson.data;
-      const tableData = [];
+      const appWatchlist = watchlistResJson.data;
+      let tableData = [];
       if( watchlistResJson.success ) {
-        userWatchlist.forEach((symbol) => {
-          try {
-            tableData.push({
-              settings: symbol,
-              symbol: symbol,
-              name: allAddedStocksJson.data.find(item => item.symbol === symbol).name
-            })
-          } catch(e) {
-            console.log('error processing  watchlist symbol: ' + symbol)
-          }
-        });
-
+        tableData = this.createTableData(appWatchlist)
         this.setState({
           tableData: tableData,
           initalTableData: [...tableData],
@@ -252,7 +277,8 @@ export default class MyWatchlist extends Component {
     tableData.push({
       symbol: selectedStockOption.symbol,
       name: selectedStockOption.name,
-      settings: selectedStockOption.symbol
+      settings: selectedStockOption.symbol,
+      comment: selectedStockOption
     })
 
     console.log('tableData ' + JSON.stringify(tableData))

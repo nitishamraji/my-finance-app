@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Typeahead, TypeaheadMenu, Menu, MenuItem } from 'react-bootstrap-typeahead'; // ES2015
 import {withRouter} from 'react-router-dom';
+import { COMMON_UTIL } from './../Common/Util';
 
 class NavbarSearch extends React.Component {
 
@@ -19,19 +20,10 @@ class NavbarSearch extends React.Component {
   async handleNavbarSearchFocus(){
 
     if( !this.supportedStocksData || this.supportedStocksData.length <= 0 ) {
-      const supportedStocksDataSessionStorage = sessionStorage.getItem('supportedStocksJson');
-      if( !supportedStocksDataSessionStorage || supportedStocksDataSessionStorage.length < 3000 ) {
-        const res = await fetch('/api/getSupportedStocks');
-        const supportedStocksJson = await res.json();
-        sessionStorage.setItem("supportedStocksJson", JSON.stringify(supportedStocksJson.data));
-        this.setState({
-          supportedStocksData: supportedStocksJson.data
-        });
-      } else {
-        this.setState({
-          supportedStocksData: JSON.parse(supportedStocksDataSessionStorage)
-        });
-      }
+      const supportedStocksData = await COMMON_UTIL.getSupportedStocksJson();
+      this.setState({
+        supportedStocksData: supportedStocksData
+      });
     }
   }
 

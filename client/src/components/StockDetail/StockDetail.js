@@ -95,19 +95,19 @@ export default class StockDetail extends React.Component {
                 {
                   this.state.symbol && this.state.symbol.length > 0 &&
                   <Tabs defaultActiveKey={"google"} className="mt-2" onSelect={this.handleInfoTabsSelect}>
-                    <Tab eventKey={"google"} title="Google News">
+                    <Tab eventKey={"google"} title="Google">
                       <TabContent className="p-3">
                         <News symbol={this.state.symbol} newsSource={'Google'}/>
                       </TabContent>
                     </Tab>
-                    <Tab eventKey={"reddit"} title="Reddit News" tabClassName={!this.state.isAuthed ? 'd-none' : ''}>
+                    <Tab eventKey={"reddit"} title="Reddit" tabClassName={!this.state.isAuthed ? 'd-none' : ''}>
                       <TabContent className="p-3">
                         { this.state.loadReddit && this.state.isAuthed &&
                           <News symbol={this.state.symbol} newsSource={'Reddit'}/>
                         }
                       </TabContent>
                     </Tab>
-                    <Tab eventKey={"finviz"} title="Finviz News" tabClassName={!this.state.isAuthed ? 'd-none' : ''}>
+                    <Tab eventKey={"finviz"} title="Finviz" tabClassName={!this.state.isAuthed ? 'd-none' : ''}>
                       <TabContent className="p-3">
                         { this.state.loadFinviz && this.state.isAuthed &&
                           <News symbol={this.state.symbol} newsSource={'Finviz'}/>

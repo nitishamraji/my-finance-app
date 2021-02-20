@@ -16,13 +16,15 @@ export default class MainNavbar extends React.Component {
     this.state = {
       showModal: false,
       register: false,
-      userId: '',
+      userId: this.props.userId,
       userName: '',
-      isUserLoggedIn: USER_DATA.isUserLoggedIn(),
+      isUserLoggedIn: this.props.isAuthed,
       userIdMsg: '',
       userNameMsg: '',
       userNameValid: true,
-      userIdValid: true
+      userIdValid: true,
+      numMsgsNotifications: 0,
+      hideMsgsNotifications: true,
     };
 
     this.handleFormChange = this.handleFormChange.bind(this);
@@ -31,6 +33,20 @@ export default class MainNavbar extends React.Component {
     this.handleOnFocus = this.handleOnFocus.bind(this);
     this.clearLoginForm = this.clearLoginForm.bind(this);
     this.clearLoginFormMessages = this.clearLoginFormMessages.bind(this);
+    this.hanldeMessagesClick = this.hanldeMessagesClick.bind(this);
+  }
+
+  async componentDidMount() {
+    if( this.state.isUserLoggedIn ) {
+      const numUnseenMessagesRes = await fetch('/api/getNumUnseenMessages/' + this.state.userId)
+      const numUnseenMessagesResJson = await numUnseenMessagesRes.json()
+      if( numUnseenMessagesResJson.success ) {
+        this.setState({
+          numMsgsNotifications: numUnseenMessagesResJson.data,
+          hideMsgsNotifications: numUnseenMessagesResJson.data <= 0 ? true : false
+        })
+      }
+    }
   }
 
   showModal = (e) => {
@@ -151,6 +167,12 @@ export default class MainNavbar extends React.Component {
     }
   }
 
+  hanldeMessagesClick(e){
+    this.setState({
+      hideMsgsNotifications: true
+    })
+  }
+
   render() {
     return (
       <React.Fragment>
@@ -193,7 +215,10 @@ export default class MainNavbar extends React.Component {
             {
               this.state.isUserLoggedIn &&
               <Nav className="ml-auto">
-                <Nav.Link href="#link"><ChatDotsFill /></Nav.Link>
+                <Nav.Link as={NavLink} to="/messages" onClick={this.hanldeMessagesClick}>
+                  <ChatDotsFill />
+                  <sup><span style={{opacity: `${this.state.hideMsgsNotifications ? '0' : '100'}`}}className="badge badge-danger">{this.state.numMsgsNotifications}</span></sup>
+                </Nav.Link>
                 <NavDropdown alignRight
                   title={<div style={{display: "inline-block"}}> <PersonFill/> </div>}>
                   <NavDropdown.Item as={NavLink} to="/user-profile">

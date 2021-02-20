@@ -171,7 +171,7 @@ class Rss {
 
     if( !isSource && symbol && symbol.length === 1 ) {
       const stocksDataService = new StocksDataService();
-      const stockInfo = await stocksDataService.getStockInfo(stockSymbol);
+      const stockInfo = await stocksDataService.getStockInfo(symbol);
       symbol = stockInfo.name;
     }
 

@@ -1,4 +1,6 @@
 const db = require('../sequelize/models')
+const AppDataService = require('./AppDataService')
+const UserService = require('./UserService')
 const StocksDataService = require('./StocksDataService')
 
 const checkCategoryExists = (existingCategories, categoryToAdd) => {
@@ -25,6 +27,9 @@ class Stocks {
       const stockToAdd = addStockJson.stockToAdd;
       let stockToAddCategories = addStockJson.categories;
 
+      console.log('addStockJson: ' + JSON.stringify(addStockJson))
+      console.log('stockToAddCategories: ' + stockToAddCategories)
+      console.log('stockToAddCategories length: ' + stockToAddCategories.length)
       if( !stockToAddCategories || stockToAddCategories.length < 1 ) {
         stockToAddCategories = ['Random'];
       }
@@ -58,7 +63,10 @@ class Stocks {
           const checkCategoryExistsObj  = checkCategoryExists(existingCategories, category);
 
           if( checkCategoryExistsObj.hasCategory ) {
-            stocksByCategory.data[checkCategoryExistsObj.categoryName].push(stockToAdd);
+            const dbCategoryStocs = stocksByCategory.data[checkCategoryExistsObj.categoryName];
+            if( !dbCategoryStocs.includes(stockToAdd) ) {
+              dbCategoryStocs.push(stockToAdd);
+            }
           } else {
             stocksByCategory.data[category] = [stockToAdd];
           }
@@ -69,6 +77,15 @@ class Stocks {
         stocksByCategory.save();
       }
 
+      try {
+        const appDataService = new AppDataService()
+        appDataService.updateToWatchList(addStockJson.addToGlobalWatchList, addStockJson.watchlistComment, stockToAdd)
+
+        const userService = new UserService()
+        userService.updateToWatchList(addStockJson.userId, addStockJson.addToMyWatchList, stockToAdd)
+      } catch(e) {
+        console.log(e)
+      }
       return { msg: stockExists ? 'Stock updated' : 'Stock added' }
   }
 
@@ -96,6 +113,40 @@ class Stocks {
     }
 
     return {symbol: symbol, stockCategories: stockCategories, stockExists: (stockCategories.length > 0)}
+  }
+
+  async getAddedStockInfo(reqJson) {
+    const symbol = reqJson.symbol;
+    const userId = reqJson.userId;
+
+    const stockInfo = await this.getStockCategories(symbol)
+    stockInfo.isInAppWatchlist = false
+    stockInfo.isInUserWatchlist = false
+    stockInfo.watchlistComment = ''
+
+    if( !stockInfo.stockExists ) {
+      return stockInfo
+    }
+
+    try {
+    const appDataService = new AppDataService()
+    const appWatchlist = await appDataService.getWatchlist()
+
+    const userService = new UserService()
+    const userWatchlist = await userService.getUserWatchList(userId)
+
+    const appWatchlistStock = appWatchlist.find(symbolInfo => symbolInfo.symbol === symbol )
+    if( appWatchlistStock ) {
+      stockInfo.isInAppWatchlist = true
+      stockInfo.watchlistComment = appWatchlistStock.comment
+    }
+
+    stockInfo.isInUserWatchlist = userWatchlist.data.includes(symbol)
+    } catch(e) {
+      console.log(e)
+    }
+
+    return stockInfo
   }
 
   async getAllCategories() {

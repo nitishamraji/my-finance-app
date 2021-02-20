@@ -8,7 +8,7 @@ class UserService {
 
     try {
       const userId = userJson.userId;
-      const user = await db.User.findByPk(userId);
+      const user = await db.User.findOne({ where: { userId: userJson.userId } });
 
       if( user ) {
 
@@ -36,7 +36,7 @@ class UserService {
     try {
 
       const userId = userJson.userId.trim();
-      const user = await db.User.findByPk(userId);
+      const user = await db.User.findOne({ where: { userId: userId } });
 
       if( user ) {
         msg = 'User ID already exists';
@@ -74,7 +74,7 @@ class UserService {
     try {
       const userId = reqJson.userId;
       const approve = reqJson.approve;
-      const userInfo = await db.User.findByPk(userId);
+      const userInfo = await db.User.findOne({ where: { userId: reqJson.userId } });
       const userRole = await userInfo.role;
       if( userInfo.role !== 'admin' ) {
         await userInfo.update({approved: approve});
@@ -95,7 +95,7 @@ class UserService {
       const userIdUpdated = reqJson.userIdUpdated;
       const userName = reqJson.userName;
 
-      const userInfo = await db.User.findByPk(userId);
+      const userInfo = await db.User.findOne({ where: { userId: userId } });
       await userInfo.update({
         userId: userIdUpdated,
         userName: userName
@@ -115,7 +115,7 @@ class UserService {
     let msg = '';
     const data = {};
     try {
-      const user = await db.User.findByPk(userId);
+      const user = await db.User.findOne({ where: { userId: userId } });
       if( user ) {
         data.userId = await user.userId,
         data.userName = await user.userName,
@@ -190,11 +190,10 @@ class UserService {
 
   async getUserWatchList(userId) {
     let res = {success: false, msg: '', data:[]}
-    res.watchlist = []
     try {
-      const userInfo = await db.User.findByPk(userId);
+      const userInfo = await db.User.findOne({ where: { userId: userId } });
       const userData = await userInfo.data;
-      if( userData ) {
+      if( userData && userData.watchlist ) {
         res.data = userData.watchlist
       }
       res.success = true
@@ -202,6 +201,7 @@ class UserService {
       console.log(e)
       res.msg='Error'
     }
+    console.log('getUserWatchList: ' + JSON.stringify(res) )
     return res
   }
 
@@ -210,7 +210,7 @@ class UserService {
 
     try {
 
-      const userInfo = await db.User.findByPk(reqJson.userId);
+      const userInfo = await db.User.findOne({ where: { userId: reqJson.userId } });
       let userData = await userInfo.data;
       if( userData ) {
         userData.watchlist = reqJson.watchlist
@@ -231,6 +231,61 @@ class UserService {
 
     return res
   }
+
+  async updateToWatchList(userId, isAdd, symbol) {
+
+    try {
+      const userInfo = await db.User.findOne({ where: { userId: userId } });
+      let userData = await userInfo.data;
+
+      if( isAdd && ( !userData || !userData.watchlist ) ) {
+        userData.watchlist = [symbol]
+      } else {
+        const dbWatchlist = userData.watchlist;
+        if( isAdd ) {
+          if( !dbWatchlist.includes(symbol) ) {
+            dbWatchlist.push(symbol)
+          }
+        } else {
+          if( dbWatchlist.includes(symbol) ) {
+            dbWatchlist.splice(dbWatchlist.indexOf(symbol), 1);
+          }
+        }
+      }
+
+      await userInfo.setDataValue('data', userData);
+      userInfo.changed('data', true);
+      userInfo.save();
+
+    } catch(e) {
+      console.log(e)
+    }
+  }
+
+  async setUserLastSeenMessageId(userId, msgId) {
+    const userInfo = await db.User.findOne({ where: { userId: userId } });
+    let userData = await userInfo.data;
+    if( userData ) {
+      userData.lastSeenMessageId = msgId;
+    } else {
+      userData = {lastSeenMessageId: msgId}
+    }
+
+    await userInfo.setDataValue('data', userData);
+    userInfo.changed('data', true);
+    userInfo.save();
+  }
+
+  async getUserLastSeenMessageId(userId) {
+    const userInfo = await db.User.findOne({ where: { userId: userId } });
+    let userData = await userInfo.data;
+    if( userData && userData.lastSeenMessageId ) {
+      return userData.lastSeenMessageId
+    } else {
+      return 0
+    }
+  }
+
 }
 
 module.exports = UserService;
