@@ -164,7 +164,7 @@ class StocksLiveData {
     }
 
     const allStocksInBatch = [];
-    var i,j,temparray,chunk = 3;
+    var i,j,temparray,chunk = 100;
     for (i=0,j=allAddedStocksInfo.length; i<j; i+=chunk) {
         allStocksInBatch.push( allAddedStocksInfo.slice(i,i+chunk).map(stockInfo => stockInfo.symbol) );
     }

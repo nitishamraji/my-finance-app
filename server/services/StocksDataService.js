@@ -4,12 +4,13 @@ const axios = require("axios");
 const moment = require('moment');
 
 function getQuoteUrl(symbol) {
-  return "https://sandbox.iexapis.com/stable/stock/"+symbol+"/quote?token=Tpk_04291f94e91b4cdd8f4245dc7a730369";
+  // return "https://sandbox.iexapis.com/stable/stock/"+symbol+"/quote?token=Tpk_04291f94e91b4cdd8f4245dc7a730369";
+  return "https://sandbox.iexapis.com/stable/stock/"+symbol+"/quote?token=pk_cc4cd8e1d02945f8a242f6b54c174370";
 }
 
 function getDateQuoteUrl(symbol, date) {
   // return "https://sandbox.iexapis.com/stable//stock/AAPL/chart/date/20201201?chartByDay=true&token=Tpk_04291f94e91b4cdd8f4245dc7a730369";
-  return "https://sandbox.iexapis.com/stable//stock/"+symbol.replace(/\s/g, '')+"/chart/"+date+"/20201201?chartByDay=true&token=Tpk_04291f94e91b4cdd8f4245dc7a730369";
+  return "https://sandbox.iexapis.com/stable//stock/"+symbol.replace(/\s/g, '')+"/chart/"+date+"/20201201?chartByDay=true&token=pk_cc4cd8e1d02945f8a242f6b54c174370";
   // return "https://sandbox.iexapis.com/stable//stock/"+symbol+"/chart/date/"+date+"?chartByDay=true&token=Tpk_04291f94e91b4cdd8f4245dc7a730369";
   // return "https://sandbox.iexapis.com/stable/stock/"+symbol+"/chart/date/"+date+"?chartByDay=true&token=Tpk_04291f94e91b4cdd8f4245dc7a730369";
 }

@@ -286,7 +286,7 @@ export default class Messages extends React.Component {
   render() {
     return (
       <div id="messages-container">
-        <div className="mb-3" onClick={this.showAppOveriewDialog}><InfoCircle/></div>
+        <div className="mb-3 d-none" onClick={this.showAppOveriewDialog}><InfoCircle/></div>
         <Accordion ref={this.accordionRef} activeKey={this.state.accordionFormActiveKey}>
           <Card>
             <Card.Header className="p-1">
@@ -361,7 +361,10 @@ export default class Messages extends React.Component {
             </h5>
             </Modal.Header>
             <Modal.Body style={{padding: '25px', width: '80% !important', maxWidth: 'none !important'}}>
-
+              <ul>
+                <li></li>
+                <li></li>
+              </ul>
             </Modal.Body>
             <Modal.Footer>
               <Button variant="secondary" onClick={this.hideAppOveriewDialog}>Close</Button>
