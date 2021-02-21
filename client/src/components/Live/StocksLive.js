@@ -72,7 +72,7 @@ export default class StocksLive extends React.Component {
         filterCategories: filterCategories
        });
 
-       this.setState({liveStatusMessage: 'Connect live stream. Available market hours'})
+       this.setState({liveStatusMessage: 'Connect live stream. Available during market hours'})
        const isMarketHoursRes = await fetch('/api/isMarketOpen');
        const isMarketHoursResJson = await isMarketHoursRes.json();
        this.setState({
@@ -370,6 +370,11 @@ export default class StocksLive extends React.Component {
                    this.state.myWatchlistStocks.length <= 0  &&
                    <Bag style={{fontSize:'25px'}} className={`m-auto ${this.state.myWatchlistStocks.length > 0 ? 'd-block' : 'd-none'}`}/>
                  }
+               </TabContent>
+             </Tab>
+             <Tab eventKey={"trends"} title="Trends">
+               <TabContent className="mt-3">
+               
                </TabContent>
              </Tab>
          </Tabs>

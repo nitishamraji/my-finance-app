@@ -10,3 +10,8 @@
 #messages-container td .text-muted {
   font-size: 11px !important;
 }
+
+.app-overview-info-dialog {
+  max-width: none;
+	width: 80% !important;
+}

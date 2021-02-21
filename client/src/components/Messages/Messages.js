@@ -286,7 +286,7 @@ export default class Messages extends React.Component {
   render() {
     return (
       <div id="messages-container">
-        <div className="mb-3 d-none" onClick={this.showAppOveriewDialog}><InfoCircle/></div>
+        <div className="mb-3" onClick={this.showAppOveriewDialog}><InfoCircle/></div>
         <Accordion ref={this.accordionRef} activeKey={this.state.accordionFormActiveKey}>
           <Card>
             <Card.Header className="p-1">
@@ -362,8 +362,11 @@ export default class Messages extends React.Component {
             </Modal.Header>
             <Modal.Body style={{padding: '25px', width: '80% !important', maxWidth: 'none !important'}}>
               <ul>
-                <li></li>
-                <li></li>
+                <li>Created this app for trading and investment purposes. A one stop aggregator of financial information. </li>
+                <li>Settings - Page for adding stocks. Only the stocks added to the app will be tracked. </li>
+                <li>Stocks - 3 months history of the stocks. I'm using <a href="https://iexcloud.io/" targe="_blank">IEX Cloud API</a> to pull the info. </li>
+                <li>Live - live streaming during market hours for the stocks added to the app. I'm using <a href="https://developer.tdameritrade.com/" target="_blank">TD Ameritrade develper api</a> for this. Api seems to be working fine during market hours.</li>
+                <li>News - Feed of news aggregated from top sources. I Randomly added whatever i found. Let me know any accouts to be added.</li>
               </ul>
             </Modal.Body>
             <Modal.Footer>
