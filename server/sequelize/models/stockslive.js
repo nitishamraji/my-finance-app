@@ -16,7 +16,8 @@ module.exports = (sequelize, DataTypes) => {
   StocksLive.init({
     data: DataTypes.JSON,
     status: DataTypes.STRING,
-    statusMsg: DataTypes.STRING
+    statusMsg: DataTypes.STRING,
+    helperData: DataTypes.JSON
   }, {
     sequelize,
     modelName: 'StocksLive',

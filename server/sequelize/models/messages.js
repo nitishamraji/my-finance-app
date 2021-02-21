@@ -14,7 +14,8 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
   Messages.init({
-    data: DataTypes.JSON
+    data: DataTypes.JSON,
+    helperData: DataTypes.JSON
   }, {
     sequelize,
     modelName: 'Messages',

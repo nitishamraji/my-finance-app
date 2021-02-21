@@ -72,7 +72,7 @@ export default class StocksLive extends React.Component {
         filterCategories: filterCategories
        });
 
-       this.setState({liveStatusMessage: 'Connect'})
+       this.setState({liveStatusMessage: 'Connect live stream. Available market hours'})
        const isMarketHoursRes = await fetch('/api/isMarketOpen');
        const isMarketHoursResJson = await isMarketHoursRes.json();
        this.setState({

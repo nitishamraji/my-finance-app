@@ -14,7 +14,8 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
   Heatmap.init({
-    url: DataTypes.STRING
+    url: DataTypes.STRING,
+    helperData: DataTypes.JSON
   }, {
     sequelize,
     modelName: 'Heatmap',

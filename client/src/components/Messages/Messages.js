@@ -4,10 +4,11 @@ import { Typeahead } from 'react-bootstrap-typeahead'; // ES2015
 import BootstrapTable from 'react-bootstrap-table-next';
 import ToolkitProvider, { Search } from 'react-bootstrap-table2-toolkit';
 import paginationFactory from 'react-bootstrap-table2-paginator';
-import { Form, Button, Card, Accordion } from 'react-bootstrap';
+import { Form, Button, Card, Accordion, Modal } from 'react-bootstrap';
 import { PencilSquare, Save, XCircleFill, PlusCircle, DashCircle } from 'react-bootstrap-icons';
 import Linkify from 'react-linkify';
 import { SecureLink } from "react-secure-link"
+import { InfoCircle } from 'react-bootstrap-icons';
 
 import $ from "jquery";
 import './styles.css';
@@ -57,6 +58,7 @@ export default class Messages extends React.Component {
       initialMessageText: '',
       isFormCollpased: true,
       accordionFormActiveKey: '-1',
+      showAppOveriewDialog: false
     }
 
     this.msgInputRef = React.createRef();
@@ -71,6 +73,8 @@ export default class Messages extends React.Component {
     this.handleRemove = this.handleRemove.bind(this);
     this.revertToInitial = this.revertToInitial.bind(this);
     this.loadMessages = this.loadMessages.bind(this);
+    this.showAppOveriewDialog = this.showAppOveriewDialog.bind(this);
+    this.hideAppOveriewDialog = this.hideAppOveriewDialog.bind(this);
   }
 
   addTableColumns() {
@@ -267,9 +271,22 @@ export default class Messages extends React.Component {
     this.msgInputRef.current.focus();
   }
 
+  showAppOveriewDialog(e) {
+    this.setState({
+      showAppOveriewDialog: true
+    })
+  }
+
+  hideAppOveriewDialog(e) {
+    this.setState({
+      showAppOveriewDialog: false
+    })
+  }
+
   render() {
     return (
       <div id="messages-container">
+        <div className="mb-3" onClick={this.showAppOveriewDialog}><InfoCircle/></div>
         <Accordion ref={this.accordionRef} activeKey={this.state.accordionFormActiveKey}>
           <Card>
             <Card.Header className="p-1">
@@ -333,6 +350,24 @@ export default class Messages extends React.Component {
             )
           }
         </ToolkitProvider>
+
+        <div>
+          <Modal dialogClassName='app-overview-info-dialog'
+            show={this.state.showAppOveriewDialog} onHide={(e)=> this.hideAppOveriewDialog(e)}
+            >
+            <Modal.Header>
+            <h5 className="mb-0">
+            App Overview
+            </h5>
+            </Modal.Header>
+            <Modal.Body style={{padding: '25px', width: '80% !important', maxWidth: 'none !important'}}>
+
+            </Modal.Body>
+            <Modal.Footer>
+              <Button variant="secondary" onClick={this.hideAppOveriewDialog}>Close</Button>
+            </Modal.Footer>
+          </Modal>
+        </div>
       </div>
     )
   }

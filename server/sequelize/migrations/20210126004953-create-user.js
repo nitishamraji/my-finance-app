@@ -28,6 +28,10 @@ module.exports = {
         type: Sequelize.JSON,
         allowNull: true,
       },
+      helperData: {
+        type: Sequelize.JSON,
+        allowNull: true,
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

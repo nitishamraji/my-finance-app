@@ -10716,6 +10716,16 @@ module.exports = {
             "$loki":1070
          },
          {
+            "symbol":"BMBL",
+            "name":"Bumble Inc",
+            "meta":{
+               "revision":0,
+               "created":1610334652093,
+               "version":0
+            },
+            "$loki":1070
+         },
+         {
             "symbol":"BMCH",
             "name":"BMC Stock Holdings Inc",
             "meta":{

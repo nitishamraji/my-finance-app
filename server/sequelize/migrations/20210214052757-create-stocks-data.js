@@ -11,6 +11,10 @@ module.exports = {
       data: {
         type: Sequelize.JSON
       },
+      helperData: {
+        type: Sequelize.JSON,
+        allowNull: true,
+      },
       status: {
         type: Sequelize.STRING
       },

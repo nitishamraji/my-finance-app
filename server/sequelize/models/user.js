@@ -19,6 +19,7 @@ module.exports = (sequelize, DataTypes) => {
     role: {type: DataTypes.STRING, allowNull: false, defaultValue: 'standard' },
     approved: {type: DataTypes.BOOLEAN, allowNull: true, defaultValue: false },
     data: {type: DataTypes.JSON },
+    helperData: DataTypes.JSON
   }, {
     sequelize,
     modelName: 'User',

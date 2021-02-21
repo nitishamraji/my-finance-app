@@ -14,7 +14,8 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
   AppData.init({
-    data: DataTypes.JSON
+    data: DataTypes.JSON,
+    helperData: DataTypes.JSON
   }, {
     sequelize,
     modelName: 'AppData',
