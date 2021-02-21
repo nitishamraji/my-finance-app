@@ -9,10 +9,12 @@ const db = require('../sequelize/models')
 const StocksDataService = require('../services/StocksDataService')
 const RssService = require('../services/RssService')
 const StocksService = require('../services/StocksService')
+const StocksLiveDataService = require('../services/StocksLiveDataService')
 const UserService = require('../services/UserService')
 const HeatMapService = require('../services/HeatMapService')
 const MessagesService = require('../services/MessagesService')
 const AppDataService = require('../services/AppDataService')
+const MarketHoursService = require('../services/MarketHoursService')
 
 router.post('/stocks', cors(), async (req, res, next) => {
   // db
@@ -220,6 +222,24 @@ router.get('/getAllStocksData', cors(),  catchErrors( async (req, res, next) => 
 
 router.get('/updateAllStocksData', cors(),  catchErrors( async (req, res, next) => {
     const service = new StocksDataService();
+    const result = await service.updateAllStocksData();
+    res.send({success: true, msg: result.msg});
+}));
+
+router.get('/isMarketOpen', cors(),  catchErrors( async (req, res, next) => {
+    const service = new MarketHoursService();
+    const isMarketOpen = await service.isMarketOpen();
+    res.send({success: true, msg: '', isMarketOpen: isMarketOpen});
+}));
+
+router.get('/getAllStocksLiveData', cors(),  catchErrors( async (req, res, next) => {
+    const service = new StocksLiveDataService();
+    const result = await service.getAllStocksData();
+    res.send({success: result.success, msg: result.msg, data: result.data});
+}));
+
+router.get('/updateAllStocksLiveData', cors(),  catchErrors( async (req, res, next) => {
+    const service = new StocksLiveDataService();
     const result = await service.updateAllStocksData();
     res.send({success: true, msg: result.msg});
 }));

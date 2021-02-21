@@ -152,8 +152,7 @@ class StocksData {
 
     Promise.all(allAddedStocks.map(async (symbol, i) => {
       await sleep(i * 2000)
-      const stockDataJson = await this.getStockData(symbol)
-      return stockDataJson;
+      return this.getStockData(symbol)
     })).then(async (allStocksJson) => {
       if( !allStocksJson || allStocksJson.length <= 0 ) {
         return;

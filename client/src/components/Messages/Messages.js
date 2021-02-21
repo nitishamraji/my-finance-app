@@ -285,7 +285,7 @@ export default class Messages extends React.Component {
                   <Form.Group controlId="input-add-msg">
                     <Form.Control value={this.state.addMessageText} ref={this.msgInputRef}
                     onChange = {this.handleMessageChange}
-                     as="textarea" rows={3} placeholder="share something.."/>
+                     as="textarea" rows={3} placeholder="add a message.."/>
                   </Form.Group>
                   <React.Fragment>
                   { !this.state.isMessageUpdate &&

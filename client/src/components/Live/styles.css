@@ -1,0 +1,27 @@
+.connect-live-section .card-header {
+  padding: 0px 3px 3px 15px;
+  text-align: center;
+}
+
+.connect-live-section .card-header button {
+  padding: 0;
+}
+
+.connect-live-section .card-body {
+  text-align: center;
+}
+
+.connect-live-section .card-header .btn,  .connect-live-section .card-header .btn-link {
+  color: #fff;
+  transition: color 1s ease-in-out;
+}
+
+.connect-live-section .card-header .btn-link:hover {
+  color: #fff;
+  text-decoration: underline !important;
+}
+
+.connect-live-section .card-header .btn-link:focus {
+  color: #fff;
+  text-decoration: none;
+}

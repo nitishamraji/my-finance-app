@@ -2,6 +2,7 @@ const db = require('../sequelize/models')
 const AppDataService = require('./AppDataService')
 const UserService = require('./UserService')
 const StocksDataService = require('./StocksDataService')
+const StocksLiveDataService = require('./StocksLiveDataService')
 
 const checkCategoryExists = (existingCategories, categoryToAdd) => {
   let hasCategory = false;
@@ -88,7 +89,12 @@ class Stocks {
           const stocksDataService = new StocksDataService ()
           stocksDataService.addStockData(stockToAdd)
         }
-        
+
+        if( !stockExists ) {
+          const stocksLiveDataService = new StocksLiveDataService ()
+          stocksLiveDataService.addStockData(stockToAdd)
+        }
+
       } catch(e) {
         console.log(e)
       }

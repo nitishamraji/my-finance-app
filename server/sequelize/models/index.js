@@ -29,9 +29,15 @@ fs
   });
 
 Object.keys(db).forEach(modelName => {
+  console.log('db model name: ' + modelName)
   if (db[modelName].associate) {
     db[modelName].associate(db);
   }
+});
+
+sequelize.define('StocksLive', {
+}, {
+  freezeTableName: true
 });
 
 db.sequelize = sequelize;
