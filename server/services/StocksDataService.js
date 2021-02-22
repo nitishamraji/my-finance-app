@@ -111,8 +111,8 @@ async function getTdaQuote(symbol) {
   const quoteRes = quoteResTmp[symbol]
 
 
-  const dayPctChange = (((quoteRes.closePrice - quoteRes.openPrice)/quoteRes.openPrice)*100).toFixed(2)
-  const afterHoursPctChange = (((quoteRes.lastPrice - quoteRes.closePrice)/quoteRes.closePrice)*100).toFixed(2)
+  const dayPctChange = (((quoteRes.regularMarketLastPrice - quoteRes.openPrice)/quoteRes.openPrice)*100).toFixed(2)
+  const afterHoursPctChange = (((quoteRes.lastPrice - quoteRes.regularMarketLastPrice)/quoteRes.regularMarketLastPrice)*100).toFixed(2)
 
   quoteRes.dayPctChange = dayPctChange
   quoteRes.afterHoursPctChange = afterHoursPctChange

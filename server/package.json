@@ -34,7 +34,6 @@
     "tda-api-client": "^1.0.0"
   },
   "devDependencies": {
-    "nodemon": "^1.12.1",
     "nodemon": "^2.0.7"
   }
 }
