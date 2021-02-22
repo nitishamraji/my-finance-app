@@ -23,12 +23,12 @@ class HeatMap {
         const timeDiffInMinutes = moment.duration(now.diff(moment(lastUpdated))).asMinutes();
         console.log('timeDiffInMinutes ' + timeDiffInMinutes)
         heatmapUrl = heatmap.url;
-        if( timeDiffInMinutes <= 10 && heatmapUrl.length > 0 ) {
+        if( timeDiffInMinutes <= 15 && heatmapUrl.length > 0 ) {
           return heatmap.url;
         }
       }
 
-      browser = await puppeteer.launch();
+      browser = await puppeteer.launch({args: ['--no-sandbox', '--disable-setuid-sandbox']});
       const page = await browser.newPage();
       await page.goto('https://finviz.com/map.ashx');
       const pageTitle = await page.title();
