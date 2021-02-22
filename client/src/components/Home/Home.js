@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { Tabs, Tab, TabContent, Spinner } from 'react-bootstrap';
 
 import CustomIframe from './../Common/CustomIframe';
-import InnerImageZoom from 'react-inner-image-zoom';
 
 import { HOME_HTML } from './Constants';
 

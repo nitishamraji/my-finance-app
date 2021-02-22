@@ -365,7 +365,7 @@ export default class Messages extends React.Component {
                 <li>Created this app for trading and investment purposes. A one stop aggregator of financial information. </li>
                 <li>Settings - Page for adding stocks. Only the stocks added to the app will be tracked. </li>
                 <li>Stocks - 3 months history of the stocks.</li>
-                <li>Live - live streaming during market hours for the stocks added to the app. I'm using <a href="https://developer.tdameritrade.com/" target="_blank">TD Ameritrade develper api</a> for this. Api seems to be working fine during market hours.</li>
+                <li>Live - live streaming during market hours for the stocks added to the app. I'm using <a href="https://developer.tdameritrade.com/" rel="noreferrer" target="_blank">TD Ameritrade develper api</a> for this. Api seems to be working fine during market hours.</li>
                 <li>News - Feed of news aggregated from top sources. I Randomly added whatever i found. Let me know any accouts to be added.</li>
               </ul>
             </Modal.Body>
