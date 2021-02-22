@@ -3,6 +3,7 @@ const tdaclient = require('tda-api-client');
 const axios = require("axios");
 const moment = require('moment');
 const lodash = require('lodash');
+const StocksService = require('./StocksService')
 
 function getDate(num, isDays) {
     var dateForQuote = moment();
@@ -336,5 +337,3 @@ class StocksLiveData {
 }
 
 module.exports = StocksLiveData;
-
-const StocksService = require('./StocksService')

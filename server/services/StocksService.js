@@ -2,7 +2,6 @@ const db = require('../sequelize/models')
 const AppDataService = require('./AppDataService')
 const UserService = require('./UserService')
 const StocksDataService = require('./StocksDataService')
-const StocksLiveDataService = require('./StocksLiveDataService')
 
 const checkCategoryExists = (existingCategories, categoryToAdd) => {
   let hasCategory = false;
@@ -218,3 +217,5 @@ class Stocks {
 }
 
 module.exports = Stocks;
+
+const StocksLiveDataService = require('./StocksLiveDataService')

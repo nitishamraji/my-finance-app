@@ -114,8 +114,8 @@ async function getTdaQuote(symbol) {
   const dayPctChange = (((quoteRes.regularMarketLastPrice - quoteRes.openPrice)/quoteRes.openPrice)*100).toFixed(2)
   const afterHoursPctChange = (((quoteRes.lastPrice - quoteRes.regularMarketLastPrice)/quoteRes.regularMarketLastPrice)*100).toFixed(2)
 
-  quoteRes.dayPctChange = dayPctChange
-  quoteRes.afterHoursPctChange = afterHoursPctChange
+  quoteRes.dayPctChange = Math.abs(quoteRes.regularMarketPercentChangeInDouble) > 0 ? quoteRes.regularMarketPercentChangeInDouble.toFixed(2) : dayPctChange
+  quoteRes.afterHoursPctChange = ( Math.abs(quoteRes.regularMarketPercentChangeInDouble) > 0 && Math.abs(quoteRes.netPercentChangeInDouble) > 0 ) ? ( quoteRes.netPercentChangeInDouble - quoteRes.regularMarketPercentChangeInDouble ).toFixed(2) : afterHoursPctChange
 
   return quoteRes
 }
@@ -171,8 +171,7 @@ class StocksData {
             low: stockDataJson.lowPrice,
             high: stockDataJson.highPrice,
             changePercent: stockDataJson.dayPctChange,
-            extendedPrice: stockDataJson.afterHoursPctChange,
-            extendedChangePercent: stockDataJson.netPercentChangeInDouble - stockDataJson.regularMarketPercentChangeInDouble,
+            extendedChangePercent: stockDataJson.afterHoursPctChange,
             volume: stockDataJson.totalVolume,
             marketCap: 0,
             week52High: stockDataJson['52WkHigh'],
