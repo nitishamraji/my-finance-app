@@ -46,7 +46,7 @@ class App extends Component {
         { this.state.isAuthVerified &&
           <React.Fragment>
           <NavBar userId={this.state.userId} isAuthed={this.state.isAuthed}/>
-          <div className="my-3 container-fluid px-5">
+          <div className="my-3 container-fluid px-3">
             <Router userId={this.state.userId} isAuthed={this.state.isAuthed}/>
           </div>
           </React.Fragment>

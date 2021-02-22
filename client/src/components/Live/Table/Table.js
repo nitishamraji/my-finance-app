@@ -131,24 +131,39 @@ const columns = [
   },
   {
     dataField: 'companyName',
-    formatter: (c) => { return ( <span style={{width:'100px'}} className="ellipsis d-inline-block" title={c}>{c}</span> ) },
+    formatter: (c) => { return ( <span style={{width:'200px'}} className="ellipsis d-inline-block" title={c}>{c}</span> ) },
     text: 'Name',
-    hidden: false
-  },
-  {
-    dataField: 'low',
-    text: 'Low',
-    hidden: false
-  },
-  {
-    dataField: 'high',
-    text: 'High',
     hidden: false
   },
   {
     dataField: 'lastPrice',
     text: 'Last Price',
-    hidden: false
+    hidden: false,
+    sort: false
+  },
+  {
+    dataField: 'open',
+    text: 'Open',
+    hidden: false,
+    sort: false
+  },
+  {
+    dataField: 'close',
+    text: 'Close',
+    hidden: false,
+    sort: false
+  },
+  {
+    dataField: 'low',
+    text: 'Low',
+    hidden: false,
+    sort: false
+  },
+  {
+    dataField: 'high',
+    text: 'High',
+    hidden: false,
+    sort: false
   },
   {
     dataField: 'changePercent',
@@ -173,10 +188,12 @@ const columns = [
   {
     dataField: 'week52High',
     text: '52W H',
+    sort: false
   },
   {
     dataField: 'week52Low',
     text: '52W L',
+    sort: false
   }
 ];
 
@@ -214,9 +231,11 @@ function constructStockJson(data, addInfoColumn, infoColumnData){
   const dataJson = {
       symbol: symbol,
       companyName: data.companyName,
+      lastPrice: data.lastPrice,
+      open: data.open,
+      close: data.close,
       low: data.low,
       high: data.high,
-      lastPrice: data.lastPrice,
       changePercent: data.changePercent,
       extendedChangePercent: data.extendedChangePercent,
       volume: data.volume,
@@ -309,7 +328,7 @@ class Table extends Component {
                         </form>
 							        </div>
 						    	}
-						        <BootstrapTable bootstrap4={true} classes="table-responsive"
+						        <BootstrapTable bootstrap4={true} classes=""
 						          { ...props.baseProps } {...(this.state.tableData.length > 10 && { pagination: pagination })}
 						          rowStyle={ { height: '5px' } }
 						        />

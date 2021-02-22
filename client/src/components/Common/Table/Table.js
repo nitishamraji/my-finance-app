@@ -125,29 +125,49 @@ const getColumns = (customInfo) => {
 const columns = [
   {
     dataField: 'symbol',
-    text: 'Symbol',
+    text: 'TCKR',
     sort: true,
     formatter: (c) => { return symbolFormat(c) },
   },
   {
     dataField: 'companyName',
-    formatter: (c) => { return ( <span style={{width:'100px'}} className="ellipsis d-inline-block" title={c}>{c}</span> ) },
+    formatter: (c) => { return ( <span style={{width:'50px'}} className="ellipsis d-inline-block" title={c}>{c}</span> ) },
     text: 'Name',
     hidden: false
   },
   {
-    dataField: 'low',
-    text: 'L',
+    dataField: 'lastPrice',
+    text: 'Price',
+    sort: false,
     hidden: false
+  },
+  {
+    dataField: 'open',
+    text: 'Open',
+    sort: false,
+    hidden: false
+  },
+  {
+    dataField: 'close',
+    text: 'Close',
+    sort: false,
+    hidden: false
+  },
+  {
+    dataField: 'low',
+    text: 'Low',
+    hidden: false,
+    sort: false,
   },
   {
     dataField: 'high',
-    text: 'H',
-    hidden: false
+    text: 'High',
+    hidden: false,
+    sort: false,
   },
   {
     dataField: 'changePercent',
-    text: '%',
+    text: 'Chng %',
     sort: true,
     formatter: (c) => { return  pctFormatter(c) },
     sortFunc: basicSort
@@ -250,6 +270,9 @@ function constructStockJson(data, addInfoColumn, infoColumnData){
   const dataJson = {
       symbol: symbol,
       companyName: data.companyName,
+      open: data.open,
+      close: data.close,
+      lastPrice: data.lastPrice,
       low: data.low,
       high: data.high,
       changePercent: data.changePercent,
@@ -350,7 +373,7 @@ class Table extends Component {
                         </form>
 							        </div>
 						    	}
-						        <BootstrapTable bootstrap4={true} classes="table-responsive"
+						        <BootstrapTable bootstrap4={true} classes=""
 						          { ...props.baseProps } {...(this.state.tableData.length > 10 && { pagination: pagination })}
 						          rowStyle={ { height: '5px' } }
 						        />

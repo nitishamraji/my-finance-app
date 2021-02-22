@@ -76,6 +76,7 @@ class StocksData {
             companyName: data.companyName,
             open: data.open,
             close: data.close,
+            lastPrice: data.extendedPrice || data.latestPrice,
             low: data.low,
             high: data.high,
             changePercent: data.changePercent * 100,
