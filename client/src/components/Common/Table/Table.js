@@ -47,7 +47,7 @@ const columnHover = (cell, row, enumObject, rowIndex) => {
   }
 
 const pctFormatter = (c) => {
-  var num = Number(c).toFixed(3);
+  var num = Number(c).toFixed(2);
   var cssClass = num < 0 ? 'text-danger' : 'text-success';
   return  <span className={cssClass}>{num}</span>
 }
@@ -167,7 +167,7 @@ const columns = [
   },
   {
     dataField: 'changePercent',
-    text: 'Chng %',
+    text: '1d %',
     sort: true,
     formatter: (c) => { return  pctFormatter(c) },
     sortFunc: basicSort
@@ -190,7 +190,8 @@ const columns = [
     dataField: 'marketCap',
     text: 'M Cap',
     sort: true,
-    formatter: (c) => { return convertNum(c) }
+    formatter: (c) => { return convertNum(c) },
+    hidden: true,
   },
   {
     dataField: 'week52High',

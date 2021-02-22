@@ -36,6 +36,90 @@ function getDate(num, isDays) {
     return dateForQuote;
 }
 
+async function getTdaHistoryData(symbol) {
+    const priceHistoryConfig = {
+      periodType: tdaclient.pricehistory.PERIOD_TYPE.MONTH,
+      period: 3,
+      frequencyType: tdaclient.pricehistory.FREQUENCY_TYPE.YEAR.WEEKLY,
+      frequency: tdaclient.pricehistory.FREQUENCY.WEEKLY.ONE,
+      symbol: symbol,
+      getExtendedHours: 'true'
+  }
+
+
+
+  // const historyQuoteRes = await tdaclient.pricehistory.getPriceHistory(priceHistoryConfig);
+  const resp = await axios.get(`https://api.tdameritrade.com/v1/marketdata/${symbol}/pricehistory?apikey=JKL8G1DBVHAVQMKASBPZ87MNMYQLEA0H&periodType=month&period=3&frequencyType=weekly&frequency=1`)
+  const historyQuoteRes = resp.data
+
+  if( !historyQuoteRes || !historyQuoteRes.candles || historyQuoteRes.candles.length < 1) {
+    return {}
+  }
+
+  let {candles} = historyQuoteRes // Candles are ordered from latest to oldest weeks
+
+
+  // Our sort function sorts oldest week first and newest week last
+  candles = candles.sort((a, b) => (a.datetime > b.datetime) ? 1 : -1)
+
+  // console.log('candles ', symbol, ' ', candles)
+
+  const len = candles.length
+
+  const oneWeekCandle = candles[len-1]
+  const currentOpen = oneWeekCandle.open
+  const currentClose = oneWeekCandle.close
+
+  const oneWeekChange = (((currentClose - currentOpen)/currentOpen)*100).toFixed(2)
+  let twoWeekChange = oneWeekChange
+  let oneMonthChange = oneWeekChange
+  let threeMonthChange = oneWeekChange
+
+  // Computing first week
+  if (len > 1) {
+    const secondWeekOpen = candles[len-2].open
+    twoWeekChange = (((currentClose - secondWeekOpen)/secondWeekOpen)*100).toFixed(2)
+    oneMonthChange,threeMonthChange = twoWeekChange,twoWeekChange
+  }
+
+  if (len > 3) {
+    const monthOpen = candles[len-4].open
+    oneMonthChange = (((currentClose - monthOpen)/monthOpen)*100).toFixed(2)
+    threeMonthChange = oneMonthChange
+  } else {
+    const monthOpen = candles[0].open
+    oneMonthChange = (((currentClose - monthOpen)/monthOpen)*100).toFixed(2)
+    threeMonthChange = oneMonthChange
+  }
+
+  if (len > 11) {
+    const threeMonthOpen = candles[len-12].open
+    threeMonthChange = (((currentClose - threeMonthOpen)/threeMonthOpen)*100).toFixed(2)
+  } else  {
+    const threeMonthOpen = candles[0].open
+    threeMonthChange = (((currentClose - threeMonthOpen)/threeMonthOpen)*100).toFixed(2)
+  }
+
+  return {oneWeekChange,twoWeekChange,oneMonthChange,threeMonthChange,symbol}
+}
+
+async function getTdaQuote(symbol) {
+
+  const resp = await axios.get(`https://api.tdameritrade.com/v1/marketdata/${symbol}/quotes?apikey=JKL8G1DBVHAVQMKASBPZ87MNMYQLEA0H`)
+  const quoteResTmp = resp.data
+
+  const quoteRes = quoteResTmp[symbol]
+
+
+  const dayPctChange = (((quoteRes.closePrice - quoteRes.openPrice)/quoteRes.openPrice)*100).toFixed(2)
+  const afterHoursPctChange = (((quoteRes.lastPrice - quoteRes.closePrice)/quoteRes.closePrice)*100).toFixed(2)
+
+  quoteRes.dayPctChange = dayPctChange
+  quoteRes.afterHoursPctChange = afterHoursPctChange
+
+  return quoteRes
+}
+
 const sleep = (milliseconds) => {
   return new Promise(resolve => setTimeout(resolve, milliseconds))
 }
@@ -59,44 +143,49 @@ class StocksData {
   }
 
   async getStockData(symbol) {
-    let stockDataJson = {};
+    let stockData = {};
     try {
-      console.log('7d quote url: ' + getDateQuoteUrl(symbol, getDate(7, true)));
+      // console.log('7d quote url: ' + getDateQuoteUrl(symbol, getDate(7, true)));
 
-        var response = await axios.get(getQuoteUrl(symbol));
-        var response7d = await axios.get(getDateQuoteUrl(symbol, '7d'));
-        var response14d = await axios.get(getDateQuoteUrl(symbol, '14d'));
-        var response1m = await axios.get(getDateQuoteUrl(symbol, '1m'));
-        var response3m = await axios.get(getDateQuoteUrl(symbol, '3m'));
+        // var response = await axios.get(getQuoteUrl(symbol));
+        // var response7d = await axios.get(getDateQuoteUrl(symbol, '7d'));
+        // var response14d = await axios.get(getDateQuoteUrl(symbol, '14d'));
+        // var response1m = await axios.get(getDateQuoteUrl(symbol, '1m'));
+        // var response3m = await axios.get(getDateQuoteUrl(symbol, '3m'));
+        const getQuoteConfig = {
+          symbol: symbol,
+          apikey: ''
+        };
+        const stockDataJson = await getTdaQuote(symbol)
+        const {oneWeekChange,twoWeekChange,oneMonthChange,threeMonthChange} = await getTdaHistoryData(symbol)
 
-        console.log('response7d - ' + symbol + ': ' + response7d.data[0] )
-        var data = response.data;
-        var dataJson = {
-            symbol: data.symbol,
-            companyName: data.companyName,
-            open: data.open,
-            close: data.close,
-            lastPrice: data.extendedPrice || data.latestPrice,
-            low: data.low,
-            high: data.high,
-            changePercent: data.changePercent * 100,
-            extendedPrice: data.extendedPrice,
-            extendedChangePercent: data.extendedChangePercent * 100,
-            volume: data.volume,
-            marketCap: data.marketCap,
-            week52High: data.week52High,
-            week52Low: data.week52Low,
-            pct7d: response7d.data[response7d.data.length - 1].changeOverTime * 100,
-            pct14d: response14d.data[response14d.data.length - 1].changeOverTime * 100,
-            pct1m: response1m.data[response1m.data.length - 1].changeOverTime * 100,
-            pct3m: response3m.data[response3m.data.length - 1].changeOverTime * 100
+        // console.log(symbol,' ',stockDataJson)
+        // console.log(symbol,oneWeekChange,twoWeekChange,oneMonthChange,threeMonthChange)
+
+        stockData = {
+            symbol: symbol,
+            companyName: stockDataJson.description,
+            open: stockDataJson.openPrice,
+            close: stockDataJson.closePrice,
+            lastPrice: stockDataJson.lastPrice,
+            low: stockDataJson.lowPrice,
+            high: stockDataJson.highPrice,
+            changePercent: stockDataJson.dayPctChange,
+            extendedPrice: stockDataJson.afterHoursPctChange,
+            extendedChangePercent: stockDataJson.netPercentChangeInDouble - stockDataJson.regularMarketPercentChangeInDouble,
+            volume: stockDataJson.totalVolume,
+            marketCap: 0,
+            week52High: stockDataJson['52WkHigh'],
+            week52Low: stockDataJson['52WkLow'],
+            pct7d: oneWeekChange,
+            pct14d: twoWeekChange,
+            pct1m: oneMonthChange,
+            pct3m: threeMonthChange
         }
-
-        stockDataJson = dataJson;
     } catch (e) {
       console.log(e)
     }
-    return stockDataJson;
+    return stockData;
   }
 
   async getAllStocksData() {
