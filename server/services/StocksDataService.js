@@ -5,14 +5,23 @@ const moment = require('moment');
 
 function getQuoteUrl(symbol) {
   // return "https://sandbox.iexapis.com/stable/stock/"+symbol+"/quote?token=Tpk_04291f94e91b4cdd8f4245dc7a730369";
-  return "https://sandbox.iexapis.com/stable/stock/"+symbol+"/quote?token=pk_cc4cd8e1d02945f8a242f6b54c174370";
+
+  // return "https://sandbox.iexapis.com/stable/stock/"+symbol+"/quote?token=pk_cc4cd8e1d02945f8a242f6b54c174370";
+  return "https://cloud.iexapis.com/stable/stock/"+symbol+"/quote?token=pk_cc4cd8e1d02945f8a242f6b54c174370";
 }
 
-function getDateQuoteUrl(symbol, date) {
-  // return "https://sandbox.iexapis.com/stable//stock/AAPL/chart/date/20201201?chartByDay=true&token=Tpk_04291f94e91b4cdd8f4245dc7a730369";
-  return "https://sandbox.iexapis.com/stable//stock/"+symbol.replace(/\s/g, '')+"/chart/"+date+"/20201201?chartByDay=true&token=pk_cc4cd8e1d02945f8a242f6b54c174370";
-  // return "https://sandbox.iexapis.com/stable//stock/"+symbol+"/chart/date/"+date+"?chartByDay=true&token=Tpk_04291f94e91b4cdd8f4245dc7a730369";
-  // return "https://sandbox.iexapis.com/stable/stock/"+symbol+"/chart/date/"+date+"?chartByDay=true&token=Tpk_04291f94e91b4cdd8f4245dc7a730369";
+// function getDateQuoteUrl(symbol, date) {
+//   // return "https://sandbox.iexapis.com/stable//stock/AAPL/chart/date/20201201?chartByDay=true&token=Tpk_04291f94e91b4cdd8f4245dc7a730369";
+//
+//   // return "https://sandbox.iexapis.com/stable//stock/"+symbol.replace(/\s/g, '')+"/chart/"+date+"/20201201?chartByDay=true&token=pk_cc4cd8e1d02945f8a242f6b54c174370";
+//   return "https://cloud.iexapis.com/stable/stock/"+symbol.replace(/\s/g, '')+"/chart/"+date+"?chartByDay=true&token=pk_cc4cd8e1d02945f8a242f6b54c174370";
+//
+//   // return "https://sandbox.iexapis.com/stable//stock/"+symbol+"/chart/date/"+date+"?chartByDay=true&token=Tpk_04291f94e91b4cdd8f4245dc7a730369";
+//   // return "https://sandbox.iexapis.com/stable/stock/"+symbol+"/chart/date/"+date+"?chartByDay=true&token=Tpk_04291f94e91b4cdd8f4245dc7a730369";
+// }
+
+function getDateQuoteUrl(symbol, range) {
+  return "https://cloud.iexapis.com/stable/stock/"+symbol.replace(/\s/g, '')+"/chart/"+range+"?chartByDay=true&token=pk_cc4cd8e1d02945f8a242f6b54c174370";
 }
 
 function getSupportedSymbolsUrl() {
@@ -52,12 +61,15 @@ class StocksData {
   async getStockData(symbol) {
     let stockDataJson = {};
     try {
-        var response = await axios.get(getQuoteUrl(symbol));
-        var response7d = await axios.get(getDateQuoteUrl(symbol, getDate(7, true)));
-        var response14d = await axios.get(getDateQuoteUrl(symbol, getDate(14, true)));
-        var response1m = await axios.get(getDateQuoteUrl(symbol, getDate(1, false)));
-        var response3m = await axios.get(getDateQuoteUrl(symbol, getDate(3, false)));
+      console.log('7d quote url: ' + getDateQuoteUrl(symbol, getDate(7, true)));
 
+        var response = await axios.get(getQuoteUrl(symbol));
+        var response7d = await axios.get(getDateQuoteUrl(symbol, '7d'));
+        var response14d = await axios.get(getDateQuoteUrl(symbol, '14d'));
+        var response1m = await axios.get(getDateQuoteUrl(symbol, '1m'));
+        var response3m = await axios.get(getDateQuoteUrl(symbol, '3m'));
+
+        console.log('response7d - ' + symbol + ': ' + response7d.data[0] )
         var data = response.data;
         var dataJson = {
             symbol: data.symbol,
@@ -66,17 +78,17 @@ class StocksData {
             close: data.close,
             low: data.low,
             high: data.high,
-            changePercent: data.changePercent,
+            changePercent: data.changePercent * 100,
             extendedPrice: data.extendedPrice,
-            extendedChangePercent: data.extendedChangePercent,
+            extendedChangePercent: data.extendedChangePercent * 100,
             volume: data.volume,
             marketCap: data.marketCap,
             week52High: data.week52High,
             week52Low: data.week52Low,
-            pct7d: response7d.data[0].changePercent,
-            pct14d: response14d.data[0].changePercent,
-            pct1m: response1m.data[0].changePercent,
-            pct3m: response3m.data[0].changePercent
+            pct7d: response7d.data[response7d.data.length - 1].changeOverTime * 100,
+            pct14d: response14d.data[response14d.data.length - 1].changeOverTime * 100,
+            pct1m: response1m.data[response1m.data.length - 1].changeOverTime * 100,
+            pct3m: response3m.data[response3m.data.length - 1].changeOverTime * 100
         }
 
         stockDataJson = dataJson;
