@@ -185,28 +185,28 @@ const columns = [
     text: '1w %',
     sort: true,
     sortFunc: basicSort,
-    formatter: (c) => { return  pctFormatter(c.pct7d) }
+    formatter: (c) => { return  pctFormatter(c) }
   },
   {
     dataField: 'pct14d',
     text: '2w %',
     sort: true,
     sortFunc: basicSort,
-    formatter: (c) => { return  pctFormatter(c.pct14d) }
+    formatter: (c) => { return  pctFormatter(c) }
   },
   {
     dataField: 'pct1m',
     text: '1m %',
     sort: true,
     sortFunc: basicSort,
-    formatter: (c) => { return  pctFormatter(c.pct1m) }
+    formatter: (c) => { return  pctFormatter(c) }
   },
   {
     dataField: 'pct3m',
     text: '3m %',
     sort: true,
     sortFunc: basicSort,
-    formatter: (c) => { return  pctFormatter(c.pct3m) }
+    formatter: (c) => { return  pctFormatter(c) }
   },
   // {
   //   dataField: 'settings',
@@ -259,10 +259,10 @@ function constructStockJson(data, addInfoColumn, infoColumnData){
       marketCap: data.marketCap,
       week52High: data.week52High,
       week52Low: data.week52Low,
-      pct7d: data,
-      pct14d: data,
-      pct1m: data,
-      pct3m: data
+      pct7d: data.pct7d,
+      pct14d: data.pct14d,
+      pct1m: data.pct1m,
+      pct3m: data.pct3m
   }
 
   if( addInfoColumn ) {
