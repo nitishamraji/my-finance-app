@@ -3,10 +3,8 @@ import { Link } from "react-router-dom";
 import { Modal, Button, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import BootstrapTable from 'react-bootstrap-table-next';
 import Popup from 'reactjs-popup';
-import TradingViewWidget, { Themes, BarStyles } from 'react-tradingview-widget';
 import ToolkitProvider, { Search } from 'react-bootstrap-table2-toolkit';
 import paginationFactory from 'react-bootstrap-table2-paginator';
-import { DynamicModal,ModalManager,Effect} from 'react-dynamic-modal';
 import { InfoCircle } from 'react-bootstrap-icons';
 
 import StockDetail from './../../StockDetail/StockDetail';
@@ -53,64 +51,10 @@ const pctFormatter = (c) => {
 }
 
 const basicSort =  (a, b, order, dataField, rowA, rowB) => {
-      if (order === 'asc') {
-        return b - a;
-      }
-      return a - b; // desc
-    }
-
-const popupStyles = { width: '800px' }; // style for an svg element
-
-class MyModal extends Component{
-   render(){
-      const { text,onRequestClose } = this.props;
-      return (
-         <DynamicModal
-            onRequestClose={onRequestClose}
-            effect={Effect.Newspaper}>
-            <h1>What you input : {text}</h1>
-            <button onClick={ModalManager.close}>Close Modal</button>
-         </DynamicModal>
-      );
-   }
-}
-
-const MyModel = (props) => (<Modal show={props.isHidden} onHide={props.onClose}>
-  <Modal.Header closeButton>
-    <Modal.Title>Translations</Modal.Title>
-  </Modal.Header>
-  <Modal.Body>
-    <h4>Filter:</h4>
-    <p>Duis mollis, est non commodo luctus, nisi erat porttitor ligula.</p>
-    <hr />
-  </Modal.Body>
-  <Modal.Footer>
-    <Button onClick={props.onClose}>Close</Button>
-  </Modal.Footer>
-</Modal>);
-
-const settingsFormat = (symbol) => {
-  return (
-      <Popup
-        trigger={
-          <span className="cell-settings" stock-symbol={symbol}>
-          <i className="material-icons">settings</i>
-          </span>
-        }
-        modal
-        nested>
-        <div style={{width: '400px',height:'300px'}} className="card mx-auto">
-          <div className="card-body">
-          <input type="text" id="modalInput"/>
-          <label onClick={(e)=>{
-              console.log("testing modal click");
-              console.log(document.getElementById('modalInput').value);
-          }
-          }>{symbol}</label>
-          </div>
-        </div>
-      </Popup>
-    );
+  if (order === 'asc') {
+    return b - a;
+  }
+  return a - b; // desc
 }
 
 const symbolFormat = (symbol) => {
@@ -228,13 +172,7 @@ const columns = [
     sort: true,
     sortFunc: basicSort,
     formatter: (c) => { return  pctFormatter(c) }
-  },
-  // {
-  //   dataField: 'settings',
-  //   text: 'S',
-  //   sort: false,
-  //   formatter: (c) => { return settingsFormat(c) },
-  // }
+  }
 ];
 
 if( customInfo && customInfo.addInfoColumn ) {

@@ -204,21 +204,21 @@ export default class NewsPage extends React.Component {
               <Tab eventKey={"trades"} title="Trades">
                 <TabContent className="p-2">
                   <TabContent className="p-2">
-                    <CustomIframe symbol={this.state.symbol} iframe={`<iframe src='data:text/html,<a class="twitter-timeline" data-width="800" data-height="900" href="https://twitter.com/pxyellanki/lists/trade-ideas-41799?ref_src=twsrc%5Etfw"></a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>'
-                    width='900' height='900' ></iframe>`} />
+                    <CustomIframe symbol={this.state.symbol} iframe={`<iframe src='data:text/html,<a class="twitter-timeline" data-width="500" data-height="900" href="https://twitter.com/pxyellanki/lists/trade-ideas-41799?ref_src=twsrc%5Etfw"></a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>'
+                    width='510' height='900' ></iframe>`} />
                   </TabContent>
                 </TabContent>
               </Tab>
               <Tab eventKey={"people"} title="People">
                 <TabContent className="p-2">
-                  <CustomIframe symbol={this.state.symbol} iframe={`<iframe src='data:text/html,<a class="twitter-timeline" data-width="800" data-height="900" href="https://twitter.com/pxyellanki/lists/stocks-people-11813?ref_src=twsrc%5Etfw"></a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>'
-                  width='900' height='900' ></iframe>`} />
+                  <CustomIframe symbol={this.state.symbol} iframe={`<iframe src='data:text/html,<a class="twitter-timeline" data-width="500" data-height="900" href="https://twitter.com/pxyellanki/lists/stocks-people-11813?ref_src=twsrc%5Etfw"></a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>'
+                  width='510' height='900' ></iframe>`} />
                 </TabContent>
               </Tab>
               <Tab eventKey={"options"} title="Options">
                 <TabContent className="p-2">
-                  <CustomIframe symbol={this.state.symbol} iframe={`<iframe src='data:text/html,<a class="twitter-timeline" href="https://twitter.com/pxyellanki/lists/options-12241?ref_src=twsrc%5Etfw"></a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>'
-                  width='900' height='900' ></iframe>`} />
+                  <CustomIframe symbol={this.state.symbol} iframe={`<iframe src='data:text/html,<a class="twitter-timeline" data-width="500" data-height="900" href="https://twitter.com/pxyellanki/lists/options-12241?ref_src=twsrc%5Etfw"></a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>'
+                  width='510' height='900' ></iframe>`} />
                 </TabContent>
               </Tab>
             </Tabs>

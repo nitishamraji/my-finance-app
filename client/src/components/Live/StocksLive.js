@@ -374,7 +374,7 @@ export default class StocksLive extends React.Component {
              </Tab>
              <Tab eventKey={"trends"} title="Trends">
                <TabContent className="mt-3">
-               
+
                </TabContent>
              </Tab>
          </Tabs>
