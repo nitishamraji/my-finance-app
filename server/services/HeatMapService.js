@@ -28,14 +28,29 @@ class HeatMap {
         }
       }
 
-      browser = await puppeteer.launch({args: ['--no-sandbox', '--disable-setuid-sandbox']});
+      // browser = await puppeteer.launch({headless: true, args: ['--no-sandbox', '--disable-setuid-sandbox']});
+
+      const puppeteer = require('puppeteer-extra')
+
+// add stealth plugin and use defaults (all evasion techniques)
+const StealthPlugin = require('puppeteer-extra-plugin-stealth')
+puppeteer.use(StealthPlugin())
+
+puppeteer.launch({ headless: true }).then(async browser => {
       const page = await browser.newPage();
       await page.goto('https://finviz.com/map.ashx');
+
+      await page.waitForTimeout(10000)
+      await page.screenshot({ path: "./screenshot.png", fullPage: true });
+
+      console.log('testing puppeteer file  changes: ')
       const pageTitle = await page.title();
       console.log('finvizz title: ' + pageTitle);
+      await page.waitForTimeout(3000)
       await page.waitForSelector('#share-map');
+      await page.waitForTimeout(3000)
       await page.click('#share-map');
-      // await page.waitForTimeout(5000)
+      await page.waitForTimeout(3000)
       await page.waitForSelector('#static', { visible: true });
 
       // await page.waitForSelector('#static');
@@ -50,7 +65,8 @@ class HeatMap {
       }
 
       browser.close();
-
+    });
+    
     }catch(error){
       if(browser){
         browser.close();

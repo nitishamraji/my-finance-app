@@ -294,7 +294,7 @@ router.get('/getSupportedStocks', cors(),  catchErrors( async (req, res, next) =
 }));
 
 router.get('/testTda', cors(),  catchErrors( async (req, res, next) => {
-    const service = new StocksDataService();
+    const service = new StocksLiveDataService();
     const data = await service.testTda();
     res.send({success: true, msg: '', data: data});
 }));
