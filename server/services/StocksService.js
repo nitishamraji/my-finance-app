@@ -201,7 +201,7 @@ class Stocks {
       const supportedStocks = await stocksDataService.getSupportedStocks();
 
       allAddedStocks.forEach((symbol, i) => {
-        supportedStocks.forEach((stockInfo, i) => {
+        supportedStocks.data.forEach((stockInfo, i) => {
           if( stockInfo.symbol === symbol ) {
               allAddedStocksInfo.push({
                 symbol: symbol,
