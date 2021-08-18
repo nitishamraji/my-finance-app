@@ -26,6 +26,7 @@ function getDateQuoteUrl(symbol, range) {
 
 function getSupportedSymbolsUrl() {
   // return "https://sandbox.iexapis.com/stable/ref-data/symbols?token=Tpk_04291f94e91b4cdd8f4245dc7a730369";
+  // return "https://sandbox.iexapis.com/stable/ref-data/symbols?token=Tpk_04291f94e91b4cdd8f4245dc7a730369"
   return "https://cloud.iexapis.com/stable/ref-data/symbols?token=pk_cc4cd8e1d02945f8a242f6b54c174370";
 }
 
@@ -126,9 +127,49 @@ const sleep = (milliseconds) => {
 
 class StocksData {
 
+  async getSupportedStocksLastUpdate() {
+    const returnObj = {success: true, msg: '', data: ''}
+    try {
+      const supportedStocks = await db.SupportedStocks.findOne()
+      returnObj.data = supportedStocks.updatedAt
+    } catch (e) {
+      console.log(e)
+      returnObj.success = false
+      returnObj.msg = 'Error'
+    }
+    return returnObj
+  }
+
+  async updateSupportedStocks() {
+    const returnObj = {success: true, msg: '', data: ''}
+
+    try {
+      const resp = await axios.get(getSupportedSymbolsUrl())
+      const supportedStocksDataRes = await resp.data
+
+      const supportedStocksData = []
+      supportedStocksDataRes.forEach((stockDataJson) => {
+        supportedStocksData.push({ symbol: stockDataJson.symbol, name: stockDataJson.name })
+      })
+
+      if( supportedStocksData && supportedStocksData.length > 0 ) {
+        await db.SupportedStocks.destroy({ truncate : true, cascade: false })
+        const currTime = moment()
+        await db.SupportedStocks.create({ data: supportedStocksData, helperData: '' })
+        returnObj.data = supportedStocksData
+      }
+    } catch (e) {
+      console.log(e)
+      returnObj.success = false
+      returnObj.msg = 'Error'
+    }
+
+    return returnObj
+  }
+
   async getSupportedStocks() {
     const supportedStocks = await db.SupportedStocks.findOne();
-    return supportedStocks.data;
+    return {data: supportedStocks.data, updatedAt: supportedStocks.updatedAt};
   }
 
   async getStockInfo(symbol) {

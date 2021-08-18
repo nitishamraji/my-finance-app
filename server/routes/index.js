@@ -213,6 +213,20 @@ router.post('/registerUser', cors(),  catchErrors( async (req, res, next) => {
     res.send({success: result.success, msg: result.msg});
 }));
 
+router.get('/updateAllSupportedStocks', cors(),  catchErrors( async (req, res, next) => {
+    console.log('/updateAllSupportedStocks')
+    const service = new StocksDataService();
+    const result = await service.updateSupportedStocks();
+    res.send({success: result.success, msg: result.msg, data: result.data});
+}));
+
+router.get('/getSupportedStocksLastUpdate', cors(),  catchErrors( async (req, res, next) => {
+    console.log('/getSupportedStocksLastUpdate')
+    const service = new StocksDataService();
+    const result = await service.getSupportedStocksLastUpdate();
+    res.send({success: result.success, msg: result.msg, data: result.data});
+}));
+
 router.get('/getAllStocksData', cors(),  catchErrors( async (req, res, next) => {
     console.log('/getAllStocksData')
     const service = new StocksDataService();
@@ -289,8 +303,8 @@ router.get('/getStockInfo/:symbol', cors(),  catchErrors( async (req, res, next)
 
 router.get('/getSupportedStocks', cors(),  catchErrors( async (req, res, next) => {
     const service = new StocksDataService();
-    const data = await service.getSupportedStocks();
-    res.send({success: true, msg: '', data: data});
+    const resObj = await service.getSupportedStocks();
+    res.send({success: true, msg: '', data: resObj});
 }));
 
 router.get('/testTda', cors(),  catchErrors( async (req, res, next) => {

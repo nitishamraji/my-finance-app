@@ -7,11 +7,11 @@
   "license": "ISC",
   "scripts": {
     "postinstall": "npm --prefix client install && npm --prefix server install",
-    "start:dev": "concurrently 'npm run --prefix client start' 'nodemon server'",
+    "start:dev": "concurrently 'npm run --prefix client start' 'npx nodemon server'",
     "heroku-postbuild": "cd client && npm install && npm run build",
     "start": "NODE_ENV=production node server",
     "db-migrate": "cd server && npx sequelize-cli db:migrate",
-    "start-dev-server": "nodemon server"
+    "start-dev-server": "npx nodemon server"
   },
   "dependencies": {
     "dotenv": "^8.2.0",
