@@ -64,8 +64,12 @@ class Home extends Component {
             <CustomIframe iframe={`<iframe src='data:text/html,`+ HOME_HTML.topActive() +`' width='420' height='580' ></iframe>`} />
           </TabContent>
         </Tab>
+
         <Tab eventKey={"heatmap"} title="Heat Map" tabClassName={this.props.isAuthed ? 'd-block' : 'd-none'}>
           <TabContent className="p-2">
+            <CustomIframe iframe={`<iframe src='https://finviz.com/map.ashx' width='420' height='580' ></iframe>`} />
+
+            {/*
             {
               this.state.loadingHeatMap && this.props.isAuthed &&
               <Spinner style={{margin: '150px 0px 0px 200px'}} animation="border" role="status" className="d-flex text-primary">
@@ -79,8 +83,10 @@ class Home extends Component {
                 />
               )
             }
+            */}
           </TabContent>
         </Tab>
+
       </Tabs>
     	);
   }

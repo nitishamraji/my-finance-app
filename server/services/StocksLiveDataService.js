@@ -44,11 +44,13 @@ class StocksLiveData {
       high: getQuoteResult.highPrice,
       lastPrice: getQuoteResult.lastPrice,
       changePercent: getQuoteResult.regularMarketPercentChangeInDouble,
-      extendedChangePercent: getQuoteResult.netPercentChangeInDouble - getQuoteResult.regularMarketPercentChangeInDouble,
+      extendedChangePercent: (( getQuoteResult.mark - getQuoteResult.regularMarketLastPrice ) * 100)/getQuoteResult.regularMarketLastPrice,
       volume: getQuoteResult.totalVolume,
       week52High: getQuoteResult['52WkHigh'],
       week52Low: getQuoteResult['52WkLow'],
     }
+    //      extendedChangePercent: getQuoteResult.netPercentChangeInDouble - getQuoteResult.regularMarketPercentChangeInDouble,
+
     return dataJson
   }
 
