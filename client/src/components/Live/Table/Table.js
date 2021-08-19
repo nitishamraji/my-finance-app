@@ -9,6 +9,8 @@ import { InfoCircle } from 'react-bootstrap-icons';
 
 import StockDetail from './../../StockDetail/StockDetail';
 
+import LZString from 'lz-string';
+
 import './styles.css';
 
 const { SearchBar, ClearSearchButton } = Search;
@@ -237,20 +239,75 @@ class Table extends Component {
       addInfoColumn: props.addInfoColumn,
       infoColumnData: props.infoColumnData
     };
+    this.refreshFromLocalStorage = this.refreshFromLocalStorage.bind(this);
+    this.getTableData = this.getTableData.bind(this);
   }
 
-  async componentDidMount() {
+  getTableData(allStocksData) {
     const tableData = []
     this.state.stocksList.forEach((symbol) => {
       try {
-        tableData.push(constructStockJson(this.state.allStocksData[symbol], this.state.addInfoColumn, this.state.infoColumnData))
+        tableData.push(constructStockJson(allStocksData[symbol], this.state.addInfoColumn, this.state.infoColumnData))
       } catch(e) {
         console.log('Error processing symbol:' + symbol + ' ' + e)
       }
     });
+    return tableData
+  }
+
+  refreshFromLocalStorage() {
+    try {
+      // let tabData = this.state.tableData;
+      // tabData.forEach((stockJson) => {
+      //   if( stockJson['symbol'] === 'TSLA' ) {
+      //     stockJson['lastPrice'] = Math.floor(Math.random() * 1000)
+      //   }
+      // });
+      const tabData = JSON.parse(LZString.decompress(localStorage.getItem('StocksLiveData')))
+      if( !tabData || tabData.length < 1 ) {
+        return
+      }
+
+      this.setState({
+        tableData: this.getTableData(tabData)
+      })
+      localStorage.removeItem('StocksLiveData')
+    } catch (e) {
+
+    }
+
+  }
+
+  async componentDidUpdate(prevProps) {
+    // console.log('testing table props updated')
+  }
+
+  // async shouldComponentUpdate(nextProps, nextState) {
+  //   console.log('testing table props updated3')
+  // }
+
+  // async shouldComponentUpdate(nextProps, nextState) {
+  //   let tabData = this.state.tableData;
+  //   tabData.forEach((stockJson) => {
+  //     if( stockJson['symbol'] === 'TSLA' ) {
+  //       stockJson['lastPrice'] = Math.floor(Math.random() * 1000)
+  //     }
+  //   });
+  //   // if( nextProps.allStocksData && nextProps.allStocksData.length > 0 ) {
+  //   //   this.setState({
+  //   //     tableData: nextProps.allStocksData
+  //   //   })
+  //   // }
+  //   return false
+  // }
+
+  async componentDidMount() {
+    const tableData = this.getTableData(this.state.allStocksData)
     this.setState({
       tableData: tableData
     })
+    // this.props.testing = tableData
+    setInterval(this.refreshFromLocalStorage, 2*1000)
   }
 
 	render() {

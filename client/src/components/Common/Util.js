@@ -33,16 +33,6 @@ export const COMMON_UTIL = {
       }
 
       supportedStocksData = JSON.parse(LZString.decompress(localStorage.getItem('supportedStocks')))
-
-      // let supportedStocksDataSessionStorage = localStorage.getItem('supportedStocks')
-      // if( supportedStocksDataSessionStorage ) {
-      //   supportedStocksDataSessionStorage = LZString.decompress(supportedStocksDataSessionStorage);
-      // }
-      // if( !supportedStocksDataSessionStorage || supportedStocksDataSessionStorage.length < 3000 ) {
-      //
-      // } else {
-      //   supportedStocksData = JSON.parse(supportedStocksDataSessionStorage);
-      // }
     } catch (error) {
       console.log(error);
     }

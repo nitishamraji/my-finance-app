@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 
+import LZString from 'lz-string';
+
 import Table from './Table/Table';
 import MyWatchlist from './../../components/User/MyWatchlist';
 import AppWatchlist from './../../components/User/AppWatchlist';
@@ -31,6 +33,7 @@ export default class StocksLive extends React.Component {
       showModal: false,
       reRenderMyWatchlistTriggerKey: '',
       reRenderAppWatchlistTriggerKey: '',
+      reRenderStocksLiveData: '',
       liveStatusMessage: '',
       isMarketHours: false,
       liveStreamConnected: false,
@@ -47,6 +50,18 @@ export default class StocksLive extends React.Component {
     this.handleSocketConnectClick = this.handleSocketConnectClick.bind(this);
     this.handleSocketCancelClick = this.handleSocketCancelClick.bind(this);
 
+  }
+
+  async componentWillUnmount() {
+    try {
+      console.log('test socket disconnect')
+      localStorage.removeItem('StocksLiveData')
+      if(this.state.socket) {
+        this.state.socket.disconnect()
+      }
+    } catch (e) {
+      console.log(e)
+    }
   }
 
   async componentDidMount() {
@@ -75,10 +90,13 @@ export default class StocksLive extends React.Component {
        this.setState({liveStatusMessage: 'Connect live stream. Available during market hours'})
        const isMarketHoursRes = await fetch('/api/isMarketOpen');
        const isMarketHoursResJson = await isMarketHoursRes.json();
+       const isMarketHours = isMarketHoursResJson.isMarketOpen
        this.setState({
-         isMarketHours: isMarketHoursResJson.isMarketOpen
+         isMarketHours: isMarketHours
        })
-
+       if( isMarketHours ) {
+         this.handleSocketConnectClick()
+       }
     } catch(error) {
       console.log(error);
     }
@@ -207,11 +225,20 @@ export default class StocksLive extends React.Component {
       socket: socket
     })
 
-    socket.on("FromAPI", data => {
+    socket.on("StocksLiveData", stocksLiveData => {
+      const dateNow = new Date()
       this.setState({
-        socketDate: data,
-        liveStatusMessage: data
+        socketDate: dateNow,
+        allStocksData: stocksLiveData.data.stocks,
       });
+
+      localStorage.setItem( "StocksLiveData", LZString.compress(JSON.stringify(stocksLiveData.data.stocks)) )
+
+      // this.setState({
+      //   reRenderStocksLiveData: dateNow,
+      //   reRenderAppWatchlistTriggerKey: dateNow,
+      //   reRenderMyWatchlistTriggerKey: dateNow
+      // });
     });
     socket.on('connect', () => {
         this.setState({
@@ -233,7 +260,7 @@ export default class StocksLive extends React.Component {
   render() {
     return (
       <div>
-        <div className="connect-live-section mb-3 w-50 m-auto">
+        <div className="connect-live-section mb-3 w-50 m-auto d-none">
           <Accordion>
             <Card>
               <Card.Header className="bg-info">
@@ -261,6 +288,7 @@ export default class StocksLive extends React.Component {
                     stocksList={ Object.keys(this.state.allStocksData) }
                     allStocksData={ this.state.allStocksData }
                     showSearch={true}
+                    key={this.state.reRenderStocksLiveData}
                    />
                  }
                 </TabContent>
@@ -319,6 +347,7 @@ export default class StocksLive extends React.Component {
                              stocksList={ this.state.categoryStocksMapper[category] }
                              allStocksData={ this.state.allStocksData }
                              showSearch={false}
+                             key={this.state.reRenderStocksLiveData}
                             />
                           </Card.Body>
                         </Accordion.Collapse>

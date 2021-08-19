@@ -50,7 +50,10 @@ class StocksLiveData {
       week52Low: getQuoteResult['52WkLow'],
     }
     //      extendedChangePercent: getQuoteResult.netPercentChangeInDouble - getQuoteResult.regularMarketPercentChangeInDouble,
-
+    //
+    // if( dataJson['symbol'] == 'TSLA' ) {
+    //   dataJson['lastPrice'] = Math.floor(Math.random() * 1000)
+    // }
     return dataJson
   }
 
@@ -165,12 +168,12 @@ class StocksLiveData {
     }
 
     const allStocksInBatch = [];
-    var i,j,temparray,chunk = 100;
+    var i,j,temparray,chunk = 300;
     for (i=0,j=allAddedStocksInfo.length; i<j; i+=chunk) {
         allStocksInBatch.push( allAddedStocksInfo.slice(i,i+chunk).map(stockInfo => stockInfo.symbol) );
     }
 
-    console.log('updateAllStocksData allStocksInBatch: ' + JSON.stringify(allStocksInBatch) )
+    // console.log('updateAllStocksData allStocksInBatch: ' + JSON.stringify(allStocksInBatch) )
 
     Promise.all(allStocksInBatch.map(async (singleBatchStocks, i) => {
       await sleep(i * 2000)
@@ -189,7 +192,7 @@ class StocksLiveData {
         }
       });
 
-      console.log('allStocksQuoteData: ' + JSON.stringify(allStocksQuoteData))
+      // console.log('allStocksQuoteData: ' + JSON.stringify(allStocksQuoteData))
 
       const allFetchedStocks = Object.keys(allStocksQuoteData)
       if( !allFetchedStocks || allFetchedStocks.length <= 0 ) {
@@ -255,12 +258,12 @@ class StocksLiveData {
     console.log('retryUpdateMissedStocks live stocks: ' + stocksToRetry)
 
     const allStocksInBatch = [];
-    var i,j,temparray,chunk = 3;
+    var i,j,temparray,chunk = 30;
     for (i=0,j=stocksToRetry.length; i<j; i+=chunk) {
       allStocksInBatch.push( stocksToRetry.slice(i,i+chunk) );
     }
 
-    console.log('updateAllStocksData live allStocksInBatch: ' + JSON.stringify(allStocksInBatch) )
+    // console.log('updateAllStocksData live allStocksInBatch: ' + JSON.stringify(allStocksInBatch) )
 
     Promise.all(allStocksInBatch.map(async (singleBatchStocks, i) => {
       await sleep(i * 2000)

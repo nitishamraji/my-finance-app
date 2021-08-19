@@ -1,3 +1,5 @@
+const StocksLiveDataService = require('../services/StocksLiveDataService')
+
 var socketInit = function(server) {
 
   const io = require('socket.io')(server, {
@@ -17,7 +19,7 @@ var socketInit = function(server) {
     console.log('clients connected: ' + connectCounter);
 
     if (connectCounter === 1) {
-      interval = setInterval(() => getApiAndEmit(), 5000);
+      interval = setInterval(() => getApiAndEmit(), 10 * 1000);
       global.liveStreamingInProgess = true
     }
     // console.log(Object.keys(io.sockets));
@@ -37,10 +39,13 @@ var socketInit = function(server) {
     });
   });
 
-  const getApiAndEmit = () => {
+  const getApiAndEmit = async () => {
     const response = new Date();
+    const service = new StocksLiveDataService();
+    await service.updateAllStocksData();
+    const result = await service.getAllStocksData();
     // Emitting a new message. Will be consumed by the client
-    io.sockets.emit("FromAPI", Math.floor(Math.random() * Math.floor(100)));
+    io.sockets.emit("StocksLiveData", result);
   };
 
 };
