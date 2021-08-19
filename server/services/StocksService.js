@@ -105,7 +105,12 @@ class Stocks {
   async getCategoryStocksMapper() {
     const stocksByCategoryRow = await db.StocksByCategory.findOne()
     const categoryStocksMapper = await stocksByCategoryRow.data
-    return categoryStocksMapper
+    const sortedKeys = Object.keys(categoryStocksMapper).sort()
+    const categoryStocksData = {}
+    sortedKeys.forEach((key, i) => {
+      categoryStocksData[key] = categoryStocksMapper[key]
+    });    
+    return categoryStocksData
   }
 
   async getStockCategories(symbol) {
