@@ -289,7 +289,7 @@ export default class StocksLive extends React.Component {
 
   render() {
     return (
-      <div>
+      <div className="live-container">
         <div className="connect-live-section mb-3 w-50 m-auto d-none">
           <Accordion>
             <Card>

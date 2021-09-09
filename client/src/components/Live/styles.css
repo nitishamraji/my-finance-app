@@ -26,13 +26,13 @@
   text-decoration: none;
 }
 
-.nav-tabs > a:last-of-type {
+.live-container .nav-tabs > a:last-of-type {
   /* right: 0;
   position: absolute; */
   margin-left: 100px;
 }
 
-.nav-tabs .nav-link:last-of-type:hover, .nav-tabs .nav-link:last-of-type:focus {
+.live-container .nav-tabs .nav-link:last-of-type:hover, .nav-tabs .nav-link:last-of-type:focus {
   border-color: #fff !important;
   border-bottom: #dee2e6 !important;
 }
