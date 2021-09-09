@@ -306,8 +306,12 @@ class Table extends Component {
     this.setState({
       tableData: tableData
     })
-    // this.props.testing = tableData
-    setInterval(this.refreshFromLocalStorage, 2*1000)
+    // this.interval = setInterval(this.refreshFromLocalStorage, 1*1000)
+  }
+
+  componentWillUnmount() {
+    // Clear the interval right before component unmount
+    // clearInterval(this.interval);
   }
 
 	render() {
@@ -329,7 +333,7 @@ class Table extends Component {
                         </form>
 							        </div>
 						    	}
-						        <BootstrapTable bootstrap4={true} classes=""
+						        <BootstrapTable bootstrap4={true} classes="" sort={ { dataField: 'changePercent', order: 'asc' } }
 						          { ...props.baseProps } {...(this.state.tableData.length > 10 && { pagination: pagination })}
 						          rowStyle={ { height: '5px' } }
 						        />

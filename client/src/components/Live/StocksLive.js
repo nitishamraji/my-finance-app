@@ -6,9 +6,9 @@ import Table from './Table/Table';
 import MyWatchlist from './../../components/User/MyWatchlist';
 import AppWatchlist from './../../components/User/AppWatchlist';
 
-import { Tabs, Tab, TabContent, Button, Card, Accordion, Form, Modal } from 'react-bootstrap';
+import { Tabs, Tab, TabContent, Button, Card, Accordion, Form, Modal, Spinner } from 'react-bootstrap';
 import $ from "jquery";
-import { Bag, Gear, PlusCircle, DashCircle } from 'react-bootstrap-icons';
+import { Bag, Gear, PlusCircle, DashCircle, ArrowRepeat } from 'react-bootstrap-icons';
 import './styles.css';
 import socketIOClient from "socket.io-client";
 
@@ -37,7 +37,8 @@ export default class StocksLive extends React.Component {
       liveStatusMessage: '',
       isMarketHours: false,
       liveStreamConnected: false,
-      socket: null
+      socket: null,
+      loadingData: false
     };
 
     this.handleCategoryFilterChange = this.handleCategoryFilterChange.bind(this);
@@ -49,7 +50,7 @@ export default class StocksLive extends React.Component {
     this.appWatchlistSaveCallback = this.appWatchlistSaveCallback.bind(this);
     this.handleSocketConnectClick = this.handleSocketConnectClick.bind(this);
     this.handleSocketCancelClick = this.handleSocketCancelClick.bind(this);
-
+    this.handleRefreshClick = this.handleRefreshClick.bind(this);
   }
 
   async componentWillUnmount() {
@@ -95,7 +96,8 @@ export default class StocksLive extends React.Component {
          isMarketHours: isMarketHours
        })
        if( isMarketHours ) {
-         this.handleSocketConnectClick()
+         // this.handleSocketConnectClick()
+
        }
     } catch(error) {
       console.log(error);
@@ -257,6 +259,32 @@ export default class StocksLive extends React.Component {
     });
   }
 
+  async handleRefreshClick() {
+    if( !this.state.isMarketHours ) {
+      return
+    }
+    try {
+      this.setState({
+        loadingData: true
+      })
+      const response = await fetch('/api/getAllStocksLiveData');
+      const stocksLiveData = await response.json();
+      // localStorage.setItem( "StocksLiveData", LZString.compress(JSON.stringify(stocksLiveData.data.stocks)) )
+      const dateNow = new Date()
+      this.setState({
+        socketDate: dateNow,
+        allStocksData: stocksLiveData.data.stocks,
+        reRenderStocksLiveData: dateNow
+      })
+    } catch(e) {
+      console.log(e)
+    } finally {
+      this.setState({
+        loadingData: false
+      })
+    }
+  }
+
   render() {
     return (
       <div>
@@ -282,6 +310,12 @@ export default class StocksLive extends React.Component {
           <Tabs defaultActiveKey={"all"} onSelect={this.handleTabsSelect}>
               <Tab eventKey={"all"} title="All">
                 <TabContent className="mt-3">
+                  {
+                    this.state.loadingData &&
+                    <Spinner style={{margin: '150px 0px 0px 200px',position: 'fixed', zIndex: '900'}} animation="border" role="status" className="d-flex text-primary">
+                      <span className="sr-only">Loading...</span>
+                    </Spinner>
+                  }
                  {
                    this.state.allStocksData && Object.keys(this.state.allStocksData).length > 0  &&
                    <Table
@@ -296,6 +330,12 @@ export default class StocksLive extends React.Component {
              <Tab eventKey={"categories"} title="Categories">
                 <TabContent className="mt-3" id="categories-tab-content">
                   <React.Fragment>
+                  {
+                    this.state.loadingData &&
+                    <Spinner style={{margin: '150px 0px 0px 200px',position: 'fixed', zIndex: '900'}} animation="border" role="status" className="d-flex text-primary">
+                      <span className="sr-only">Loading...</span>
+                    </Spinner>
+                  }
                   {
                     this.state.categoryStocksMapper && Object.keys(this.state.categoryStocksMapper).length > 0 &&
                     <Accordion defaultActiveKey="0">
@@ -360,6 +400,12 @@ export default class StocksLive extends React.Component {
              </Tab>
              <Tab eventKey={"appWatchlist"} title="Global Watchlist">
                <TabContent className="mt-3">
+                 {
+                   this.state.loadingData &&
+                   <Spinner style={{margin: '150px 0px 0px 200px',position: 'fixed', zIndex: '900'}} animation="border" role="status" className="d-flex text-primary">
+                     <span className="sr-only">Loading...</span>
+                   </Spinner>
+                 }
                    {
                    // <Popup trigger={<Gear className="cursor-pointer" />} modal nested>
                    //     <MyWatchlist userId={this.state.userId} isAuthed={this.state.isAuthed}/>
@@ -372,7 +418,7 @@ export default class StocksLive extends React.Component {
                     stocksList={ this.state.appWatchlistStocks }
                     allStocksData={ this.state.allStocksData }
                     showSearch={false}
-                    key={this.state.reRenderAppWatchlistTriggerKey}
+                    key={this.state.reRenderAppWatchlistTriggerKey || this.state.reRenderStocksLiveData }
                     addInfoColumn={true}
                     infoColumnData={this.state.appWatchlistStocksInfo}
                    />
@@ -385,6 +431,12 @@ export default class StocksLive extends React.Component {
              </Tab>
              <Tab eventKey={"mywatchlist"} title="My Watchlist">
                <TabContent className="mt-3">
+                 {
+                   this.state.loadingData &&
+                   <Spinner style={{margin: '150px 0px 0px 200px',position: 'fixed', zIndex: '900'}} animation="border" role="status" className="d-flex text-primary">
+                     <span className="sr-only">Loading...</span>
+                   </Spinner>
+                 }
                   <Gear className="cursor-pointer" onClick={() => this.showModal('mywatchlist')}/>
                  {
                    this.state.myWatchlistStocks.length > 0  &&
@@ -392,7 +444,7 @@ export default class StocksLive extends React.Component {
                     stocksList={ this.state.myWatchlistStocks }
                     allStocksData={ this.state.allStocksData }
                     showSearch={false}
-                    key={this.state.reRenderMyWatchlistTriggerKey}
+                    key={this.state.reRenderMyWatchlistTriggerKey || this.state.reRenderStocksLiveData}
                    />
                  }
                  {
@@ -405,6 +457,11 @@ export default class StocksLive extends React.Component {
                <TabContent className="mt-3">
 
                </TabContent>
+             </Tab>
+             <Tab  tabClassName={!this.state.isMarketHours ? 'd-none' : ''}
+              title={<span style={{color:'black'}} title="refresh">
+              <ArrowRepeat onClick={() => this.handleRefreshClick()}/>
+              </span>}>
              </Tab>
          </Tabs>
          <Modal dialogClassName='stocks-dialog'
