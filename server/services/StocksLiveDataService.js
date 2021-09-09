@@ -57,6 +57,12 @@ class StocksLiveData {
     return dataJson
   }
 
+  async updateAndGetAllStocksData() {
+    await this.updateAllStocksData();
+    const result = await this.getAllStocksData();
+    return result;
+  }
+
   async getAllStocksData() {
     const returnObj = {success: true, msg: '', data: {}}
     try {

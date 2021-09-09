@@ -67,7 +67,9 @@ export default class StocksLive extends React.Component {
 
   async componentDidMount() {
     try {
-      const response = await fetch('/api/getAllStocksLiveData');
+      // const response = await fetch('/api/getAllStocksLiveData');
+      const response = await fetch('/api/updateAndGetAllStocksLiveData');
+
       // const response = await fetch('/api/getAllStocksData');
       const stocksDataJson = await response.json();
       this.setState({allStocksData: stocksDataJson.data.stocks});

@@ -246,6 +246,12 @@ router.get('/isMarketOpen', cors(),  catchErrors( async (req, res, next) => {
     res.send({success: true, msg: '', isMarketOpen: isMarketOpen});
 }));
 
+router.get('/updateAndGetAllStocksLiveData', cors(),  catchErrors( async (req, res, next) => {
+    const service = new StocksLiveDataService();
+    const result = await service.updateAndGetAllStocksData();
+    res.send({success: result.success, msg: result.msg, data: result.data});
+}));
+
 router.get('/getAllStocksLiveData', cors(),  catchErrors( async (req, res, next) => {
     const service = new StocksLiveDataService();
     const result = await service.getAllStocksData();
