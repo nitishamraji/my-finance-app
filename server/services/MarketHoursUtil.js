@@ -34,7 +34,7 @@ const MARKET_HOURS_UTIL = {
               daysOffset = -2
               break
           default:
-              daysOffset = -1
+              daysOffset = 0
       }
 
       // if current time is weekday post market close we do not have to offset any days
@@ -44,19 +44,19 @@ const MARKET_HOURS_UTIL = {
       return moment(marketCloseTime,HM_FORMAT).add(daysOffset,'d')
   },
 
-  isDataLatest: (lastUpdatedTs) => {
+  isTimeStampAfterLastMarketCloseTime: (lastUpdatedTs) => {
 
       if( !lastUpdatedTs ) {
         return false
       }
 
       // Data is never latest if market is still open
-      if (isMarketOpen()) {
+      if (MARKET_HOURS_UTIL.isMarketOpen()) {
           return false
       }
 
       // Our lastDBUpdatedTs should always be same or after previous market close.
-      if (moment(lastUpdatedTs).isBefore(getLastMarketCloseTime())) {
+      if (moment(lastUpdatedTs).isBefore(MARKET_HOURS_UTIL.getLastMarketCloseTime())) {
           return false
       }
 

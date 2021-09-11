@@ -4,6 +4,7 @@ const axios = require("axios");
 const moment = require('moment');
 const lodash = require('lodash');
 const StocksService = require('./StocksService')
+const MarketHoursService = require('../services/MarketHoursService')
 
 function getDate(num, isDays) {
     var dateForQuote = moment();
@@ -166,6 +167,33 @@ class StocksLiveData {
   }
 
   async updateAllStocksData() {
+
+    if( global.liveDataPreviousUpdateTime ) {
+      const diffInSeconds = moment().diff(moment(global.liveDataPreviousUpdateTime), 'seconds')
+      if( diffInSeconds < 10 ) {
+        return {
+          msg: 'live data last updated ' + diffInSeconds + ' seconds ago. update frequency at least 10 seconds.'
+        }
+      }
+    }
+
+    const marketHoursService = new MarketHoursService();
+    const isMarketOpen = await marketHoursService.isMarketOpen();
+    console.log('testing isMarketOpen: ' + isMarketOpen)
+    if( !isMarketOpen ) {
+      const dbLiveRes = await db.StocksLive.findAll({ order: [['id', 'DESC']]})
+      console.log('testing dbLiveRes: ' + dbLiveRes.length)
+      if( dbLiveRes && dbLiveRes.length > 0 ) {
+        const dbLiveDataLastUpdateTS = await dbLiveRes[0].updatedAt;
+        console.log('testing dbLiveDataLastUpdateTS: ' + dbLiveDataLastUpdateTS)
+        if( marketHoursService.isTimeStampAfterLastMarketCloseTime(dbLiveDataLastUpdateTS) ) {
+          return { msg: 'Live data is latest. Nothing to update.'}
+        }
+      }
+    }
+
+    global.liveDataPreviousUpdateTime = moment()
+
     const stocksService = new StocksService();
     const allAddedStocksInfo = await stocksService.getAllAddedStocks();
 
@@ -227,9 +255,7 @@ class StocksLiveData {
             }
         })
       }
-
       this.retryUpdateMissedStocks(uniqueStocksQuoteData)
-
     })
     return {msg: 'processing'}
   }
@@ -296,6 +322,10 @@ class StocksLiveData {
 
       const recentDbStocksDataRow = await alldata[0]
       const dbStocksData = await recentDbStocksDataRow.data
+
+      if( !allStocksQuoteData || lodash.isEmpty(allStocksQuoteData) ) {
+        return
+      }
 
       allStocksQuoteData.map((symbol) => {
         dbStocksData.stocks[symbol] = allStocksQuoteData[symbol];
