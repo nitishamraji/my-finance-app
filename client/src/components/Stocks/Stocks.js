@@ -4,7 +4,7 @@ import Table from './../../components/Common/Table/Table';
 import MyWatchlist from './../../components/User/MyWatchlist';
 import AppWatchlist from './../../components/User/AppWatchlist';
 
-import { Tabs, Tab, TabContent, Button, Card, Accordion, Form, Modal } from 'react-bootstrap';
+import { Tabs, Tab, TabContent, Button, Card, Accordion, Form, Modal, Spinner } from 'react-bootstrap';
 import $ from "jquery";
 import { Bag, Gear } from 'react-bootstrap-icons';
 import Popup from 'reactjs-popup';
@@ -31,7 +31,12 @@ export default class Stocks extends React.Component {
       appWatchlistStocksInfo: [],
       showModal: false,
       reRenderMyWatchlistTriggerKey: '',
-      reRenderAppWatchlistTriggerKey: ''
+      reRenderAppWatchlistTriggerKey: '',
+      isMarketHours: true,
+      stocksDatalastUpdatedTS: '',
+      isDataUpdatedAfterLastClose: false,
+      isUpdateInProgress: false
+
     };
     this.handleCategoryFilterChange = this.handleCategoryFilterChange.bind(this);
     this.handleToggleAll = this.handleToggleAll.bind(this);
@@ -40,7 +45,34 @@ export default class Stocks extends React.Component {
     this.hideModal = this.hideModal.bind(this);
     this.myWatchlistSaveCallback = this.myWatchlistSaveCallback.bind(this);
     this.appWatchlistSaveCallback = this.appWatchlistSaveCallback.bind(this);
+    this.updateStocksDataStatusInfo = this.updateStocksDataStatusInfo.bind(this);
+  }
 
+  async updateStocksDataStatusInfo() {
+    try {
+      const lastUpdatedInfoRes = await fetch('/api/getStocksDataLastUpdatedInfo')
+      const lastUpdatedInfoJson = await lastUpdatedInfoRes.json()
+      const lastUpdatedInfo = lastUpdatedInfoJson.data
+
+      this.setState({
+        isMarketHours: lastUpdatedInfo.isMarketHours,
+        stocksDatalastUpdatedTS: lastUpdatedInfo.stocksDatalastUpdatedTS,
+        isDataUpdatedAfterLastClose: lastUpdatedInfo.isDataUpdatedAfterLastClose,
+        isUpdateInProgress: lastUpdatedInfo.isUpdateInProgress
+
+      })
+    } catch(e) {
+      console.log(e)
+    }
+  }
+
+  async handleStocksDataUpdate() {
+    const response = await fetch('/api/updateAllStocksData');
+    this.setState({
+      isUpdateInProgress: true
+    })
+    // const response = await fetch('/api/getAllStocksData');
+    // const stocksDataJson = await response.json();
   }
 
   async componentDidMount() {
@@ -65,6 +97,7 @@ export default class Stocks extends React.Component {
         filterCategories: filterCategories
        });
 
+      this.updateStocksDataStatusInfo()
     } catch(error) {
       console.log(error);
     }
@@ -179,6 +212,7 @@ export default class Stocks extends React.Component {
   render() {
     return (
       <React.Fragment>
+      <div className="stocks-data-container">
       <Tabs defaultActiveKey={"all"} onSelect={this.handleTabsSelect}>
           <Tab eventKey={"all"} title="All">
             <TabContent className="mt-3">
@@ -299,7 +333,42 @@ export default class Stocks extends React.Component {
              }
            </TabContent>
          </Tab>
+
+         <Tab
+          title={
+            <React.Fragment>
+              {
+                !this.state.isMarketHours && !this.state.isDataUpdatedAfterLastClose && !this.state.isUpdateInProgress &&
+                <span>
+                <button onClick={() => this.handleStocksDataUpdate()} type="button" class="btn btn-sm btn-info">Update</button>
+                </span>
+              }
+              {
+                !this.state.isMarketHours && !this.state.isDataUpdatedAfterLastClose && this.state.isUpdateInProgress &&
+                <span>
+                <Button variant="info" disabled className="btn-sm">
+                  <Spinner
+                    as="span"
+                    animation="border"
+                    size="sm"
+                    role="status"
+                    aria-hidden="true"
+                    className="mr-2"
+                  />
+                   Update InProgress...
+                </Button>
+                </span>
+              }
+              <span className="small text-secondary pl-3">
+                last update: {this.state.stocksDatalastUpdatedTS}
+              </span>
+            </React.Fragment>
+          }
+          >
+         </Tab>
+
      </Tabs>
+     </div>
      <Modal dialogClassName='stocks-dialog'
        show={this.state.showModal} onHide={(e)=> this.hideModal(e)}
        >

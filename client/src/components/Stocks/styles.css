@@ -47,3 +47,14 @@ iframe {
 #categories-tab-content .card-header .btn {
 	padding: 0 0.5rem !important;
 }
+
+.stocks-data-container .nav-tabs > a:last-of-type {
+  /* right: 0;
+  position: absolute; */
+  margin-left: 100px;
+}
+
+.stocks-data-container .nav-tabs .nav-link:last-of-type:hover, .stocks-data-container .nav-tabs .nav-link:last-of-type:focus {
+  border-color: #fff !important;
+  border-bottom: #dee2e6 !important;
+}

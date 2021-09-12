@@ -45,9 +45,9 @@ const columnHover = (cell, row, enumObject, rowIndex) => {
   }
 
 const pctFormatter = (c) => {
-  var num = Number(c).toFixed(2);
-  var cssClass = num < 0 ? 'text-danger' : 'text-success';
-  return  <span className={cssClass}>{num}</span>
+  // var num = Number(c);//.toFixed(2);
+  var cssClass = Number(c) < 0 ? 'text-danger' : 'text-success';
+  return  <span className={cssClass}>{c}</span>
 }
 
 const basicSort =  (a, b, order, dataField, rowA, rowB) => {
@@ -117,12 +117,13 @@ const columns = [
     sortFunc: basicSort
   },
   {
-    dataField: 'extendedPrice',
+    dataField: 'extendedChangePercent',
     text: 'AH %',
     sort: true,
     hidden: false,
-    formatter: (c) => { return  pctFormatter(c.extendedChangePercent) },
-    sortFunc: (a,b, order) => { return basicSort( a.extendedChangePercent, b.extendedChangePercent, order) }
+    formatter: (c) => { return  pctFormatter(c) },
+    sortFunc: basicSort
+    // sortFunc: (a,b, order) => { return basicSort( a.extendedChangePercent, b.extendedChangePercent, order) }
   },
   {
     dataField: 'volume',
@@ -209,22 +210,21 @@ function constructStockJson(data, addInfoColumn, infoColumnData){
   const dataJson = {
       symbol: symbol,
       companyName: data.companyName,
-      open: data.open,
-      close: data.close,
-      lastPrice: data.lastPrice,
-      low: data.low,
-      high: data.high,
-      changePercent: data.changePercent,
-      extendedPrice: data,
-      extendedChangePercent: data.extendedChangePercent,
-      volume: data.volume,
-      marketCap: data.marketCap,
-      week52High: data.week52High,
-      week52Low: data.week52Low,
-      pct7d: data.pct7d,
-      pct14d: data.pct14d,
-      pct1m: data.pct1m,
-      pct3m: data.pct3m
+      open: roundToTwoDecimals(data.open),
+      close: roundToTwoDecimals(data.close),
+      lastPrice: roundToTwoDecimals(data.lastPrice),
+      low: roundToTwoDecimals(data.low),
+      high: roundToTwoDecimals(data.high),
+      changePercent: roundToTwoDecimals(data.changePercent),
+      extendedChangePercent: roundToTwoDecimals(data.extendedChangePercent),
+      volume: roundToTwoDecimals(data.volume),
+      marketCap: roundToTwoDecimals(data.marketCap),
+      week52High: roundToTwoDecimals(data.week52High),
+      week52Low: roundToTwoDecimals(data.week52Low),
+      pct7d: roundToTwoDecimals(data.pct7d),
+      pct14d: roundToTwoDecimals(data.pct14d),
+      pct1m: roundToTwoDecimals(data.pct1m),
+      pct3m: roundToTwoDecimals(data.pct3m)
   }
 
   if( addInfoColumn ) {
@@ -238,6 +238,10 @@ function constructStockJson(data, addInfoColumn, infoColumnData){
     dataJson.info = info;
   }
   return dataJson;
+}
+
+function roundToTwoDecimals(num) {
+  return (Math.round(parseFloat(num) * 100) / 100).toFixed(2)
 }
 
 function convertNum (num) {

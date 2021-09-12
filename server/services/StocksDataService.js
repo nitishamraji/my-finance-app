@@ -2,6 +2,7 @@ const db = require('../sequelize/models')
 const tdaclient = require('tda-api-client');
 const axios = require("axios");
 const moment = require('moment');
+const MarketHoursService = require('../services/MarketHoursService')
 
 function getQuoteUrl(symbol) {
   // return "https://sandbox.iexapis.com/stable/stock/"+symbol+"/quote?token=Tpk_04291f94e91b4cdd8f4245dc7a730369";
@@ -106,11 +107,23 @@ async function getTdaHistoryData(symbol) {
 
 async function getTdaQuote(symbol) {
 
-  const resp = await axios.get(`https://api.tdameritrade.com/v1/marketdata/${symbol}/quotes?apikey=JKL8G1DBVHAVQMKASBPZ87MNMYQLEA0H`)
-  const quoteResTmp = resp.data
+  const getQuoteConfig = {
+    symbol: symbol,
+    apikey: ''
+  };
 
-  const quoteRes = quoteResTmp[symbol]
+  // const resp = await axios.get(`https://api.tdameritrade.com/v1/marketdata/${symbol}/quotes?apikey=JKL8G1DBVHAVQMKASBPZ87MNMYQLEA0H`)
+  const quotesResult = await tdaclient.quotes.getQuote(getQuoteConfig)
 
+  // const quoteResTmp = resp.data
+  //
+  const quoteRes = quotesResult[symbol]
+
+  // const getQuoteResult = quotesResult[symbol]
+  //
+  // getQuoteResult.dayPctChange = getQuoteResult.regularMarketPercentChangeInDouble
+  // getQuoteResult.afterHoursPctChange = (( getQuoteResult.mark - getQuoteResult.regularMarketLastPrice ) * 100)/getQuoteResult.regularMarketLastPrice
+  // volume: getQuoteResult.totalVolume,
 
   const dayPctChange = (((quoteRes.regularMarketLastPrice - quoteRes.openPrice)/quoteRes.openPrice)*100).toFixed(2)
   const afterHoursPctChange = (((quoteRes.lastPrice - quoteRes.regularMarketLastPrice)/quoteRes.regularMarketLastPrice)*100).toFixed(2)
@@ -126,6 +139,34 @@ const sleep = (milliseconds) => {
 }
 
 class StocksData {
+
+  async getStocksDataLastUpdatedInfo() {
+    const marketHoursService = new MarketHoursService()
+    const isMarketOpen = await marketHoursService.isMarketOpen()
+
+    let isDataUpdatedAfterLastClose = false
+    const dbStocksData = await db.StocksData.findAll({ order: [['id', 'DESC']] })
+    let stocksDatalastUpdatedTS;
+    if( dbStocksData || dbStocksData.length > 0 ) {
+      stocksDatalastUpdatedTS = await dbStocksData[0].updatedAt;
+      if( marketHoursService.isTimeStampAfterLastMarketCloseTime(stocksDatalastUpdatedTS) ) {
+        isDataUpdatedAfterLastClose = true
+      }
+    }
+
+    let isUpdateInProgress = global.stocksDataUpdateInProgress
+    const diffInMinutes = moment().diff(moment(global.stocksDataPreviousUpdateTime), 'minutes')
+    if( diffInMinutes > 30 ) {
+      isUpdateInProgress = false
+    }
+
+    return {
+      isMarketOpen: isMarketOpen,
+      isDataUpdatedAfterLastClose: isDataUpdatedAfterLastClose,
+      stocksDatalastUpdatedTS: moment(stocksDatalastUpdatedTS).format('MMMM Do YYYY, h:mm a'),
+      isUpdateInProgress: isUpdateInProgress
+    }
+  }
 
   async getSupportedStocksLastUpdate() {
     const returnObj = {success: true, msg: '', data: ''}
@@ -280,6 +321,17 @@ class StocksData {
   async updateAllStocksData() {
     // var start = moment();
 
+    if( global.stocksDataPreviousUpdateTime ) {
+      const diffInMinutes = moment().diff(moment(global.stocksDataPreviousUpdateTime), 'minutes')
+      if( diffInMinutes < 30 ) {
+        return {
+          msg: 'stocks data updated recently.'
+        }
+      }
+    }
+
+    global.stocksDataPreviousUpdateTime = moment()
+
     const stocksService = new StocksService();
     const allAddedStocksInfo = await stocksService.getAllAddedStocks();
 
@@ -295,6 +347,7 @@ class StocksData {
 
     Promise.all(allAddedStocks.map(async (symbol, i) => {
       await sleep(i * 2000)
+      global.stocksDataUpdateInProgress = true
       return this.getStockData(symbol)
     })).then(async (allStocksJson) => {
       if( !allStocksJson || allStocksJson.length <= 0 ) {
@@ -323,8 +376,9 @@ class StocksData {
         })
       }
 
-      this.retryUpdateMissedStocks()
+      // this.retryUpdateMissedStocks()
 
+      global.stocksDataUpdateInProgress = false
     })
     // const msg = 'It took ' + moment.duration(moment().diff(start)).asSeconds();
     return {msg: 'processing'}

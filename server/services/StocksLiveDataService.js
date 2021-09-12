@@ -106,7 +106,7 @@ class StocksLiveData {
         apikey: ''
       };
       const quoteResult = await tdaclient.quotes.getQuote(getQuoteConfig);
-      console.log('test tda result: ' + JSON.stringify(quoteResult));
+      // console.log('test tda result: ' + JSON.stringify(quoteResult));
       stockDataJson = quoteResult[symbol];
     } catch (e) {
       console.log(e)
@@ -179,13 +179,10 @@ class StocksLiveData {
 
     const marketHoursService = new MarketHoursService();
     const isMarketOpen = await marketHoursService.isMarketOpen();
-    console.log('testing isMarketOpen: ' + isMarketOpen)
     if( !isMarketOpen ) {
       const dbLiveRes = await db.StocksLive.findAll({ order: [['id', 'DESC']]})
-      console.log('testing dbLiveRes: ' + dbLiveRes.length)
       if( dbLiveRes && dbLiveRes.length > 0 ) {
         const dbLiveDataLastUpdateTS = await dbLiveRes[0].updatedAt;
-        console.log('testing dbLiveDataLastUpdateTS: ' + dbLiveDataLastUpdateTS)
         if( marketHoursService.isTimeStampAfterLastMarketCloseTime(dbLiveDataLastUpdateTS) ) {
           return { msg: 'Live data is latest. Nothing to update.'}
         }
@@ -255,7 +252,7 @@ class StocksLiveData {
             }
         })
       }
-      this.retryUpdateMissedStocks(uniqueStocksQuoteData)
+      // this.retryUpdateMissedStocks(uniqueStocksQuoteData)
     })
     return {msg: 'processing'}
   }

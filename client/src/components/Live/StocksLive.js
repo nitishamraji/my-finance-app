@@ -269,7 +269,7 @@ export default class StocksLive extends React.Component {
       this.setState({
         loadingData: true
       })
-      const response = await fetch('/api/getAllStocksLiveData');
+      const response = await fetch('/api/updateAndGetAllStocksLiveData');
       const stocksLiveData = await response.json();
       // localStorage.setItem( "StocksLiveData", LZString.compress(JSON.stringify(stocksLiveData.data.stocks)) )
       const dateNow = new Date()

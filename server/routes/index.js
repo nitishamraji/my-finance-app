@@ -227,6 +227,13 @@ router.get('/getSupportedStocksLastUpdate', cors(),  catchErrors( async (req, re
     res.send({success: result.success, msg: result.msg, data: result.data});
 }));
 
+router.get('/getStocksDataLastUpdatedInfo', cors(),  catchErrors( async (req, res, next) => {
+    console.log('/getStocksDataLastUpdatedInfo')
+    const service = new StocksDataService();
+    const result = await service.getStocksDataLastUpdatedInfo();
+    res.send({success: result.success, msg: result.msg, data: result});
+}));
+
 router.get('/getAllStocksData', cors(),  catchErrors( async (req, res, next) => {
     console.log('/getAllStocksData')
     const service = new StocksDataService();
