@@ -241,6 +241,14 @@ class StocksData {
         const stockDataJson = await getTdaQuote(symbol)
         const {oneWeekChange,twoWeekChange,oneMonthChange,threeMonthChange} = await getTdaHistoryData(symbol)
 
+        let pct52WeekHighChg = 0.0;
+        let pct52WeekLowChg = 0.0;
+        try {
+          pct52WeekHighChg = ((stockDataJson.lastPrice / stockDataJson['52WkHigh']) - 1)*100.00;
+          pct52WeekLowChg = ((stockDataJson.lastPrice / stockDataJson['52WkLow']) - 1)*100.00;
+        } catch (e) {
+          console.log("error calc pct52WeekHighChg: symbol - " + symbol + ": "+ e);
+        }
         // console.log(symbol,' ',stockDataJson)
         // console.log(symbol,oneWeekChange,twoWeekChange,oneMonthChange,threeMonthChange)
 
@@ -261,10 +269,12 @@ class StocksData {
             pct7d: oneWeekChange,
             pct14d: twoWeekChange,
             pct1m: oneMonthChange,
-            pct3m: threeMonthChange
+            pct3m: threeMonthChange,
+            pct52WeekHighChg: pct52WeekHighChg,
+            pct52WeekLowChg: pct52WeekLowChg
         }
     } catch (e) {
-      console.log(e)
+      console.log("error getStockData: symbol - " + symbol + ": " + e);
     }
     return stockData;
   }
@@ -321,14 +331,14 @@ class StocksData {
   async updateAllStocksData() {
     // var start = moment();
 
-    if( global.stocksDataPreviousUpdateTime ) {
-      const diffInMinutes = moment().diff(moment(global.stocksDataPreviousUpdateTime), 'minutes')
-      if( diffInMinutes < 30 ) {
-        return {
-          msg: 'stocks data updated recently.'
-        }
-      }
-    }
+    // if( global.stocksDataPreviousUpdateTime ) {
+    //   const diffInMinutes = moment().diff(moment(global.stocksDataPreviousUpdateTime), 'minutes')
+    //   if( diffInMinutes < 30 ) {
+    //     return {
+    //       msg: 'stocks data updated recently.'
+    //     }
+    //   }
+    // }
 
     global.stocksDataPreviousUpdateTime = moment()
 

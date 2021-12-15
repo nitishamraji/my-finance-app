@@ -47,7 +47,7 @@ const columnHover = (cell, row, enumObject, rowIndex) => {
 const pctFormatter = (c) => {
   // var num = Number(c);//.toFixed(2);
   var cssClass = Number(c) < 0 ? 'text-danger' : 'text-success';
-  return  <span className={cssClass}>{c}</span>
+  return  <span className={cssClass}>{c}%</span>
 }
 
 const basicSort =  (a, b, order, dataField, rowA, rowB) => {
@@ -86,26 +86,14 @@ const columns = [
     hidden: false
   },
   {
-    dataField: 'open',
-    text: 'Open',
+    dataField: 'openClose',
+    text: 'Open/Close',
     sort: false,
     hidden: false
   },
   {
-    dataField: 'close',
-    text: 'Close',
-    sort: false,
-    hidden: false
-  },
-  {
-    dataField: 'low',
-    text: 'Low',
-    hidden: false,
-    sort: false,
-  },
-  {
-    dataField: 'high',
-    text: 'High',
+    dataField: 'lowHigh',
+    text: 'Low/High',
     hidden: false,
     sort: false,
   },
@@ -127,7 +115,7 @@ const columns = [
   },
   {
     dataField: 'volume',
-    text: 'V',
+    text: 'Vol',
     sort: true,
     formatter: (c) => { return convertNum(c) }
   },
@@ -145,6 +133,20 @@ const columns = [
   {
     dataField: 'week52Low',
     text: '52W L',
+  },
+  {
+    dataField: 'pct52WeekLowChg',
+    text: '%52w L',
+    sort: true,
+    sortFunc: basicSort,
+    formatter: (c) => { return  pctFormatter(c) }
+  },
+  {
+    dataField: 'pct52WeekHighChg',
+    text: '%52w H',
+    sort: true,
+    sortFunc: basicSort,
+    formatter: (c) => { return  pctFormatter(c) }
   },
   {
     dataField: 'pct7d',
@@ -207,20 +209,32 @@ const defaultSorted = [{
 
 function constructStockJson(data, addInfoColumn, infoColumnData){
   const symbol = data.symbol;
+  const open = roundToTwoDecimals(data.open);
+  const close = roundToTwoDecimals(data.close);
+  const openClose = open.toString() + '/' + close.toString();
+
+  const low = roundToTwoDecimals(data.low);
+  const high = roundToTwoDecimals(data.high);
+  const lowHigh = low.toString() + '/' + high.toString();
+
   const dataJson = {
       symbol: symbol,
       companyName: data.companyName,
       open: roundToTwoDecimals(data.open),
       close: roundToTwoDecimals(data.close),
+      openClose: openClose,
       lastPrice: roundToTwoDecimals(data.lastPrice),
       low: roundToTwoDecimals(data.low),
       high: roundToTwoDecimals(data.high),
+      lowHigh: lowHigh,
       changePercent: roundToTwoDecimals(data.changePercent),
       extendedChangePercent: roundToTwoDecimals(data.extendedChangePercent),
       volume: roundToTwoDecimals(data.volume),
       marketCap: roundToTwoDecimals(data.marketCap),
       week52High: roundToTwoDecimals(data.week52High),
       week52Low: roundToTwoDecimals(data.week52Low),
+      pct52WeekHighChg: roundToTwoDecimals(data.pct52WeekHighChg),
+      pct52WeekLowChg: roundToTwoDecimals(data.pct52WeekLowChg),
       pct7d: roundToTwoDecimals(data.pct7d),
       pct14d: roundToTwoDecimals(data.pct14d),
       pct1m: roundToTwoDecimals(data.pct1m),
