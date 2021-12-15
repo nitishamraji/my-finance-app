@@ -85,61 +85,71 @@ const columns = [
     dataField: 'lastPrice',
     text: 'Last Price',
     hidden: false,
-    sort: false
+    sort: false,
+    searchable: false
   },
   {
     dataField: 'open',
     text: 'Open',
     hidden: false,
-    sort: false
+    sort: false,
+    searchable: false
   },
   {
     dataField: 'close',
     text: 'Close',
     hidden: false,
-    sort: false
+    sort: false,
+    searchable: false
   },
   {
     dataField: 'low',
     text: 'Low',
     hidden: false,
-    sort: false
+    sort: false,
+    searchable: false
   },
   {
     dataField: 'high',
     text: 'High',
     hidden: false,
-    sort: false
+    sort: false,
+    searchable: false
   },
   {
     dataField: 'changePercent',
     text: 'Change %',
     sort: true,
     formatter: (c) => { return  pctFormatter(c) },
-    sortFunc: basicSort
+    sortFunc: basicSort,
+    searchable: false
   },
   {
     dataField: 'extendedChangePercent',
     text: 'After Hours %',
     sort: true,
     formatter: (c) => { return  pctFormatter(c) },
-    sortFunc: basicSort
+    sortFunc: basicSort,
+    searchable: false
   },
   {
     dataField: 'volume',
     text: 'Vol',
     sort: true,
-    formatter: (c) => { return convertNum(c) }
+    formatter: (c) => { return convertNum(c) },
+    searchable: false
   },
   {
     dataField: 'week52High',
     text: '52W H',
-    sort: false
+    sort: false,
+    searchable: false
   },
   {
     dataField: 'week52Low',
     text: '52W L',
-    sort: false
+    sort: false,
+    searchable: false
   }
 ];
 
@@ -226,6 +236,17 @@ function convertNum (num) {
     : Number( Math.abs(Number(num))).toFixed(2);
 
     return convertNum
+}
+
+function customMatchFunc({searchText,value,column,row}) {
+  if (typeof value !== 'undefined') {
+    if(column.text == 'Symbol') {
+       return value.toUpperCase().startsWith(searchText.toUpperCase()) || value.toUpperCase() === searchText.toUpperCase();
+    } else {
+      return value.toUpperCase().includes(searchText.toUpperCase());
+    }
+  }
+  return false;
 }
 
 class Table extends Component {
@@ -321,7 +342,7 @@ class Table extends Component {
 						  keyField="symbol"
 						  data={ this.state.tableData }
 						  columns={ getColumns({addInfoColumn: this.state.addInfoColumn, infoColumnData: this.state.infoColumnData}) }
-						  search
+						  search = { { onColumnMatch: customMatchFunc } }
 						>
 						  {
 						    props => (

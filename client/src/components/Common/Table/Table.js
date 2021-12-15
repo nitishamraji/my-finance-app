@@ -4,6 +4,7 @@ import { Modal, Button, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import BootstrapTable from 'react-bootstrap-table-next';
 import Popup from 'reactjs-popup';
 import ToolkitProvider, { Search } from 'react-bootstrap-table2-toolkit';
+
 import paginationFactory from 'react-bootstrap-table2-paginator';
 import { InfoCircle } from 'react-bootstrap-icons';
 
@@ -11,7 +12,7 @@ import StockDetail from './../../StockDetail/StockDetail';
 
 import './styles.css';
 
-const { SearchBar, ClearSearchButton } = Search;
+const { SearchBar } = Search;
 
 const pagination = paginationFactory({
   page: 1,
@@ -87,38 +88,42 @@ const columns = [
     dataField: 'symbol',
     text: 'TCKR',
     sort: true,
-    formatter: (c) => { return symbolFormat(c) },
+    formatter: (c) => { return symbolFormat(c) }
   },
   {
     dataField: 'companyName',
     formatter: (c) => { return ( <span style={{width:'50px'}} className="ellipsis d-inline-block" title={c}>{c}</span> ) },
     text: 'Name',
-    hidden: false
+    hidden: false,
   },
   {
     dataField: 'lastPrice',
     text: 'Price',
     sort: false,
-    hidden: false
+    hidden: false,
+    searchable: false
   },
   {
     dataField: 'openClose',
     text: 'Open/Close',
     sort: false,
-    hidden: false
+    hidden: false,
+    searchable: false
   },
   {
     dataField: 'lowHigh',
     text: 'Low/High',
     hidden: false,
     sort: false,
+    searchable: false
   },
   {
     dataField: 'changePercent',
     text: '1d%',
     sort: true,
     formatter: (c) => { return  pctFormatter(c) },
-    sortFunc: basicSort
+    sortFunc: basicSort,
+    searchable: false
   },
   {
     dataField: 'extendedChangePercent',
@@ -126,7 +131,8 @@ const columns = [
     sort: true,
     hidden: false,
     formatter: (c) => { return  pctFormatter(c) },
-    sortFunc: basicSort
+    sortFunc: basicSort,
+    searchable: false
     // sortFunc: (a,b, order) => { return basicSort( a.extendedChangePercent, b.extendedChangePercent, order) }
   },
   {
@@ -134,60 +140,69 @@ const columns = [
     text: 'Vol',
     sort: true,
     formatter: (c) => { return convertNum(c) },
-    hidden: true
+    hidden: true,
+    searchable: false
   },
   {
     dataField: 'marketCap',
     text: 'MCap',
     sort: true,
     formatter: (c) => { return c[1] },
-    sortFunc: marketCapFieldSort
+    sortFunc: marketCapFieldSort,
+    searchable: false
   },
   {
     dataField: 'week52LH',
     text: '52w L/H',
+    searchable: false
   },
   {
     dataField: 'pct52WeekLowChg',
     text: '52wL%',
     sort: true,
     sortFunc: basicSort,
-    formatter: (c) => { return  pctFormatter(c) }
+    formatter: (c) => { return  pctFormatter(c) },
+    searchable: false
   },
   {
     dataField: 'pct52WeekHighChg',
     text: '52wH%',
     sort: true,
     sortFunc: basicSort,
-    formatter: (c) => { return  pctFormatter(c) }
+    formatter: (c) => { return  pctFormatter(c) },
+    searchable: false
   },
   {
     dataField: 'pct7d',
     text: '1w%',
     sort: true,
     sortFunc: basicSort,
-    formatter: (c) => { return  pctFormatter(c) }
+    formatter: (c) => { return  pctFormatter(c) },
+    searchable: false
   },
   {
     dataField: 'pct14d',
     text: '2w%',
     sort: true,
     sortFunc: basicSort,
-    formatter: (c) => { return  pctFormatter(c) }
+    formatter: (c) => { return  pctFormatter(c) },
+    searchable: false
   },
   {
     dataField: 'pct1m',
     text: '1m%',
     sort: true,
     sortFunc: basicSort,
-    formatter: (c) => { return  pctFormatter(c) }
+    formatter: (c) => { return  pctFormatter(c) },
+    searchable: false
   },
   {
     dataField: 'pct3m',
     text: '3m%',
     sort: true,
     sortFunc: basicSort,
-    formatter: (c) => { return  pctFormatter(c) }
+    formatter: (c) => { return  pctFormatter(c) },
+    searchable: false
   }
 ];
 
@@ -316,6 +331,17 @@ function convertNum (num) {
     return convertNum
 }
 
+function customMatchFunc({searchText,value,column,row}) {
+  if (typeof value !== 'undefined') {
+    if(column.text == 'TCKR') {
+       return value.toUpperCase().startsWith(searchText.toUpperCase()) || value.toUpperCase() === searchText.toUpperCase();
+    } else {
+      return value.toUpperCase().includes(searchText.toUpperCase());
+    }
+  }
+  return false;
+}
+
 class Table extends Component {
 
   constructor(props) {
@@ -350,7 +376,7 @@ class Table extends Component {
 						  keyField="symbol"
 						  data={ this.state.tableData }
 						  columns={ getColumns({addInfoColumn: this.state.addInfoColumn, infoColumnData: this.state.infoColumnData}) }
-						  search
+						  search = { { onColumnMatch: customMatchFunc } }
 						>
 						  {
 						    props => (

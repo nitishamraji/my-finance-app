@@ -340,7 +340,7 @@ export default class Stocks extends React.Component {
               {
                 !this.state.isMarketHours && !this.state.isDataUpdatedAfterLastClose && !this.state.isUpdateInProgress &&
                 <span>
-                <button onClick={() => this.handleStocksDataUpdate()} type="button" class="btn btn-sm btn-info">Update</button>
+                <button onClick={() => this.handleStocksDataUpdate()} type="button" className="btn btn-sm btn-info">Update</button>
                 </span>
               }
               {
