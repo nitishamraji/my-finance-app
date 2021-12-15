@@ -145,18 +145,18 @@ const columns = [
   },
   {
     dataField: 'week52LH',
-    text: '52W L/H',
+    text: '52w L/H',
   },
   {
     dataField: 'pct52WeekLowChg',
-    text: '%52wL',
+    text: '52wL%',
     sort: true,
     sortFunc: basicSort,
     formatter: (c) => { return  pctFormatter(c) }
   },
   {
     dataField: 'pct52WeekHighChg',
-    text: '%52wH',
+    text: '52wH%',
     sort: true,
     sortFunc: basicSort,
     formatter: (c) => { return  pctFormatter(c) }
