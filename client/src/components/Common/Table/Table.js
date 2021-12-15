@@ -236,7 +236,7 @@ function constructStockJson(data, addInfoColumn, infoColumnData){
     marketCap = data.marketCap;
     marketCapFormat = getMarketCapFormat(marketCap);
   } catch (e) {
-    marketCap=0, marketCapFormat='0.0M';
+    marketCap=0; marketCapFormat='0.0M';
   }
 
   const week52LH = roundToTwoDecimals(data.week52Low).toString() + '/' + roundToTwoDecimals(data.week52High).toString();
