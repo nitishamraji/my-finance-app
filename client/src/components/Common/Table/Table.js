@@ -51,6 +51,15 @@ const pctFormatter = (c) => {
 }
 
 const marketCapFieldSort =  (a, b, order, dataField, rowA, rowB) => {
+
+  // nulls sort after anything else
+  if (a[0] === 0) {
+      return 1;
+  }
+  else if (b[0] === 0) {
+      return -1;
+  }
+
   if (order === 'asc') {
     return b[0] - a[0];
   }
