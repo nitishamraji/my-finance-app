@@ -230,9 +230,14 @@ function constructStockJson(data, addInfoColumn, infoColumnData){
   const lowHigh = low.toString() + '/' + high.toString();
 
   const powTenMap = {'K': 3, 'M': 6, 'B': 9, 'T': 12};
-  const marketCapAbbr = data.marketCap;
-  const marketCap = parseFloat(marketCapAbbr.slice(0,-1)) * 10 ** powTenMap[marketCapAbbr.slice(-1)];
-  const marketCapFormat = getMarketCapFormat(marketCap);
+
+  let marketCapAbbr = '0.0M', marketCap=0, marketCapFormat='0.0M';
+  try {
+    marketCapAbbr = data.marketCap;
+    marketCap = parseFloat(marketCapAbbr.slice(0,-1)) * 10 ** powTenMap[marketCapAbbr.slice(-1)];
+    marketCapFormat = getMarketCapFormat(marketCap);
+  } catch (e) {
+  }
 
   const week52LH = roundToTwoDecimals(data.week52Low).toString() + '/' + roundToTwoDecimals(data.week52High).toString();
   const dataJson = {
