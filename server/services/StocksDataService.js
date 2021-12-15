@@ -158,12 +158,15 @@ async function getStockMarketCap(stockSymbol) {
       });
 
       if( td_mcap_index ) {
-        stockMarkCapAbbr = $($('td')[td_mcap_index+1]).text();
-        stockMarkCap = parseFloat(stockMarkCapAbbr.slice(0,-1)) * 10 ** powTenMap[stockMarkCapAbbr.slice(-1)];
+        stockMarkCapAbbr = $($('td')[td_mcap_index+1]).text().trim();
+        if( stockMarkCapAbbr.length > 1) {
+          stockMarkCap = parseFloat(stockMarkCapAbbr.slice(0,-1)) * 10 ** powTenMap[stockMarkCapAbbr.slice(-1)];
+        }
       }
     })
     .catch(err => console.log(err) )
   } catch (e) {
+    stockMarkCap = 0;
   }
 
   return stockMarkCap;
