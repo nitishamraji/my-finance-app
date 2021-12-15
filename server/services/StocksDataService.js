@@ -329,16 +329,16 @@ class StocksData {
   }
 
   async updateAllStocksData() {
-    // var start = moment();
+    var start = moment();
 
-    // if( global.stocksDataPreviousUpdateTime ) {
-    //   const diffInMinutes = moment().diff(moment(global.stocksDataPreviousUpdateTime), 'minutes')
-    //   if( diffInMinutes < 30 ) {
-    //     return {
-    //       msg: 'stocks data updated recently.'
-    //     }
-    //   }
-    // }
+    if( global.stocksDataPreviousUpdateTime ) {
+      const diffInMinutes = moment().diff(moment(global.stocksDataPreviousUpdateTime), 'minutes')
+      if( diffInMinutes < 30 ) {
+        return {
+          msg: 'stocks data updated recently.'
+        }
+      }
+    }
 
     global.stocksDataPreviousUpdateTime = moment()
 
