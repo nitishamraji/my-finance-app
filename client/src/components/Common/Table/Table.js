@@ -115,14 +115,14 @@ const columns = [
   },
   {
     dataField: 'changePercent',
-    text: '1d %',
+    text: '1d%',
     sort: true,
     formatter: (c) => { return  pctFormatter(c) },
     sortFunc: basicSort
   },
   {
     dataField: 'extendedChangePercent',
-    text: 'AH %',
+    text: 'AH%',
     sort: true,
     hidden: false,
     formatter: (c) => { return  pctFormatter(c) },
@@ -138,7 +138,7 @@ const columns = [
   },
   {
     dataField: 'marketCap',
-    text: 'M Cap',
+    text: 'MCap',
     sort: true,
     formatter: (c) => { return c[1] },
     sortFunc: marketCapFieldSort
@@ -149,42 +149,42 @@ const columns = [
   },
   {
     dataField: 'pct52WeekLowChg',
-    text: '%52w L',
+    text: '%52wL',
     sort: true,
     sortFunc: basicSort,
     formatter: (c) => { return  pctFormatter(c) }
   },
   {
     dataField: 'pct52WeekHighChg',
-    text: '%52w H',
+    text: '%52wH',
     sort: true,
     sortFunc: basicSort,
     formatter: (c) => { return  pctFormatter(c) }
   },
   {
     dataField: 'pct7d',
-    text: '1w %',
+    text: '1w%',
     sort: true,
     sortFunc: basicSort,
     formatter: (c) => { return  pctFormatter(c) }
   },
   {
     dataField: 'pct14d',
-    text: '2w %',
+    text: '2w%',
     sort: true,
     sortFunc: basicSort,
     formatter: (c) => { return  pctFormatter(c) }
   },
   {
     dataField: 'pct1m',
-    text: '1m %',
+    text: '1m%',
     sort: true,
     sortFunc: basicSort,
     formatter: (c) => { return  pctFormatter(c) }
   },
   {
     dataField: 'pct3m',
-    text: '3m %',
+    text: '3m%',
     sort: true,
     sortFunc: basicSort,
     formatter: (c) => { return  pctFormatter(c) }
