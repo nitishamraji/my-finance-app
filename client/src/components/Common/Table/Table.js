@@ -50,6 +50,13 @@ const pctFormatter = (c) => {
   return  <span className={cssClass}>{c}%</span>
 }
 
+const marketCapFieldSort =  (a, b, order, dataField, rowA, rowB) => {
+  if (order === 'asc') {
+    return b[0] - a[0];
+  }
+  return a[0] - b[0]; // desc
+}
+
 const basicSort =  (a, b, order, dataField, rowA, rowB) => {
   if (order === 'asc') {
     return b - a;
@@ -117,22 +124,19 @@ const columns = [
     dataField: 'volume',
     text: 'Vol',
     sort: true,
-    formatter: (c) => { return convertNum(c) }
+    formatter: (c) => { return convertNum(c) },
+    hidden: true
   },
   {
     dataField: 'marketCap',
     text: 'M Cap',
     sort: true,
-    formatter: (c) => { return convertNum(c) },
-    hidden: true,
+    formatter: (c) => { return c[1] },
+    sortFunc: marketCapFieldSort
   },
   {
-    dataField: 'week52High',
-    text: '52W H',
-  },
-  {
-    dataField: 'week52Low',
-    text: '52W L',
+    dataField: 'week52LH',
+    text: '52W L/H',
   },
   {
     dataField: 'pct52WeekLowChg',
@@ -207,6 +211,14 @@ const defaultSorted = [{
   order: 'desc'
 }];
 
+function getMarketCapFormat(num) {
+    var units = ["M","B","T","Q"]
+    var unit = Math.floor((num / 1.0e+1).toFixed(0).toString().length)
+    var r = unit%3
+    var x =  Math.abs(Number(num))/Number('1.0e+'+(unit-r)).toFixed(2)
+    return x.toFixed(2)+ '' + units[Math.floor(unit / 3) - 2]
+}
+
 function constructStockJson(data, addInfoColumn, infoColumnData){
   const symbol = data.symbol;
   const open = roundToTwoDecimals(data.open);
@@ -217,6 +229,12 @@ function constructStockJson(data, addInfoColumn, infoColumnData){
   const high = roundToTwoDecimals(data.high);
   const lowHigh = low.toString() + '/' + high.toString();
 
+  const powTenMap = {'K': 3, 'M': 6, 'B': 9, 'T': 12};
+  const marketCapAbbr = data.marketCap;
+  const marketCap = parseFloat(marketCapAbbr.slice(0,-1)) * 10 ** powTenMap[marketCapAbbr.slice(-1)];
+  const marketCapFormat = getMarketCapFormat(marketCap);
+
+  const week52LH = roundToTwoDecimals(data.week52Low).toString() + '/' + roundToTwoDecimals(data.week52High).toString();
   const dataJson = {
       symbol: symbol,
       companyName: data.companyName,
@@ -230,9 +248,10 @@ function constructStockJson(data, addInfoColumn, infoColumnData){
       changePercent: roundToTwoDecimals(data.changePercent),
       extendedChangePercent: roundToTwoDecimals(data.extendedChangePercent),
       volume: roundToTwoDecimals(data.volume),
-      marketCap: roundToTwoDecimals(data.marketCap),
+      marketCap: [marketCap,marketCapFormat],
       week52High: roundToTwoDecimals(data.week52High),
       week52Low: roundToTwoDecimals(data.week52Low),
+      week52LH: week52LH,
       pct52WeekHighChg: roundToTwoDecimals(data.pct52WeekHighChg),
       pct52WeekLowChg: roundToTwoDecimals(data.pct52WeekLowChg),
       pct7d: roundToTwoDecimals(data.pct7d),

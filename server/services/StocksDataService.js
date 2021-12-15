@@ -3,6 +3,8 @@ const tdaclient = require('tda-api-client');
 const axios = require("axios");
 const moment = require('moment');
 const MarketHoursService = require('../services/MarketHoursService')
+const rp = require("request-promise")
+const cheerio = require("cheerio")
 
 function getQuoteUrl(symbol) {
   // return "https://sandbox.iexapis.com/stable/stock/"+symbol+"/quote?token=Tpk_04291f94e91b4cdd8f4245dc7a730369";
@@ -138,6 +140,33 @@ const sleep = (milliseconds) => {
   return new Promise(resolve => setTimeout(resolve, milliseconds))
 }
 
+async function getStockMarketCap(stockSymbol) {
+  let stockMarkCap = '0.0M';
+
+  try {
+    await rp(`https://www.finviz.com/quote.ashx?t=${stockSymbol}&ty=c&p=d&b=1`)
+    .then(async html => {
+      const $ = cheerio.load(html, null, false);
+
+      var td_mcap_index = null;
+      $('td').each(function (i, e) {
+        if( $(this) && $(this).text() && $(this).text().trim().toUpperCase() === 'Market Cap'.toUpperCase() ) {
+          td_mcap_index = i;
+          return false;
+        }
+      });
+
+      if( td_mcap_index ) {
+        stockMarkCap = $($('td')[td_mcap_index+1]).text();
+      }
+    })
+    .catch(err => console.log(err) )
+  } catch (e) {
+  }
+
+  return stockMarkCap;
+}
+
 class StocksData {
 
   async getStocksDataLastUpdatedInfo() {
@@ -251,7 +280,7 @@ class StocksData {
         }
         // console.log(symbol,' ',stockDataJson)
         // console.log(symbol,oneWeekChange,twoWeekChange,oneMonthChange,threeMonthChange)
-
+        const stockMarkCap = await getStockMarketCap(symbol);
         stockData = {
             symbol: symbol,
             companyName: stockDataJson.description,
@@ -263,7 +292,7 @@ class StocksData {
             changePercent: stockDataJson.dayPctChange,
             extendedChangePercent: stockDataJson.afterHoursPctChange,
             volume: stockDataJson.totalVolume,
-            marketCap: 0,
+            marketCap: stockMarkCap,
             week52High: stockDataJson['52WkHigh'],
             week52Low: stockDataJson['52WkLow'],
             pct7d: oneWeekChange,
@@ -331,14 +360,14 @@ class StocksData {
   async updateAllStocksData() {
     var start = moment();
 
-    if( global.stocksDataPreviousUpdateTime ) {
-      const diffInMinutes = moment().diff(moment(global.stocksDataPreviousUpdateTime), 'minutes')
-      if( diffInMinutes < 30 ) {
-        return {
-          msg: 'stocks data updated recently.'
-        }
-      }
-    }
+    // if( global.stocksDataPreviousUpdateTime ) {
+    //   const diffInMinutes = moment().diff(moment(global.stocksDataPreviousUpdateTime), 'minutes')
+    //   if( diffInMinutes < 30 ) {
+    //     return {
+    //       msg: 'stocks data updated recently.'
+    //     }
+    //   }
+    // }
 
     global.stocksDataPreviousUpdateTime = moment()
 
