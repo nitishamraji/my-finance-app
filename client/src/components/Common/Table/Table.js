@@ -216,7 +216,8 @@ function getMarketCapFormat(num) {
     var unit = Math.floor((num / 1.0e+1).toFixed(0).toString().length)
     var r = unit%3
     var x =  Math.abs(Number(num))/Number('1.0e+'+(unit-r)).toFixed(2)
-    return x.toFixed(2)+ '' + units[Math.floor(unit / 3) - 2]
+    var unitsIdx = units[Math.floor(unit / 3) - 2];
+    return x.toFixed(2)+ '' + (unitsIdx ? unitsIdx : units[0]);
 }
 
 function constructStockJson(data, addInfoColumn, infoColumnData){
@@ -228,8 +229,6 @@ function constructStockJson(data, addInfoColumn, infoColumnData){
   const low = roundToTwoDecimals(data.low);
   const high = roundToTwoDecimals(data.high);
   const lowHigh = low.toString() + '/' + high.toString();
-
-  const powTenMap = {'K': 3, 'M': 6, 'B': 9, 'T': 12};
 
   let marketCap=0, marketCapFormat='0.0M';
   try {
