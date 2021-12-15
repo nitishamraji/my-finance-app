@@ -141,7 +141,8 @@ const sleep = (milliseconds) => {
 }
 
 async function getStockMarketCap(stockSymbol) {
-  let stockMarkCap = '0.0M';
+  let stockMarkCap = 0;
+  const powTenMap = {'K': 3, 'M': 6, 'B': 9, 'T': 12};
 
   try {
     await rp(`https://www.finviz.com/quote.ashx?t=${stockSymbol}&ty=c&p=d&b=1`)
@@ -157,7 +158,8 @@ async function getStockMarketCap(stockSymbol) {
       });
 
       if( td_mcap_index ) {
-        stockMarkCap = $($('td')[td_mcap_index+1]).text();
+        stockMarkCapAbbr = $($('td')[td_mcap_index+1]).text();
+        stockMarkCap = parseFloat(stockMarkCapAbbr.slice(0,-1)) * 10 ** powTenMap[stockMarkCapAbbr.slice(-1)];
       }
     })
     .catch(err => console.log(err) )

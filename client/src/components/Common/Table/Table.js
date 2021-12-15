@@ -231,10 +231,9 @@ function constructStockJson(data, addInfoColumn, infoColumnData){
 
   const powTenMap = {'K': 3, 'M': 6, 'B': 9, 'T': 12};
 
-  let marketCapAbbr = '0.0M', marketCap=0, marketCapFormat='0.0M';
+  let marketCap=0, marketCapFormat='0.0M';
   try {
-    marketCapAbbr = data.marketCap;
-    marketCap = parseFloat(marketCapAbbr.slice(0,-1)) * 10 ** powTenMap[marketCapAbbr.slice(-1)];
+    marketCap = data.marketCap;
     marketCapFormat = getMarketCapFormat(marketCap);
   } catch (e) {
   }
