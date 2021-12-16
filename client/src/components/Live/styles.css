@@ -26,13 +26,17 @@
   text-decoration: none;
 }
 
-.live-container .nav-tabs > a:last-of-type {
+.live-container .live-tabs > a:last-of-type {
   /* right: 0;
   position: absolute; */
   margin-left: 100px;
 }
 
-.live-container .nav-tabs .nav-link:last-of-type:hover, .live-container .nav-tabs .nav-link:last-of-type:focus {
+.live-container .live-tabs .nav-link:last-of-type:hover, .live-container .live-tabs .nav-link:last-of-type:focus {
   border-color: #fff !important;
   border-bottom: #dee2e6 !important;
+}
+
+.tredningStocksTabContent .nav-tabs {
+  margin-bottom: 12px;
 }

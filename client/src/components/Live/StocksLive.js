@@ -38,7 +38,10 @@ export default class StocksLive extends React.Component {
       isMarketHours: false,
       liveStreamConnected: false,
       socket: null,
-      loadingData: false
+      loadingData: false,
+      tredningStocksInfo: {},
+      reRenderTredningStocksTriggerKey: '',
+      currentSelectedTab: 'all'
     };
 
     this.handleCategoryFilterChange = this.handleCategoryFilterChange.bind(this);
@@ -136,6 +139,8 @@ export default class StocksLive extends React.Component {
   }
 
   async handleTabsSelect(key) {
+    this.setState({currentSelectedTab: key});
+
     if( key === 'mywatchlist' ) {
 
       if( !this.state.loadMyWatchlist ) {
@@ -164,8 +169,25 @@ export default class StocksLive extends React.Component {
             nonUsedKey: new Date()
           })
         }
-
       }
+    }
+
+    if( key === 'trends') {
+
+      this.setState({
+        loadingData: true
+      });
+      const tredningStocksRes = await fetch('/api/getAllTrendingStocksData');
+      const tredningStocksResJson = await tredningStocksRes.json();
+      if( tredningStocksResJson.success ) {
+        this.setState({
+          tredningStocksInfo: tredningStocksResJson.data.trendingStocks,
+          reRenderTredningStocksTriggerKey: new Date()
+        })
+      }
+      this.setState({
+        loadingData: false
+      });
     }
   }
 
@@ -269,15 +291,29 @@ export default class StocksLive extends React.Component {
       this.setState({
         loadingData: true
       })
-      const response = await fetch('/api/updateAndGetAllStocksLiveData');
-      const stocksLiveData = await response.json();
-      // localStorage.setItem( "StocksLiveData", LZString.compress(JSON.stringify(stocksLiveData.data.stocks)) )
-      const dateNow = new Date()
-      this.setState({
-        socketDate: dateNow,
-        allStocksData: stocksLiveData.data.stocks,
-        reRenderStocksLiveData: dateNow
-      })
+
+      const currentSelectedTab = this.state.currentSelectedTab;
+
+      if(currentSelectedTab === 'trends') {
+        const tredningStocksRes = await fetch('/api/updateAndGetAllTrendingStocksData');
+        const tredningStocksResJson = await tredningStocksRes.json();
+        if( tredningStocksResJson.success ) {
+          this.setState({
+            tredningStocksInfo: tredningStocksResJson.data.trendingStocks,
+            reRenderTredningStocksTriggerKey: new Date()
+          })
+        }
+      } else {
+        const response = await fetch('/api/updateAndGetAllStocksLiveData');
+        const stocksLiveData = await response.json();
+        // localStorage.setItem( "StocksLiveData", LZString.compress(JSON.stringify(stocksLiveData.data.stocks)) )
+        const dateNow = new Date()
+        this.setState({
+          socketDate: dateNow,
+          allStocksData: stocksLiveData.data.stocks,
+          reRenderStocksLiveData: dateNow
+        });
+      }
     } catch(e) {
       console.log(e)
     } finally {
@@ -285,6 +321,7 @@ export default class StocksLive extends React.Component {
         loadingData: false
       })
     }
+
   }
 
   render() {
@@ -309,7 +346,7 @@ export default class StocksLive extends React.Component {
           </Accordion>
         </div>
         <div>
-          <Tabs defaultActiveKey={"all"} onSelect={this.handleTabsSelect}>
+          <Tabs className="live-tabs" defaultActiveKey={"all"} onSelect={this.handleTabsSelect}>
               <Tab eventKey={"all"} title="All">
                 <TabContent className="mt-3">
                   {
@@ -456,8 +493,93 @@ export default class StocksLive extends React.Component {
                </TabContent>
              </Tab>
              <Tab eventKey={"trends"} title="Trends">
-               <TabContent className="mt-3">
-
+               <TabContent className="mt-3 tredningStocksTabContent">
+                   <Tabs defaultActiveKey={"stocktwits"}>
+                     <Tab eventKey={"stocktwits"} title="Stocktwits">
+                        <TabContent>
+                          <React.Fragment>
+                          {
+                            this.state.loadingData &&
+                            <Spinner style={{margin: '150px 0px 0px 200px',position: 'fixed', zIndex: '900'}} animation="border" role="status" className="d-flex text-primary">
+                              <span className="sr-only">Loading...</span>
+                            </Spinner>
+                          }
+                         {
+                           this.state.tredningStocksInfo && Object.keys(this.state.tredningStocksInfo).length > 0  &&
+                           <Table
+                            stocksList={ this.state.tredningStocksInfo['stocktwits'] }
+                            allStocksData={ this.state.tredningStocksInfo['quotes'] }
+                            showSearch={true}
+                            key={this.state.reRenderTredningStocksTriggerKey}
+                           />
+                         }
+                         </React.Fragment>
+                       </TabContent>
+                     </Tab>
+                     <Tab eventKey={"topGainers"} title="Top Gainers">
+                        <TabContent>
+                          <React.Fragment>
+                          {
+                            this.state.loadingData &&
+                            <Spinner style={{margin: '150px 0px 0px 200px',position: 'fixed', zIndex: '900'}} animation="border" role="status" className="d-flex text-primary">
+                              <span className="sr-only">Loading...</span>
+                            </Spinner>
+                          }
+                         {
+                           this.state.tredningStocksInfo && Object.keys(this.state.tredningStocksInfo).length > 0  &&
+                           <Table
+                            stocksList={ this.state.tredningStocksInfo['topGainers'] }
+                            allStocksData={ this.state.tredningStocksInfo['quotes'] }
+                            showSearch={true}
+                            key={this.state.reRenderTredningStocksTriggerKey}
+                           />
+                         }
+                         </React.Fragment>
+                       </TabContent>
+                     </Tab>
+                     <Tab eventKey={"topDecliners"} title="Top Decliners">
+                        <TabContent>
+                          <React.Fragment>
+                          {
+                            this.state.loadingData &&
+                            <Spinner style={{margin: '150px 0px 0px 200px',position: 'fixed', zIndex: '900'}} animation="border" role="status" className="d-flex text-primary">
+                              <span className="sr-only">Loading...</span>
+                            </Spinner>
+                          }
+                         {
+                           this.state.tredningStocksInfo && Object.keys(this.state.tredningStocksInfo).length > 0  &&
+                           <Table
+                            stocksList={ this.state.tredningStocksInfo['topDecliners'] }
+                            allStocksData={ this.state.tredningStocksInfo['quotes'] }
+                            showSearch={true}
+                            key={this.state.reRenderTredningStocksTriggerKey}
+                           />
+                         }
+                         </React.Fragment>
+                       </TabContent>
+                     </Tab>
+                     <Tab eventKey={"all"} title="All">
+                        <TabContent>
+                        <React.Fragment>
+                        {
+                          this.state.loadingData &&
+                          <Spinner style={{margin: '150px 0px 0px 200px',position: 'fixed', zIndex: '900'}} animation="border" role="status" className="d-flex text-primary">
+                            <span className="sr-only">Loading...</span>
+                          </Spinner>
+                        }
+                         {
+                           this.state.tredningStocksInfo && Object.keys(this.state.tredningStocksInfo).length > 0  &&
+                           <Table
+                            stocksList={ this.state.tredningStocksInfo['allTrendSymobls'] }
+                            allStocksData={ this.state.tredningStocksInfo['quotes'] }
+                            showSearch={true}
+                            key={this.state.reRenderTredningStocksTriggerKey}
+                           />
+                         }
+                         </React.Fragment>
+                       </TabContent>
+                     </Tab>
+                   </Tabs>
                </TabContent>
              </Tab>
              <Tab  tabClassName={!this.state.isMarketHours ? 'd-none' : ''}

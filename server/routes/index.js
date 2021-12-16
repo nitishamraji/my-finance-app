@@ -15,6 +15,7 @@ const HeatMapService = require('../services/HeatMapService')
 const MessagesService = require('../services/MessagesService')
 const AppDataService = require('../services/AppDataService')
 const MarketHoursService = require('../services/MarketHoursService')
+const TrendingStocksService = require('../services/TrendingStocksService')
 
 router.post('/stocks', cors(), async (req, res, next) => {
   // db
@@ -269,6 +270,24 @@ router.get('/updateAllStocksLiveData', cors(),  catchErrors( async (req, res, ne
     const service = new StocksLiveDataService();
     const result = await service.updateAllStocksData();
     res.send({success: true, msg: result.msg});
+}));
+
+router.get('/getAllTrendingStocksData', cors(),  catchErrors( async (req, res, next) => {
+    const service = new TrendingStocksService();
+    const result = await service.getAllTrendingStocksData();
+    res.send({success: result.success, msg: result.msg, data: result.data});
+}));
+
+router.get('/updateAllTrendingStocksData', cors(),  catchErrors( async (req, res, next) => {
+    const service = new TrendingStocksService();
+    const result = await service.updateAllTrendingStocksData();
+    res.send({success: true, msg: result ? result.msg : ''});
+}));
+
+router.get('/updateAndGetAllTrendingStocksData', cors(),  catchErrors( async (req, res, next) => {
+    const service = new TrendingStocksService();
+    const result = await service.updateAndGetAllTrendingStocksData();
+    res.send({success: result.success, msg: result.msg, data: result.data});
 }));
 
 router.post('/addStock', cors(),  catchErrors( async (req, res, next) => {

@@ -332,13 +332,24 @@ function convertNum (num) {
 }
 
 function customMatchFunc({searchText,value,column,row}) {
-  if (typeof value !== 'undefined') {
-    if(column.text == 'TCKR') {
-       return value.toUpperCase().startsWith(searchText.toUpperCase()) || value.toUpperCase() === searchText.toUpperCase();
-    } else {
-      return value.toUpperCase().includes(searchText.toUpperCase());
-    }
+  var searchTextVal = searchText ? searchText.trim() : searchText;
+  if(!searchTextVal || searchTextVal === '') {
+    return true;
   }
+
+  if(searchTextVal.length <= 2 && column.text !== 'TCKR') {
+    return false;
+  }
+
+  if(column.text === 'TCKR') {
+    if(searchTextVal.length == 1) {
+      return value.toUpperCase() === searchTextVal.toUpperCase();
+    }
+    return value.toUpperCase().startsWith(searchTextVal.toUpperCase());
+  } else {
+    return value.toUpperCase().includes(searchTextVal.toUpperCase());
+  }
+
   return false;
 }
 

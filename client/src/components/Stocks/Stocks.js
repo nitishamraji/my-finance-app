@@ -360,7 +360,7 @@ export default class Stocks extends React.Component {
                 </span>
               }
               <span className="small text-secondary pl-3">
-                last update: {this.state.stocksDatalastUpdatedTS}
+                Last update: {this.state.stocksDatalastUpdatedTS}
               </span>
             </React.Fragment>
           }
