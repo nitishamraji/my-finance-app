@@ -6,7 +6,7 @@
   "author": "",
   "license": "ISC",
   "scripts": {
-    "postinstall": "npm --prefix client install --force && npm --prefix server install",
+    "postinstall": "npm --prefix client install --legacy-peer-deps && npm --prefix server install",
     "start:dev": "concurrently 'npm run --prefix client start' 'npx nodemon server'",
     "heroku-postbuild": "cd client && npm install && npm run build",
     "start": "NODE_ENV=production node server",
