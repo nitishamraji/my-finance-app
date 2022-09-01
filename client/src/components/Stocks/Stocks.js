@@ -232,7 +232,7 @@ export default class Stocks extends React.Component {
               {
                 this.state.categoryStocksMapper && Object.keys(this.state.categoryStocksMapper).length > 0 &&
                 <Accordion defaultActiveKey="0">
-                <Card className="mb-3">
+                <Card className="mb-3" style={{overflow: "inherit"}}>
                   <Card.Header>
                     <Accordion.Toggle as={Button} variant="link" eventKey="0">
                       Filter

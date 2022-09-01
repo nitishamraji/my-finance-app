@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { Link } from "react-router-dom";
-import { Modal, Button, OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { Modal, Button, OverlayTrigger, Tooltip, Dropdown, DropdownButton} from 'react-bootstrap';
 import BootstrapTable from 'react-bootstrap-table-next';
 import Popup from 'reactjs-popup';
-import ToolkitProvider, { Search } from 'react-bootstrap-table2-toolkit';
+import ToolkitProvider, { Search, ColumnToggle } from 'react-bootstrap-table2-toolkit';
 
 import paginationFactory from 'react-bootstrap-table2-paginator';
 import { InfoCircle } from 'react-bootstrap-icons';
@@ -13,6 +13,49 @@ import StockDetail from './../../StockDetail/StockDetail';
 import './styles.css';
 
 const { SearchBar } = Search;
+//const { ToggleList } = ColumnToggle;
+
+const CustomToggleList = ({ columns, onColumnToggle, toggles, changeColumnState }) => {
+	const result = columns.filter(
+		(column) => column.text !== 'ID' && column.text !== 'Status'
+	);
+	console.log(columns[0])
+	columns = result;
+	return (
+		<Dropdown style={{ float: 'right' }}>
+			<DropdownButton variant='dark' title='Fields to show' drop='right'>
+				{columns
+					.map((column) => ({
+						...column,
+						toggle: toggles[column.dataField],
+					}))
+					.map((column) => (
+						<Dropdown.Item key={column.dataField}>
+							<button
+								type='button'
+								key={column.dataField}
+								className={`btn btn-${
+									column.toggle ? 'warning btn-sm active' : 'secondary btn-sm'
+								}`}
+								data-toggle='button'
+								aria-pressed={column.toggle ? 'true' : 'false'}
+								onClick={() =>
+								{
+									onColumnToggle(column.dataField)
+//custom toggle function
+									if(changeColumnState){
+										changeColumnState(column.dataField)
+									}
+									console.log(columns)
+								}}>
+								{column.text}
+							</button>
+						</Dropdown.Item>
+					))}
+			</DropdownButton>
+		</Dropdown>
+	);
+};
 
 const pagination = paginationFactory({
   page: 1,
@@ -203,7 +246,31 @@ const columns = [
     sortFunc: basicSort,
     formatter: (c) => { return  pctFormatter(c) },
     searchable: false
-  }
+  },
+	{
+    dataField: 'pct3yrHighChg',
+    text: '3yrH%',
+    sort: true,
+    sortFunc: basicSort,
+    formatter: (c) => { return  pctFormatter(c) },
+    searchable: false,
+		hidden: true,
+  },
+	{
+    dataField: 'pct3yrLowChg',
+    text: '3yrL%',
+    sort: true,
+    sortFunc: basicSort,
+    formatter: (c) => { return  pctFormatter(c) },
+    searchable: false,
+		hidden: true,
+  },
+	{
+    dataField: 'threeYearLH',
+    text: '3yr L/H',
+    searchable: false,
+		hidden: true,
+  },
 ];
 
 if( customInfo && customInfo.addInfoColumn ) {
@@ -263,7 +330,9 @@ function constructStockJson(data, addInfoColumn, infoColumnData){
   }
 
   const week52LH = roundToTwoDecimals(data.week52Low).toString() + '/' + roundToTwoDecimals(data.week52High).toString();
-  const dataJson = {
+	const threeYearLH = roundToTwoDecimals(data.high3yr).toString() + '/' + roundToTwoDecimals(data.low3yr).toString();
+
+	const dataJson = {
       symbol: symbol,
       companyName: data.companyName,
       open: roundToTwoDecimals(data.open),
@@ -285,7 +354,10 @@ function constructStockJson(data, addInfoColumn, infoColumnData){
       pct7d: roundToTwoDecimals(data.pct7d),
       pct14d: roundToTwoDecimals(data.pct14d),
       pct1m: roundToTwoDecimals(data.pct1m),
-      pct3m: roundToTwoDecimals(data.pct3m)
+      pct3m: roundToTwoDecimals(data.pct3m),
+			threeYearLH: threeYearLH,
+			pct3yrHighChg: roundToTwoDecimals(data.pct3yrHighChg),
+			pct3yrLowChg: roundToTwoDecimals(data.pct3yrLowChg)
   }
 
   if( addInfoColumn ) {
@@ -388,17 +460,19 @@ class Table extends Component {
 						  data={ this.state.tableData }
 						  columns={ getColumns({addInfoColumn: this.state.addInfoColumn, infoColumnData: this.state.infoColumnData}) }
 						  search = { { onColumnMatch: customMatchFunc } }
+              columnToggle
 						>
 						  {
 						    props => (
 						      <div>
-						       	{ this.props.showSearch &&
-							      	<div autoComplete="off">
-                        <form autoComplete="off">
-							        	<SearchBar { ...props.searchProps } />
+						       	{
+                      //this.props.showSearch &&
+                      true &&
+                        <form className='table-toolbar-custom' autoComplete="off">
+							            <SearchBar { ...props.searchProps } />
+                          <CustomToggleList { ...props.columnToggleProps } />
                         </form>
-							        </div>
-						    	}
+    						    	}
 						        <BootstrapTable bootstrap4={true} classes=""
 						          { ...props.baseProps } {...(this.state.tableData.length > 10 && { pagination: pagination })}
 						          rowStyle={ { height: '5px' } }

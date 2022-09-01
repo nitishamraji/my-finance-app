@@ -88,3 +88,9 @@ table.table-fit thead th, table.table-fit tfoot th {
 table.table-fit tbody td, table.table-fit tfoot td {
     width: auto !important;
 }
+
+.table-toolbar-custom .dropdown-menu {
+  /* position: absolute !important;
+  transform: none !important;
+  z-index: 100; */
+}

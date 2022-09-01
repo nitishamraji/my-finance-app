@@ -40,6 +40,30 @@ function getDate(num, isDays) {
     return dateForQuote;
 }
 
+async function getTda3YrHistoryData(symbol) {
+  if(symbol != "TSLA") {
+    return;
+  }
+  const resp = await axios.get(`https://api.tdameritrade.com/v1/marketdata/${symbol}/pricehistory?apikey=JKL8G1DBVHAVQMKASBPZ87MNMYQLEA0H&periodType=year&period=3&frequencyType=monthly&frequency=1`)
+  const historyQuoteRes = resp.data
+
+  if( !historyQuoteRes || !historyQuoteRes.candles || historyQuoteRes.candles.length < 1) {
+    return {}
+  }
+
+  let {candles} = historyQuoteRes // Candles are ordered from latest to oldest weeks
+
+  high = 0
+  console.log("testing 3 year: " + symbol);
+  //console.log(candles);
+  let highArray = candles.map((candle) => candle.high);
+  let lowArray = candles.map((candle) => candle.high);
+
+  var min3Yr = Math.min( ...lowArray ), max3Yr = Math.max( ...highArray );
+  console.log(min3Yr);
+  console.log(max3Yr);
+}
+
 async function getTdaHistoryData(symbol) {
     const priceHistoryConfig = {
       periodType: tdaclient.pricehistory.PERIOD_TYPE.MONTH,
@@ -104,7 +128,30 @@ async function getTdaHistoryData(symbol) {
     threeMonthChange = (((currentClose - threeMonthOpen)/threeMonthOpen)*100).toFixed(2)
   }
 
-  return {oneWeekChange,twoWeekChange,oneMonthChange,threeMonthChange,symbol}
+  let returnVal = {
+    oneWeekChange: oneWeekChange,
+    twoWeekChange: twoWeekChange,
+    oneMonthChange: oneMonthChange,
+    threeMonthChange: threeMonthChange,
+    symbol: symbol
+  }
+
+  const resp3yr = await axios.get(`https://api.tdameritrade.com/v1/marketdata/${symbol}/pricehistory?apikey=JKL8G1DBVHAVQMKASBPZ87MNMYQLEA0H&periodType=year&period=3&frequencyType=monthly&frequency=1`)
+  const historyQuoteRes3yr = resp3yr.data
+
+  if( !historyQuoteRes3yr || !historyQuoteRes3yr.candles || historyQuoteRes3yr.candles.length < 1) {
+    return returnVal
+  }
+
+  let highArray = historyQuoteRes3yr.candles.map((candle) => candle.high);
+  let lowArray = historyQuoteRes3yr.candles.map((candle) => candle.high);
+
+  let high3yr = Math.max( ...lowArray ), low3yr = Math.min( ...highArray );
+
+  returnVal.high3yr = high3yr;
+  returnVal.low3yr = low3yr;
+
+  return returnVal;
 }
 
 async function getTdaQuote(symbol) {
@@ -273,13 +320,15 @@ class StocksData {
           apikey: ''
         };
         const stockDataJson = await getTdaQuote(symbol)
-        const {oneWeekChange,twoWeekChange,oneMonthChange,threeMonthChange} = await getTdaHistoryData(symbol)
+        const historyRes = await getTdaHistoryData(symbol)
 
-        let pct52WeekHighChg = 0.0;
-        let pct52WeekLowChg = 0.0;
+
+        let pct52WeekHighChg = 0.0, pct52WeekLowChg = 0.0, pct3yrHighChg = 0.0, pct3yrLowChg = 0.0;
         try {
           pct52WeekHighChg = ((stockDataJson.lastPrice / stockDataJson['52WkHigh']) - 1)*100.00;
           pct52WeekLowChg = ((stockDataJson.lastPrice / stockDataJson['52WkLow']) - 1)*100.00;
+          pct3yrHighChg = ((stockDataJson.lastPrice / historyRes.high3yr) - 1)*100.00;
+          pct3yrLowChg = ((stockDataJson.lastPrice / historyRes.low3yr) - 1)*100.00;
         } catch (e) {
           console.log("error calc pct52WeekHighChg: symbol - " + symbol + ": "+ e);
         }
@@ -300,16 +349,21 @@ class StocksData {
             marketCap: stockMarkCap,
             week52High: stockDataJson['52WkHigh'],
             week52Low: stockDataJson['52WkLow'],
-            pct7d: oneWeekChange,
-            pct14d: twoWeekChange,
-            pct1m: oneMonthChange,
-            pct3m: threeMonthChange,
+            pct7d: historyRes.oneWeekChange,
+            pct14d: historyRes.twoWeekChange,
+            pct1m: historyRes.oneMonthChange,
+            pct3m: historyRes.threeMonthChange,
             pct52WeekHighChg: pct52WeekHighChg,
-            pct52WeekLowChg: pct52WeekLowChg
+            pct52WeekLowChg: pct52WeekLowChg,
+            pct3yrHighChg: pct3yrHighChg,
+            pct3yrLowChg: pct3yrLowChg,
+            high3yr: historyRes.high3yr,
+            low3yr: historyRes.low3yr
         }
     } catch (e) {
       console.log("error getStockData: symbol - " + symbol + ": " + e);
     }
+
     return stockData;
   }
 
