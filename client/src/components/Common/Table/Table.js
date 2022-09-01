@@ -150,13 +150,13 @@ const columns = [
     dataField: 'openClose',
     text: 'Open/Close',
     sort: false,
-    hidden: false,
+    hidden: true,
     searchable: false
   },
   {
     dataField: 'lowHigh',
     text: 'Low/High',
-    hidden: false,
+    hidden: true,
     sort: false,
     searchable: false
   },
@@ -254,7 +254,7 @@ const columns = [
     sortFunc: basicSort,
     formatter: (c) => { return  pctFormatter(c) },
     searchable: false,
-		hidden: true,
+		hidden: false,
   },
 	{
     dataField: 'pct3yrLowChg',
@@ -263,7 +263,7 @@ const columns = [
     sortFunc: basicSort,
     formatter: (c) => { return  pctFormatter(c) },
     searchable: false,
-		hidden: true,
+		hidden: false,
   },
 	{
     dataField: 'threeYearLH',
