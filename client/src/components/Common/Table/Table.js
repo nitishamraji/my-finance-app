@@ -229,7 +229,8 @@ const columns = [
     sort: true,
     sortFunc: basicSort,
     formatter: (c) => { return  pctFormatter(c) },
-    searchable: false
+    searchable: false,
+		hidden: true,
   },
   {
     dataField: 'pct1m',
@@ -269,7 +270,7 @@ const columns = [
     dataField: 'threeYearLH',
     text: '3yr L/H',
     searchable: false,
-		hidden: true,
+		hidden: false,
   },
 ];
 
