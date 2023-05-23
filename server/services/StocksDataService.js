@@ -230,9 +230,9 @@ class StocksData {
     let stocksDatalastUpdatedTS;
     if( dbStocksData || dbStocksData.length > 0 ) {
       stocksDatalastUpdatedTS = await dbStocksData[0].updatedAt;
-      if( marketHoursService.isTimeStampAfterLastMarketCloseTime(stocksDatalastUpdatedTS) ) {
-        isDataUpdatedAfterLastClose = true
-      }
+      // if( marketHoursService.isTimeStampAfterLastMarketCloseTime(stocksDatalastUpdatedTS) ) {
+      //   isDataUpdatedAfterLastClose = true
+      // }
     }
 
     let isUpdateInProgress = global.stocksDataUpdateInProgress
