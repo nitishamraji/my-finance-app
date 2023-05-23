@@ -34,7 +34,10 @@ app.use(express.json());
 //   }
 // }
 
-app.use(cors());
+app.use(cors())
+
+//disable etag
+app.disable('etag')
 
 const routes = require('./routes')
 app.use('/api', routes)
