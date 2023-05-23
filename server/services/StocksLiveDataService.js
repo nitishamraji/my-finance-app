@@ -168,26 +168,26 @@ class StocksLiveData {
 
   async updateAllStocksData() {
 
-    if( global.liveDataPreviousUpdateTime ) {
-      const diffInSeconds = moment().diff(moment(global.liveDataPreviousUpdateTime), 'seconds')
-      if( diffInSeconds < 10 ) {
-        return {
-          msg: 'live data last updated ' + diffInSeconds + ' seconds ago. update frequency at least 10 seconds.'
-        }
-      }
-    }
+    // if( global.liveDataPreviousUpdateTime ) {
+    //   const diffInSeconds = moment().diff(moment(global.liveDataPreviousUpdateTime), 'seconds')
+    //   if( diffInSeconds < 10 ) {
+    //     return {
+    //       msg: 'live data last updated ' + diffInSeconds + ' seconds ago. update frequency at least 10 seconds.'
+    //     }
+    //   }
+    // }
 
-    const marketHoursService = new MarketHoursService();
-    const isMarketOpen = await marketHoursService.isMarketOpen();
-    if( !isMarketOpen ) {
-      const dbLiveRes = await db.StocksLive.findAll({ order: [['id', 'DESC']]})
-      if( dbLiveRes && dbLiveRes.length > 0 ) {
-        const dbLiveDataLastUpdateTS = await dbLiveRes[0].updatedAt;
-        if( marketHoursService.isTimeStampAfterLastMarketCloseTime(dbLiveDataLastUpdateTS) ) {
-          return { msg: 'Live data is latest. Nothing to update.'}
-        }
-      }
-    }
+    // const marketHoursService = new MarketHoursService();
+    // const isMarketOpen = await marketHoursService.isMarketOpen();
+    // if( !isMarketOpen ) {
+    //   const dbLiveRes = await db.StocksLive.findAll({ order: [['id', 'DESC']]})
+    //   if( dbLiveRes && dbLiveRes.length > 0 ) {
+    //     const dbLiveDataLastUpdateTS = await dbLiveRes[0].updatedAt;
+    //     if( marketHoursService.isTimeStampAfterLastMarketCloseTime(dbLiveDataLastUpdateTS) ) {
+    //       return { msg: 'Live data is latest. Nothing to update.'}
+    //     }
+    //   }
+    // }
 
     global.liveDataPreviousUpdateTime = moment()
 
