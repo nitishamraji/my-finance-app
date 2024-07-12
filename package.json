@@ -9,7 +9,8 @@
     "postinstall": "npm --prefix client install --legacy-peer-deps && npm --prefix server install",
     "start:dev": "concurrently 'npm run --prefix client start' 'npx nodemon server'",
     "heroku-postbuild": "cd client && npm install --legacy-peer-deps && npm run build",
-    "start": "NODE_ENV=production npx nodemon server",
+    "start2": "NODE_ENV=production npx nodemon server",
+    "start": "concurrently 'npm run start:server' 'npm run --prefix client start'"
     "db-migrate": "cd server && npx sequelize-cli db:migrate",
     "start-dev-server": "npx nodemon server"
   },
