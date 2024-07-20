@@ -44,7 +44,7 @@ async function getTda3YrHistoryData(symbol) {
   if(symbol != "TSLA") {
     return;
   }
-  const resp = await axios.get(`https://api.tdameritrade.com/v1/marketdata/${symbol}/pricehistory?apikey=JKL8G1DBVHAVQMKASBPZ87MNMYQLEA0H&periodType=year&period=3&frequencyType=monthly&frequency=1`)
+  const resp = await axios.get(`https://api.schwabapi.com/marketdata/v1/${symbol}/pricehistory?apikey=JKL8G1DBVHAVQMKASBPZ87MNMYQLEA0H&periodType=year&period=3&frequencyType=monthly&frequency=1`)
   const historyQuoteRes = resp.data
 
   if( !historyQuoteRes || !historyQuoteRes.candles || historyQuoteRes.candles.length < 1) {
@@ -77,7 +77,7 @@ async function getTdaHistoryData(symbol) {
 
 
   // const historyQuoteRes = await tdaclient.pricehistory.getPriceHistory(priceHistoryConfig);
-  const resp = await axios.get(`https://api.tdameritrade.com/v1/marketdata/${symbol}/pricehistory?apikey=JKL8G1DBVHAVQMKASBPZ87MNMYQLEA0H&periodType=month&period=3&frequencyType=weekly&frequency=1`)
+  const resp = await axios.get(`https://api.schwabapi.com/marketdata/v1/${symbol}/pricehistory?apikey=JKL8G1DBVHAVQMKASBPZ87MNMYQLEA0H&periodType=month&period=3&frequencyType=weekly&frequency=1`)
   const historyQuoteRes = resp.data
 
   if( !historyQuoteRes || !historyQuoteRes.candles || historyQuoteRes.candles.length < 1) {
@@ -136,7 +136,7 @@ async function getTdaHistoryData(symbol) {
     symbol: symbol
   }
 
-  const resp3yr = await axios.get(`https://api.tdameritrade.com/v1/marketdata/${symbol}/pricehistory?apikey=JKL8G1DBVHAVQMKASBPZ87MNMYQLEA0H&periodType=year&period=3&frequencyType=monthly&frequency=1`)
+  const resp3yr = await axios.get(`https://api.schwabapi.com/marketdata/v1/${symbol}/pricehistory?apikey=JKL8G1DBVHAVQMKASBPZ87MNMYQLEA0H&periodType=year&period=3&frequencyType=monthly&frequency=1`)
   const historyQuoteRes3yr = resp3yr.data
 
   if( !historyQuoteRes3yr || !historyQuoteRes3yr.candles || historyQuoteRes3yr.candles.length < 1) {
@@ -161,7 +161,7 @@ async function getTdaQuote(symbol) {
     apikey: ''
   };
 
-  // const resp = await axios.get(`https://api.tdameritrade.com/v1/marketdata/${symbol}/quotes?apikey=JKL8G1DBVHAVQMKASBPZ87MNMYQLEA0H`)
+  // const resp = await axios.get(`https://api.schwabapi.com/marketdata/v1/${symbol}/quotes?apikey=JKL8G1DBVHAVQMKASBPZ87MNMYQLEA0H`)
   const quotesResult = await tdaclient.quotes.getQuote(getQuoteConfig)
 
   // const quoteResTmp = resp.data
