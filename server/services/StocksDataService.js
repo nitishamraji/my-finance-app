@@ -2,7 +2,8 @@ const db = require('../sequelize/models')
 const tdaclient = require('tda-api-client');
 const axios = require("axios");
 const moment = require('moment');
-const MarketHoursService = require('../services/MarketHoursService')
+const MarketHoursService = require('../services/MarketHoursService');
+const SchwabMarketDataService = require('../services/SchwabMarketDataService')
 const rp = require("request-promise")
 const cheerio = require("cheerio")
 
@@ -162,7 +163,8 @@ async function getTdaQuote(symbol) {
   };
 
   // const resp = await axios.get(`https://api.schwabapi.com/marketdata/v1/${symbol}/quotes?apikey=JKL8G1DBVHAVQMKASBPZ87MNMYQLEA0H`)
-  const quotesResult = await tdaclient.quotes.getQuote(getQuoteConfig)
+  const schwabMarketDataService = new SchwabMarketDataService();
+  const quotesResult = await schwabMarketDataService.getQuote(getQuoteConfig)
 
   // const quoteResTmp = resp.data
   //
