@@ -1,3 +1,10 @@
+https://127.0.0.1
+
+https://api.schwabapi.com/v1/oauth/authorize?response_type=code&client_id=9YE69wGRAD5Fsn7SMVj9Xo4aqqTEJARP&scope=readonly&redirect_uri=https://127.0.0.1
+
+charles schwab get authorization code
+-----------------------
+
 https://github.com/Sainglend/tda-api-client
 
 https://stackabuse.com/adding-a-postgresql-database-to-a-node-js-app-on-heroku/
