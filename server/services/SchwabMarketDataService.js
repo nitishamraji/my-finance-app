@@ -22,8 +22,8 @@ class SchwabMarketData {
         }
     }
 
-    async getQuote(symbol) {
-        const quotesUrl = `https://api.schwabapi.com/marketdata/v1/${symbol}/quotes?fields=quote%2Creference&indicative=false`;
+    async getHistoryData(symbol, queryParams) {
+        const quotesUrl = `https://api.schwabapi.com/marketdata/v1/${symbol}/pricehistory?{queryParams}`;
 
         try {
             const response = await axios.get(quotesUrl, {
