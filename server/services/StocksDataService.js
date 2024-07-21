@@ -66,19 +66,6 @@ async function getTda3YrHistoryData(symbol) {
 }
 
 async function getTdaHistoryData(symbol) {
-    const priceHistoryConfig = {
-      periodType: tdaclient.pricehistory.PERIOD_TYPE.MONTH,
-      period: 3,
-      frequencyType: tdaclient.pricehistory.FREQUENCY_TYPE.YEAR.WEEKLY,
-      frequency: tdaclient.pricehistory.FREQUENCY.WEEKLY.ONE,
-      symbol: symbol,
-      getExtendedHours: 'true'
-  }
-
-
-
-  // const historyQuoteRes = await tdaclient.pricehistory.getPriceHistory(priceHistoryConfig);
-  //const resp = await axios.get(`https://api.schwabapi.com/marketdata/v1/${symbol}/pricehistory?apikey=JKL8G1DBVHAVQMKASBPZ87MNMYQLEA0H&periodType=month&period=3&frequencyType=weekly&frequency=1`)
   const schwabMarketDataService = new SchwabMarketDataService();
   const resp = await schwabMarketDataService.getHistoryData(symbol, 'periodType=month&period=3&frequencyType=weekly&frequency=1');
   const historyQuoteRes = resp.data
@@ -159,12 +146,6 @@ async function getTdaHistoryData(symbol) {
 }
 
 async function getTdaQuote(symbol) {
-
-  const getQuoteConfig = {
-    symbol: symbol,
-    apikey: ''
-  };
-
   const schwabMarketDataService = new SchwabMarketDataService();
   const quotesResult = await schwabMarketDataService.getQuotes(symbol)
 
@@ -304,20 +285,10 @@ class StocksData {
   async getStockData(symbol) {
     let stockData = {};
     try {
-      // console.log('7d quote url: ' + getDateQuoteUrl(symbol, getDate(7, true)));
-
-        // var response = await axios.get(getQuoteUrl(symbol));
-        // var response7d = await axios.get(getDateQuoteUrl(symbol, '7d'));
-        // var response14d = await axios.get(getDateQuoteUrl(symbol, '14d'));
-        // var response1m = await axios.get(getDateQuoteUrl(symbol, '1m'));
-        // var response3m = await axios.get(getDateQuoteUrl(symbol, '3m'));
-        const getQuoteConfig = {
-          symbol: symbol,
-          apikey: ''
-        };
         const stockDataJson = await getTdaQuote(symbol)
         const historyRes = await getTdaHistoryData(symbol)
-
+        console.log('historyRes: ' + historyRes);
+      
         let pct52WeekHighChg = 0.0, pct52WeekLowChg = 0.0, pct3yrHighChg = 0.0, pct3yrLowChg = 0.0;
         try {
           pct52WeekHighChg = ((stockDataJson.quote.lastPrice / stockDataJson.quote['52WeekHigh']) - 1)*100.00;
