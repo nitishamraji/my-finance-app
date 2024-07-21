@@ -43,17 +43,17 @@ class StocksLiveData {
   getQuoteJson(getQuoteResult) {
     var dataJson = {
       symbol: getQuoteResult.symbol,
-      companyName: getQuoteResult.description,
-      open: getQuoteResult.openPrice,
-      close: getQuoteResult.closePrice,
-      low: getQuoteResult.lowPrice,
-      high: getQuoteResult.highPrice,
-      lastPrice: getQuoteResult.lastPrice,
-      changePercent: getQuoteResult.regularMarketPercentChangeInDouble,
-      extendedChangePercent: (( getQuoteResult.mark - getQuoteResult.regularMarketLastPrice ) * 100)/getQuoteResult.regularMarketLastPrice,
-      volume: getQuoteResult.totalVolume,
-      week52High: getQuoteResult['52WkHigh'],
-      week52Low: getQuoteResult['52WkLow'],
+      companyName: getQuoteResult.reference.description,
+      open: getQuoteResult.quote.openPrice,
+      close: getQuoteResult.quote.closePrice,
+      low: getQuoteResult.quote.lowPrice,
+      high: getQuoteResult.quote.highPrice,
+      lastPrice: getQuoteResult.quote.lastPrice,
+      changePercent: getQuoteResult.regular.regularMarketPercentChange,
+      extendedChangePercent: (( getQuoteResult.quote.mark - getQuoteResult.regular.regularMarketLastPrice ) * 100)/getQuoteResult.regular.regularMarketLastPrice,
+      volume: getQuoteResult.quote.totalVolume,
+      week52High: getQuoteResult.quote['52WeekHigh'],
+      week52Low: getQuoteResult.quote['52WeekLow'],
     }
     //      extendedChangePercent: getQuoteResult.netPercentChangeInDouble - getQuoteResult.regularMarketPercentChangeInDouble,
     //
