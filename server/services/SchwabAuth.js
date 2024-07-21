@@ -19,28 +19,22 @@ class SchwabAuth {
     }
     
     async updateRefreshTokenInRailwayApp(newToken) {
-        const mutation = `
-          mutation variableUpsert {
-            variableUpsert(
-              input: {
-                projectId: "${process.env.RAILWAY_PROJECT_ID}"
-                environmentId: "${process.env.RAILWAY_ENVIRONMENT_ID}"
-                serviceId: "${process.env.RAILWAY_SERVICE_ID}"
-                name: "REFRESH_TOKEN"
-                value: "${newToken}"
-              }
-            ) {
-              variable {
-                name
-                value
-              }
-            }
-          }
-        `;
 
+        const mutation = `mutation variableUpsert { 
+			variableUpsert(    
+				input: {
+					projectId: \"${process.env.RAILWAY_PROJECT_ID}\"
+					environmentId: \"${process.env.RAILWAY_ENVIRONMENT_ID}\"                
+					serviceId: \"${process.env.RAILWAY_SERVICE_ID}\"     
+					name: \"REFRESH_TOKEN\"      
+					value: \"${newToken}\"    
+				}
+			)
+		}`;
+        const payload = {query: mutation,operationName:"variableUpsert"};
         try {
           const response = await axios.post('https://backboard.railway.app/graphql/v2', 
-            { query: mutation }, 
+            payload, 
             { 
               headers: {
                 'Authorization': `Bearer ${process.env.RAILWAY_API_TOKEN}`,
