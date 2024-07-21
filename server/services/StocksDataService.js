@@ -170,11 +170,11 @@ async function getTdaQuote(symbol) {
 
   const quoteRes = quotesResult[symbol]
 
-  const dayPctChange = (((quoteRes.quote.regular.regularMarketLastPrice - quoteRes.quote.openPrice)/quoteRes.quote.openPrice)*100).toFixed(2)
-  const afterHoursPctChange = (((quoteRes.quote.lastPrice - quoteRes.quote.regular.regularMarketLastPrice)/quoteRes.quote.regular.regularMarketLastPrice)*100).toFixed(2)
+  const dayPctChange = (((quoteRes.regular.regularMarketLastPrice - quoteRes.quote.openPrice)/quoteRes.quote.openPrice)*100).toFixed(2)
+  const afterHoursPctChange = (((quoteRes.quote.lastPrice - quoteRes.regular.regularMarketLastPrice)/quoteRes.regular.regularMarketLastPrice)*100).toFixed(2)
 
-  quoteRes.dayPctChange = Math.abs(quoteRes.quote.regular.regularMarketPercentChange) > 0 ? quoteRes.quote.regular.regularMarketPercentChange.toFixed(2) : dayPctChange
-  quoteRes.afterHoursPctChange = ( Math.abs(quoteRes.quote.regular.regularMarketPercentChange) > 0 && Math.abs(quoteRes.quote.netPercentChange) > 0 ) ? ( quoteRes.quote.netPercentChange - quoteRes.quote.regular.regularMarketPercentChange ).toFixed(2) : afterHoursPctChange
+  quoteRes.dayPctChange = Math.abs(quoteRes.regular.regularMarketPercentChange) > 0 ? quoteRes.regular.regularMarketPercentChange.toFixed(2) : dayPctChange
+  quoteRes.afterHoursPctChange = ( Math.abs(quoteRes.regular.regularMarketPercentChange) > 0 && Math.abs(quoteRes.quote.netPercentChange) > 0 ) ? ( quoteRes.quote.netPercentChange - quoteRes.regular.regularMarketPercentChange ).toFixed(2) : afterHoursPctChange
 
   return quoteRes
 }
