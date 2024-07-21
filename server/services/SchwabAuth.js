@@ -75,7 +75,7 @@ class SchwabAuth {
             });
 
             const tokens = response.data;
-            await schwabAuth.saveRefreshToken(tokens.refresh_token, path.join(__dirname, '..', 'config', 'auth.json'));
+            await this.saveRefreshToken(tokens.refresh_token, path.join(__dirname, '..', 'config', 'auth.json'));
 
             return tokens;
         } catch (error) {
