@@ -242,6 +242,12 @@ router.get('/getAllStocksData', cors(),  catchErrors( async (req, res, next) => 
     res.send({success: result.success, msg: result.msg, data: result.data});
 }));
 
+router.get('/updateAuthToken', cors(),  catchErrors( async (req, res, next) => {
+    const codeUrl = req.query.codeUrl;
+    const result = await schwabAuth.generateTokens(codeUrl);
+    res.send({success: true, msg: result.msg});
+}));
+
 router.get('/updateAllStocksData', cors(),  catchErrors( async (req, res, next) => {
     const service = new StocksDataService();
     const result = await service.updateAllStocksData();
