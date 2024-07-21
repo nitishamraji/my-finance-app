@@ -246,7 +246,7 @@ router.get('/getAllStocksData', cors(),  catchErrors( async (req, res, next) => 
 router.get('/updateAuthToken', cors(),  catchErrors( async (req, res, next) => {
     const codeUrl = req.query.codeUrl;
     const result = await schwabAuth.generateTokens(codeUrl);
-    res.send({success: true, msg: result.msg});
+    res.send({success: true, msg: result});
 }));
 
 router.get('/updateAllStocksData', cors(),  catchErrors( async (req, res, next) => {
