@@ -68,7 +68,7 @@ async function getTda3YrHistoryData(symbol) {
 async function getTdaHistoryData(symbol) {
   const schwabMarketDataService = new SchwabMarketDataService();
   const resp = await schwabMarketDataService.getHistoryData(symbol, 'periodType=month&period=3&frequencyType=weekly&frequency=1');
-  const historyQuoteRes = resp.data
+  const historyQuoteRes = resp;
 
   if( !historyQuoteRes || !historyQuoteRes.candles || historyQuoteRes.candles.length < 1) {
     return {}
@@ -128,7 +128,7 @@ async function getTdaHistoryData(symbol) {
 
   //const resp3yr = await axios.get(`https://api.schwabapi.com/marketdata/v1/${symbol}/pricehistory?apikey=JKL8G1DBVHAVQMKASBPZ87MNMYQLEA0H&periodType=year&period=3&frequencyType=monthly&frequency=1`)
   const resp3yr = await schwabMarketDataService.getHistoryData(symbol, 'periodType=year&period=3&frequencyType=monthly&frequency=1');
-  const historyQuoteRes3yr = resp3yr.data
+  const historyQuoteRes3yr = resp3yr;
 
   if( !historyQuoteRes3yr || !historyQuoteRes3yr.candles || historyQuoteRes3yr.candles.length < 1) {
     return returnVal
