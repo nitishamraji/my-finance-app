@@ -4,7 +4,7 @@ const path = require('path');
 const { URLSearchParams } = require('url');
 
 // Load configuration
-const configFilePath = path.join(__dirname, 'config', 'config.json');
+const configFilePath = path.join(__dirname, '..', 'config', 'config.json');
 const { appKey, secret, redirectUrl } = JSON.parse(fs.readFileSync(configFilePath, 'utf8'));
 
 class SchwabAuth {
@@ -93,13 +93,13 @@ class SchwabAuth {
 
     async getAccessToken() {
         try {
-            const authData = JSON.parse(fs.readFileSync(path.join(__dirname, 'config', 'auth.json'), 'utf8'));
+            const authData = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'config', 'auth.json'), 'utf8'));
             const refreshToken = authData.refresh_token;
             const tokens = await this.fetchNewAccessToken(refreshToken);
 
             // Save new refresh token (if provided)
             if (tokens.refresh_token) {
-                await this.saveRefreshToken(tokens.refresh_token, path.join(__dirname, 'config', 'auth.json'));
+                await this.saveRefreshToken(tokens.refresh_token, path.join(__dirname, '..', 'config', 'auth.json'));
             }
 
             return tokens.access_token;
