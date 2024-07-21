@@ -17,7 +17,44 @@ class SchwabAuth {
         }
         return SchwabAuth.instance;
     }
+    
+    async updateRefreshTokenInRailwayApp(newToken) {
+        const mutation = `
+          mutation variableUpsert {
+            variableUpsert(
+              input: {
+                projectId: "${process.env.RAILWAY_PROJECT_ID}"
+                environmentId: "${process.env.RAILWAY_ENVIRONMENT_ID}"
+                serviceId: "${process.env.RAILWAY_SERVICE_ID}"
+                name: "REFRESH_TOKEN"
+                value: "${newToken}"
+              }
+            ) {
+              variable {
+                name
+                value
+              }
+            }
+          }
+        `;
 
+        try {
+          const response = await axios.post('https://backboard.railway.app/graphql/v2', 
+            { query: mutation }, 
+            { 
+              headers: {
+                'Authorization': `Bearer ${process.env.RAILWAY_API_TOKEN}`,
+                'Content-Type': 'application/json'
+              }
+            }
+          );
+    
+          const result = response.data;
+          console.log('Environment variable updated successfully:', result);
+        } catch (error) {
+          console.error('Error updating environment variable:', error.response ? error.response.data : error.message);
+        }
+    }
     static extractAuthorizationCode(authCodeResUrl) {
         const parsedUrl = new URL(authCodeResUrl);
         const csCode = parsedUrl.searchParams.get('code');
@@ -31,18 +68,22 @@ class SchwabAuth {
 
     getSavedRefreshToken() {
         const isProd = process.env.NODE_ENV === 'production';
+        let refresh_token;
         if(isProd) {
-            const authData = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'config', 'auth.json'), 'utf8'));
-            return authData.refresh_token;
-        } else {
-            return process.env.refresh_token;
+            refresh_token = process.env.REFRESH_TOKEN;
         }
+        if(!refresh_token) {
+            const authData = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'config', 'auth.json'), 'utf8'));
+            refresh_token = authData.refresh_token;
+        }
+        return refresh_token;
     }
 
     async saveRefreshToken(refreshToken, filePath) {
         const isProd = process.env.NODE_ENV === 'production';
         if(isProd) {
-            process.env.refresh_token = refreshToken;
+            process.env.REFRESH_TOKEN = refreshToken;
+            updateRefreshTokenInRailwayApp(refresh_token);
         } else {
             fs.mkdirSync(path.dirname(filePath), { recursive: true });
             fs.writeFileSync(filePath, JSON.stringify({
@@ -77,7 +118,7 @@ class SchwabAuth {
             const tokens = response.data;
             await this.saveRefreshToken(tokens.refresh_token, path.join(__dirname, '..', 'config', 'auth.json'));
 
-            return tokens;
+            return tokens.refresh_token;
         } catch (error) {
             console.error('Error generating tokens:', error.response ? error.response.data : error.message);
             throw error;
