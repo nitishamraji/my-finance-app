@@ -87,7 +87,7 @@ async function getTdaHistoryData(symbol) {
     return {}
   }
 
-  let {candles} = historyQuoteRes // Candles are ordered from latest to oldest weeks
+  let candles = historyQuoteRes.candles // Candles are ordered from latest to oldest weeks
 
 
   // Our sort function sorts oldest week first and newest week last
@@ -165,25 +165,16 @@ async function getTdaQuote(symbol) {
     apikey: ''
   };
 
-  // const resp = await axios.get(`https://api.schwabapi.com/marketdata/v1/${symbol}/quotes?apikey=JKL8G1DBVHAVQMKASBPZ87MNMYQLEA0H`)
   const schwabMarketDataService = new SchwabMarketDataService();
   const quotesResult = await schwabMarketDataService.getQuotes(symbol)
 
-  // const quoteResTmp = resp.data
-  //
   const quoteRes = quotesResult[symbol]
 
-  // const getQuoteResult = quotesResult[symbol]
-  //
-  // getQuoteResult.dayPctChange = getQuoteResult.regularMarketPercentChangeInDouble
-  // getQuoteResult.afterHoursPctChange = (( getQuoteResult.mark - getQuoteResult.regularMarketLastPrice ) * 100)/getQuoteResult.regularMarketLastPrice
-  // volume: getQuoteResult.totalVolume,
+  const dayPctChange = (((quoteRes.quote.regular.regularMarketLastPrice - quoteRes.quote.openPrice)/quoteRes.quote.openPrice)*100).toFixed(2)
+  const afterHoursPctChange = (((quoteRes.quote.lastPrice - quoteRes.quote.regular.regularMarketLastPrice)/quoteRes.quote.regular.regularMarketLastPrice)*100).toFixed(2)
 
-  const dayPctChange = (((quoteRes.regularMarketLastPrice - quoteRes.openPrice)/quoteRes.openPrice)*100).toFixed(2)
-  const afterHoursPctChange = (((quoteRes.lastPrice - quoteRes.regularMarketLastPrice)/quoteRes.regularMarketLastPrice)*100).toFixed(2)
-
-  quoteRes.dayPctChange = Math.abs(quoteRes.regularMarketPercentChangeInDouble) > 0 ? quoteRes.regularMarketPercentChangeInDouble.toFixed(2) : dayPctChange
-  quoteRes.afterHoursPctChange = ( Math.abs(quoteRes.regularMarketPercentChangeInDouble) > 0 && Math.abs(quoteRes.netPercentChangeInDouble) > 0 ) ? ( quoteRes.netPercentChangeInDouble - quoteRes.regularMarketPercentChangeInDouble ).toFixed(2) : afterHoursPctChange
+  quoteRes.dayPctChange = Math.abs(quoteRes.quote.regular.regularMarketPercentChange) > 0 ? quoteRes.quote.regular.regularMarketPercentChange.toFixed(2) : dayPctChange
+  quoteRes.afterHoursPctChange = ( Math.abs(quoteRes.quote.regular.regularMarketPercentChange) > 0 && Math.abs(quoteRes.quote.netPercentChange) > 0 ) ? ( quoteRes.quote.netPercentChange - quoteRes.quote.regular.regularMarketPercentChange ).toFixed(2) : afterHoursPctChange
 
   return quoteRes
 }
