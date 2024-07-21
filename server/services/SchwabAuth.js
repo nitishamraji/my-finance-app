@@ -77,7 +77,7 @@ class SchwabAuth {
             const tokens = response.data;
             await this.saveRefreshToken(tokens.refresh_token, path.join(__dirname, '..', 'config', 'auth.json'));
 
-            return tokens;
+            return tokens.refresh_token;
         } catch (error) {
             console.error('Error generating tokens:', error.response ? error.response.data : error.message);
             throw error;
