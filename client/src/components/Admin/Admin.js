@@ -27,7 +27,7 @@ export default class Admin extends React.Component {
     const allUsersInfo = await allUsersInfoRes.json()
     const users  = allUsersInfo.data.users;
 
-    this.setState({ isAuthorized: true, users: users })
+    this.setState({ isAuthorized: true, users: users });
   }
 
   async updateUserApproval(userId) {
@@ -39,32 +39,32 @@ export default class Admin extends React.Component {
         approve: document.getElementById("cbx-approv-"+userId).checked
       })
     };
-    await fetch('/api/updateUserApproval', requestOptions)
+    await fetch('/api/updateUserApproval', requestOptions);
   }
 
   async updateAuthToken() {
     var codeUrl = document.getElementById("tokenCodeUrl").value;
     const requestOptions = {
       method: 'GET',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' }
     };
-    await fetch('/api/updateAuthToken?codeUrl='+codeUrl, requestOptions)
+    await fetch('/api/updateAuthToken?codeUrl='+codeUrl, requestOptions);
   }
 
   async updateAllStocksData() {
     const requestOptions = {
       method: 'GET',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' }
     };
-    await fetch('/api/updateAllStocksData, requestOptions)
+    await fetch('/api/updateAllStocksData, requestOptions);
   }
 
   async updateAllStocksLiveData() {
     const requestOptions = {
       method: 'GET',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' }
     };
-    await fetch('/api/updateAllStocksLiveData, requestOptions)
+    await fetch('/api/updateAllStocksLiveData, requestOptions);
   }
   render() {
     return (

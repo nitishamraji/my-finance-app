@@ -50,7 +50,11 @@ class SchwabAuth {
                     'Authorization': `Basic ${authHeader}`
                 }
             });
-            return response.data;
+
+            const tokens = response.data;
+            await schwabAuth.saveRefreshToken(tokens.refresh_token, path.join(__dirname, '..', 'config', 'auth.json'));
+
+            return tokens;
         } catch (error) {
             console.error('Error generating tokens:', error.response ? error.response.data : error.message);
             throw error;
@@ -98,9 +102,9 @@ class SchwabAuth {
             const tokens = await this.fetchNewAccessToken(refreshToken);
 
             // Save new refresh token (if provided)
-            if (tokens.refresh_token) {
-                await this.saveRefreshToken(tokens.refresh_token, path.join(__dirname, '..', 'config', 'auth.json'));
-            }
+            // if (tokens.refresh_token) {
+            //     await this.saveRefreshToken(tokens.refresh_token, path.join(__dirname, '..', 'config', 'auth.json'));
+            // }
 
             return tokens.access_token;
         } catch (error) {
