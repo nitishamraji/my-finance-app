@@ -112,7 +112,7 @@ class SchwabAuth {
 
     async getAccessToken() {
         try {
-            const refreshToken = getSavedRefreshToken();
+            const refreshToken = this.getSavedRefreshToken();
             const tokens = await this.fetchNewAccessToken(refreshToken);
             return tokens.access_token;
         } catch (error) {
