@@ -16,6 +16,7 @@ const MessagesService = require('../services/MessagesService')
 const AppDataService = require('../services/AppDataService')
 const MarketHoursService = require('../services/MarketHoursService')
 const TrendingStocksService = require('../services/TrendingStocksService')
+const schwabAuth = require('../services/SchwabAuth');
 
 router.post('/stocks', cors(), async (req, res, next) => {
   // db
