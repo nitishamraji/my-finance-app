@@ -83,7 +83,7 @@ class SchwabAuth {
         const isProd = process.env.NODE_ENV === 'production';
         if(isProd) {
             process.env.REFRESH_TOKEN = refreshToken;
-            this.updateRefreshTokenInRailwayApp(refresh_token);
+            this.updateRefreshTokenInRailwayApp(refreshToken);
         } else {
             fs.mkdirSync(path.dirname(filePath), { recursive: true });
             fs.writeFileSync(filePath, JSON.stringify({
