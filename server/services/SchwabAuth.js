@@ -9,9 +9,13 @@ const { appKey, secret, redirectUrl } = JSON.parse(fs.readFileSync(configFilePat
 
 class SchwabAuth {
     constructor() {
-        this.appKey = appKey;
-        this.secret = secret;
-        this.redirectUrl = redirectUrl;
+        if (!SchwabAuth.instance) {
+            this.appKey = appKey;
+            this.secret = secret;
+            this.redirectUrl = redirectUrl;
+            SchwabAuth.instance = this;
+        }
+        return SchwabAuth.instance;
     }
 
     static extractAuthorizationCode(authCodeResUrl) {
@@ -105,5 +109,7 @@ class SchwabAuth {
     }
 }
 
-// Export the class
-module.exports = SchwabAuth;
+const instance = new SchwabAuth();
+Object.freeze(instance);
+
+module.exports = instance;
