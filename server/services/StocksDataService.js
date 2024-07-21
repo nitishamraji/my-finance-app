@@ -243,8 +243,10 @@ class StocksData {
     const returnObj = {success: true, msg: '', data: ''}
 
     try {
-      const resp = await axios.get(getSupportedSymbolsUrl())
-      const supportedStocksDataRes = await resp.data
+      //const resp = await axios.get(getSupportedSymbolsUrl());
+      const apiKey = 'U03HLQN53Q5TSCY0';
+      const resp = await axios.get(`https://www.alphavantage.co/query?function=LISTING_STATUS&apikey=${apiKey}`);
+      const supportedStocksDataRes = await resp.data;
 
       const supportedStocksData = []
       supportedStocksDataRes.forEach((stockDataJson) => {
