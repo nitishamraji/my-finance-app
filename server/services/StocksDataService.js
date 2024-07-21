@@ -247,8 +247,6 @@ class StocksData {
       const apiKey = 'U03HLQN53Q5TSCY0';
       const resp = await axios.get(`https://www.alphavantage.co/query?function=LISTING_STATUS&apikey=${apiKey}`);
       const supportedStocksDataRes = await resp.data;
-
-      const supportedStocksDataRes = await resp.data;
     	const lines = supportedStocksDataRes.split('\n');
     	const headers = lines[0].split(',');
     	      
