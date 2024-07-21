@@ -417,7 +417,7 @@ class StocksData {
 
     if( global.stocksDataPreviousUpdateTime ) {
       const diffInMinutes = moment().diff(moment(global.stocksDataPreviousUpdateTime), 'minutes')
-      if( diffInMinutes < 30 ) {
+      if( diffInMinutes < 0 ) {
         return {
           msg: 'stocks data updated recently.'
         }
