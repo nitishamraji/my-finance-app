@@ -248,10 +248,36 @@ class StocksData {
       const resp = await axios.get(`https://www.alphavantage.co/query?function=LISTING_STATUS&apikey=${apiKey}`);
       const supportedStocksDataRes = await resp.data;
 
+      const supportedStocksDataRes = await resp.data;
+    	const lines = supportedStocksDataRes.split('\n');
+    	const headers = lines[0].split(',');
+    	      
       const supportedStocksData = []
-      supportedStocksDataRes.forEach((stockDataJson) => {
-        supportedStocksData.push({ symbol: stockDataJson.symbol, name: stockDataJson.name })
-      })
+    	for (let i = 1; i < lines.length; i++) {
+          const line = lines[i].trim();
+    
+          if (line) { // Skip empty lines
+            const fields = line.split(',');
+    
+            // Create an object with headers as keys and fields as values
+            const entry = {};
+            headers.forEach((header, index) => {
+              entry[header] = fields[index];
+            });
+    		
+        		const symbol = entry['symbol'];
+        		let name = entry['name'];
+        		name = name && name.length > 0 ? name : symbol;
+
+            supportedStocksData.push({ symbol: symbol, name: name });
+            //console.log(`Symbol: ${symbol}, Name: ${name}`);
+          }
+    	}
+      
+      // const supportedStocksData = []
+      // supportedStocksDataRes.forEach((stockDataJson) => {
+      //   supportedStocksData.push({ symbol: stockDataJson.symbol, name: stockDataJson.name })
+      // })
 
       if( supportedStocksData && supportedStocksData.length > 0 ) {
         await db.SupportedStocks.destroy({ truncate : true, cascade: false })
