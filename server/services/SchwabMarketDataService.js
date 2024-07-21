@@ -7,7 +7,7 @@ class SchwabMarketData {
     }
 
     async getQuotes(symbols) {
-        const quotesUrl = `https://api.schwabapi.com/marketdata/v1/quotes?symbols=${symbols}&fields=quote%2Creference&indicative=false`;
+        const quotesUrl = `https://api.schwabapi.com/marketdata/v1/quotes?symbols=${symbols}&indicative=false`;
         let accessToken = await schwabAuth.getAccessToken();
         try {
             const response = await axios.get(quotesUrl, {
