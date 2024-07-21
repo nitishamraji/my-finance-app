@@ -1,6 +1,6 @@
 // marketData.js
 const axios = require('axios');
-const schwabAuth = require('./SchwabAuth'); 
+const schwabAuth = require('../services/SchwabAuth'); 
 
 class SchwabMarketData {
     constructor() {
