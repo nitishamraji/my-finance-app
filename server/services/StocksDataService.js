@@ -318,13 +318,12 @@ class StocksData {
         const stockDataJson = await getTdaQuote(symbol)
         const historyRes = await getTdaHistoryData(symbol)
 
-
         let pct52WeekHighChg = 0.0, pct52WeekLowChg = 0.0, pct3yrHighChg = 0.0, pct3yrLowChg = 0.0;
         try {
-          pct52WeekHighChg = ((stockDataJson.lastPrice / stockDataJson['52WkHigh']) - 1)*100.00;
-          pct52WeekLowChg = ((stockDataJson.lastPrice / stockDataJson['52WkLow']) - 1)*100.00;
-          pct3yrHighChg = ((stockDataJson.lastPrice / historyRes.high3yr) - 1)*100.00;
-          pct3yrLowChg = ((stockDataJson.lastPrice / historyRes.low3yr) - 1)*100.00;
+          pct52WeekHighChg = ((stockDataJson.quote.lastPrice / stockDataJson.quote['52WeekHigh']) - 1)*100.00;
+          pct52WeekLowChg = ((stockDataJson.quote.lastPrice / stockDataJson.quote['52WeekLow']) - 1)*100.00;
+          pct3yrHighChg = ((stockDataJson.quote.lastPrice / historyRes.high3yr) - 1)*100.00;
+          pct3yrLowChg = ((stockDataJson.quote.lastPrice / historyRes.low3yr) - 1)*100.00;
         } catch (e) {
           console.log("error calc pct52WeekHighChg: symbol - " + symbol + ": "+ e);
         }
@@ -333,18 +332,18 @@ class StocksData {
         const stockMarkCap = await getStockMarketCap(symbol);
         stockData = {
             symbol: symbol,
-            companyName: stockDataJson.description,
-            open: stockDataJson.openPrice,
-            close: stockDataJson.closePrice,
-            lastPrice: stockDataJson.lastPrice,
-            low: stockDataJson.lowPrice,
-            high: stockDataJson.highPrice,
+            companyName: stockDataJson.reference.description,
+            open: stockDataJson.quote.openPrice,
+            close: stockDataJson.quote.closePrice,
+            lastPrice: stockDataJson.quote.lastPrice,
+            low: stockDataJson.quote.lowPrice,
+            high: stockDataJson.quote.highPrice,
             changePercent: stockDataJson.dayPctChange,
             extendedChangePercent: stockDataJson.afterHoursPctChange,
-            volume: stockDataJson.totalVolume,
+            volume: stockDataJson.quote.totalVolume,
             marketCap: stockMarkCap,
-            week52High: stockDataJson['52WkHigh'],
-            week52Low: stockDataJson['52WkLow'],
+            week52High: stockDataJson.quote['52WeekHigh'],
+            week52Low: stockDataJson.quote['52WeekLow'],
             pct7d: historyRes.oneWeekChange,
             pct14d: historyRes.twoWeekChange,
             pct1m: historyRes.oneMonthChange,
