@@ -5,6 +5,7 @@ const moment = require('moment');
 const lodash = require('lodash');
 const StocksService = require('./StocksService')
 const MarketHoursService = require('../services/MarketHoursService')
+const SchwabMarketDataService = require('../services/SchwabMarketDataService')
 
 function getDate(num, isDays) {
     var dateForQuote = moment();
@@ -19,6 +20,10 @@ const sleep = (milliseconds) => {
 
 class StocksLiveData {
 
+  constructor() {
+      this.schwabMarketDataService = new SchwabMarketDataService();
+  }
+    
   async getSupportedStocks() {
     const supportedStocks = await db.SupportedStocks.findOne();
     return supportedStocks.data;
@@ -105,7 +110,7 @@ class StocksLiveData {
         symbol: symbol,
         apikey: ''
       };
-      const quoteResult = await tdaclient.quotes.getQuote(getQuoteConfig);
+      const quoteResult = await this.schwabMarketDataService.getQuotes(symbol);
       // console.log('test tda result: ' + JSON.stringify(quoteResult));
       stockDataJson = quoteResult[symbol];
     } catch (e) {
@@ -126,7 +131,7 @@ class StocksLiveData {
         symbol: stocks.join(","),
         apikey: ''
       };
-      const quotesResult = await tdaclient.quotes.getQuotes(getQuotesConfig);
+      const quotesResult = await this.schwabMarketDataService.getQuotes(getQuotesConfig.symbol);
 
       //format: {"AAPL":{},"MSFT":{},...}
       stockDataJson = quotesResult;
@@ -332,43 +337,6 @@ class StocksLiveData {
       recentDbStocksDataRow.changed('data', true);
       await recentDbStocksDataRow.save();
     });
-  }
-
-  async testTda(){
-    console.log('testTda')
-    const configGetMktHours = {
-      market: tdaclient.markethours.MARKETS.OPTION,
-      date: '2020-09-10',
-      apikey: ''
-    };
-    // const getSingleMarketHoursResult = await tdaclient.markethours.getSingleMarketHours(configGetMktHours);
-    // console.log(getSingleMarketHoursResult);
-
-    const moversConfig = {
-      index: tdaclient.movers.INDEX.SPX,
-      direction: tdaclient.movers.DIRECTION.UP,
-      change: tdaclient.movers.CHANGE.PERCENT,
-      apikey: ''
-    };
-    // const getMoversResult = await tdaclient.movers.getMovers(moversConfig);
-    // console.log('test tda movers result');
-    // console.log(getMoversResult);
-
-    // const getQuoteConfig = {
-    //   symbol: 'ABCDE',
-    //   apikey: ''
-    // };
-    // const getQuoteResult = await tdaclient.quotes.getQuote(getQuoteConfig);
-    // console.log('test tda result');
-    // console.log(getQuoteResult);
-    //
-    const getQuotesConfig = {
-      symbol: "A,AA,AAA,AAAU,AACG,AACQ,AACQW,AADR,AAIC,AAIC-B,AAIC-C,AAL,AAMC,AAME,AAN,AAOI,AAON,AAP,AAPL,AAT,AAU,AAWW,AAXJ,AAXN,AB,ABB,ABBV,ABC,ABCB,ABCL,ABCM,ABEO,ABEQ,ABEV,ABG,ABIO,ABM,ABMD,ABNB,ABR,ABR-A,ABR-B,ABR-C,ABST,ABT,ABTX,ABUS,AC,ACA,ACAC,ACACW,ACAD,ACAM,ACAMW,ACB,ACBI,ACC,ACCD,ACCO,ACEL,ACER,ACES,ACET,ACEV,ACEVW,ACGL,ACGLO,ACGLP,ACH,ACHC,ACHV,ACI,ACIA,ACIC,ACIC+,ACIC=,ACIO,ACIU,ACIW,ACLS,ACM,ACMR,ACN,ACNB,ACND,ACND+,ACND=,ACOR,ACP,ACRE,ACRS,ACRX,ACSG,ACSI,ACST,ACTC,ACTCW,ACTG,ACTV,ACU,ACV,ACVF,ACWF,ACWI,ACWV,ACWX,ACY,ADAP,ADBE,ADC,ADCT,ADES,ADFI,ADI,ADIL,ADILW,ADM,ADMA,ADME,ADMP,ADMS,BA,TSLA,EBON",
-      apikey: ''
-    };
-    const getQuotesResult = await tdaclient.quotes.getQuotes(getQuotesConfig);
-    console.log('test tda result');
-    console.log(getQuotesResult);
   }
 }
 
