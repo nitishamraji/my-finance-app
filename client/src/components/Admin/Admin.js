@@ -42,6 +42,30 @@ export default class Admin extends React.Component {
     await fetch('/api/updateUserApproval', requestOptions)
   }
 
+  async updateAuthToken() {
+    var codeUrl = document.getElementById("tokenCodeUrl").value;
+    const requestOptions = {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+    };
+    await fetch('/api/updateAuthToken?codeUrl='+codeUrl, requestOptions)
+  }
+
+  async updateAllStocksData() {
+    const requestOptions = {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+    };
+    await fetch('/api/updateAllStocksData, requestOptions)
+  }
+
+  async updateAllStocksLiveData() {
+    const requestOptions = {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+    };
+    await fetch('/api/updateAllStocksLiveData, requestOptions)
+  }
   render() {
     return (
       <Tabs defaultActiveKey={"users"}>
@@ -67,6 +91,26 @@ export default class Admin extends React.Component {
             </ListGroup>
           </TabContent>
         </Tab>
+
+        <Tab eventKey={"apiAdmin"} title="API Admin">
+          <TabContent className="p-3">
+              <div>
+                <input className="cursor-pointer"  id='tokenCodeUrl'/>
+                <Button type="button" className="ml-3" onClick={ () => this.updateAuthToken()}>Update Auth Token</Button>
+              </div>
+
+              <div>
+                <input className="cursor-pointer"  id='updateAllStocksData'/>
+                <Button type="button" className="ml-3" onClick={ () => this.updateAllStocksData()}>Update Stocks Data</Button>
+              </div>
+
+                <div>
+                <input className="cursor-pointer"  id='updateAllStocksLiveData'/>
+                <Button type="button" className="ml-3" onClick={ () => this.updateAllStocksLiveData()}>Update Stocks Live Data</Button>
+              </div>
+          </TabContent>
+        </Tab>
+                
       </Tabs>
     )
   };
