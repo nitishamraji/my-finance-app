@@ -56,7 +56,7 @@ export default class Admin extends React.Component {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' }
     };
-    await fetch('/api/updateAllStocksData, requestOptions);
+    await fetch('/api/updateAllStocksData', requestOptions);
   }
 
   async updateAllStocksLiveData() {
@@ -64,7 +64,7 @@ export default class Admin extends React.Component {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' }
     };
-    await fetch('/api/updateAllStocksLiveData, requestOptions);
+    await fetch('/api/updateAllStocksLiveData', requestOptions);
   }
   render() {
     return (
