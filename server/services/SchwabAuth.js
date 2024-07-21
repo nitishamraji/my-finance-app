@@ -31,12 +31,15 @@ class SchwabAuth {
 
     getSavedRefreshToken() {
         const isProd = process.env.NODE_ENV === 'production';
+        let refresh_token;
         if(isProd) {
-            const authData = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'config', 'auth.json'), 'utf8'));
-            return authData.refresh_token;
-        } else {
-            return process.env.refresh_token;
+            refresh_token = process.env.refresh_token;
         }
+        if(!refresh_token) {
+            const authData = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'config', 'auth.json'), 'utf8'));
+            refresh_token = authData.refresh_token;
+        }
+        return refresh_token;
     }
 
     async saveRefreshToken(refreshToken, filePath) {
