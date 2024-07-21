@@ -29,6 +29,29 @@ class SchwabAuth {
         return csCode;
     }
 
+    getSavedRefreshToken() {
+        const isProd = process.env.NODE_ENV === 'production';
+        if(isProd) {
+            const authData = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'config', 'auth.json'), 'utf8'));
+            return authData.refresh_token;
+        } else {
+            return process.env.refresh_token;
+        }
+    }
+
+    async saveRefreshToken(refreshToken, filePath) {
+        const isProd = process.env.NODE_ENV === 'production';
+        if(isProd) {
+            process.env.refresh_token = refreshToken;
+        } else {
+            fs.mkdirSync(path.dirname(filePath), { recursive: true });
+            fs.writeFileSync(filePath, JSON.stringify({
+                refresh_token: refreshToken
+            }, null, 2));
+            console.log('Refresh token saved to', filePath);
+        }
+    }
+    
     async generateTokens(authCodeResUrl) {
         const csCode = extractAuthorizationCode(authCodeResUrl)
         const tokenUrl = 'https://api.schwabapi.com/v1/oauth/token';
@@ -87,25 +110,10 @@ class SchwabAuth {
         }
     }
 
-    async saveRefreshToken(refreshToken, filePath) {
-        fs.mkdirSync(path.dirname(filePath), { recursive: true });
-        fs.writeFileSync(filePath, JSON.stringify({
-            refresh_token: refreshToken
-        }, null, 2));
-        console.log('Refresh token saved to', filePath);
-    }
-
     async getAccessToken() {
         try {
-            const authData = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'config', 'auth.json'), 'utf8'));
-            const refreshToken = authData.refresh_token;
+            const refreshToken = getSavedRefreshToken();
             const tokens = await this.fetchNewAccessToken(refreshToken);
-
-            // Save new refresh token (if provided)
-            // if (tokens.refresh_token) {
-            //     await this.saveRefreshToken(tokens.refresh_token, path.join(__dirname, '..', 'config', 'auth.json'));
-            // }
-
             return tokens.access_token;
         } catch (error) {
             console.error('Error in getAccessToken:', error);
