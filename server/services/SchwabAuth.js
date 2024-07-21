@@ -29,7 +29,8 @@ class SchwabAuth {
         return csCode;
     }
 
-    async generateTokens(csCode) {
+    async generateTokens(authCodeResUrl) {
+        const csCode = extractAuthorizationCode(authCodeResUrl)
         const tokenUrl = 'https://api.schwabapi.com/v1/oauth/token';
         const payload = new URLSearchParams({
             grant_type: 'authorization_code',
