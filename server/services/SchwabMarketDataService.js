@@ -23,7 +23,7 @@ class SchwabMarketData {
     }
 
     async getHistoryData(symbol, queryParams) {
-        const quotesUrl = `https://api.schwabapi.com/marketdata/v1/${symbol}/pricehistory?{queryParams}`;
+        const quotesUrl = `https://api.schwabapi.com/marketdata/v1/${symbol}/pricehistory?${queryParams}`;
         let accessToken = await schwabAuth.getAccessToken();
         
         try {
