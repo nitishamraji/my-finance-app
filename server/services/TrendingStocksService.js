@@ -142,7 +142,7 @@ class TrendingStocks {
         symbol: stocks.join(","),
         apikey: ''
       };
-      const SchwabMarketDataService schwabMarketDataService = new SchwabMarketDataService();
+      const schwabMarketDataService = new SchwabMarketDataService();
       const quotesResult = await schwabMarketDataService.getQuotes(getQuotesConfig.symbol);
 
       //format: {"AAPL":{},"MSFT":{},...}
