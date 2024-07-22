@@ -74,7 +74,15 @@ export default class Admin extends React.Component {
     };
     await fetch('/api/updateAllSupportedStocks', requestOptions);
   }
-  
+
+  async updateAllTrendingStocksData() {
+    const requestOptions = {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' }
+    };
+    await fetch('/api/updateAllTrendingStocksData', requestOptions);
+  }
+
   render() {
     return (
       <Tabs defaultActiveKey={"users"}>
@@ -122,6 +130,12 @@ export default class Admin extends React.Component {
                 <input className="cursor-pointer"  id='updateAllSupportedStocks'/>
                 <Button type="button" className="ml-3" onClick={ () => this.updateAllSupportedStocks()}>Update All Supported Stocks</Button>
               </div>
+
+              <div class="mb-3">
+                <input className="cursor-pointer"  id='updateAllTrendingStocksData'/>
+                <Button type="button" className="ml-3" onClick={ () => this.updateAllTrendingStocksData()}>Update All Trending Stocks</Button>
+              </div>
+
                 
           </TabContent>
         </Tab>
