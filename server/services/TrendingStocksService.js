@@ -110,17 +110,17 @@ class TrendingStocks {
   getQuoteJson(getQuoteResult) {
     var dataJson = {
       symbol: getQuoteResult.symbol,
-      companyName: getQuoteResult.description,
-      open: getQuoteResult.openPrice,
-      close: getQuoteResult.closePrice,
-      low: getQuoteResult.lowPrice,
-      high: getQuoteResult.highPrice,
-      lastPrice: getQuoteResult.lastPrice,
-      changePercent: getQuoteResult.regularMarketPercentChangeInDouble,
-      extendedChangePercent: (( getQuoteResult.mark - getQuoteResult.regularMarketLastPrice ) * 100)/getQuoteResult.regularMarketLastPrice,
-      volume: getQuoteResult.totalVolume,
-      week52High: getQuoteResult['52WkHigh'],
-      week52Low: getQuoteResult['52WkLow'],
+      companyName: (getQuoteResult.reference ? getQuoteResult.reference.description : getQuoteResult.symbol),
+      open: getQuoteResult.quote.openPrice,
+      close: getQuoteResult.quote.closePrice,
+      low: getQuoteResult.quote.lowPrice,
+      high: getQuoteResult.quote.highPrice,
+      lastPrice: getQuoteResult.quote.lastPrice,
+      changePercent: getQuoteResult.regular.regularMarketPercentChange,
+      extendedChangePercent: (( getQuoteResult.quote.mark - getQuoteResult.regular.regularMarketLastPrice ) * 100)/getQuoteResult.regular.regularMarketLastPrice,
+      volume: getQuoteResult.quote.totalVolume,
+      week52High: getQuoteResult.quote['52WeekHigh'],
+      week52Low: getQuoteResult.quote['52WeekLow'],
     }
     //      extendedChangePercent: getQuoteResult.netPercentChangeInDouble - getQuoteResult.regularMarketPercentChangeInDouble,
     //
@@ -147,7 +147,11 @@ class TrendingStocks {
 
       //format: {"AAPL":{},"MSFT":{},...}
       Object.keys(quotesResult).map((symbol) => {
-        stockDataJson[symbol] = this.getQuoteJson(quotesResult[symbol])
+        try {
+          stockDataJson[symbol] = this.getQuoteJson(quotesResult[symbol]);
+        } catch(ex) {
+          console.error(`TrendingStocks - Error processing getQuoteJson for symbol: ${symbol}`);
+        }
       });
 
     } catch (e) {
