@@ -43,7 +43,7 @@ class StocksLiveData {
   getQuoteJson(getQuoteResult) {
     var dataJson = {
       symbol: getQuoteResult.symbol,
-      companyName: getQuoteResult.reference.description,
+      companyName: (getQuoteResult.reference ? getQuoteResult.reference.description : getQuoteResult.symbol),
       open: getQuoteResult.quote.openPrice,
       close: getQuoteResult.quote.closePrice,
       low: getQuoteResult.quote.lowPrice,
@@ -83,7 +83,11 @@ class StocksLiveData {
         // console.log( 'live dbStocksData: ' + JSON.stringify(dbStocks))
         let returnStocksObj = {}
         Object.keys(dbStocks).map((symbol) => {
-          returnStocksObj[symbol] = this.getQuoteJson(dbStocks[symbol])
+            try{
+              returnStocksObj[symbol] = this.getQuoteJson(dbStocks[symbol]);
+            } catch(ex) {
+                console.error('StocksLiveData - Error processing getQuoteJson from dbStocks - symbol: ' + symbol);
+            }
         });
 
         // console.log( 'live getAllStocksData: ' + JSON.stringify(returnStocksObj))
