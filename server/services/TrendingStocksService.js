@@ -150,7 +150,7 @@ class TrendingStocks {
         try {
           stockDataJson[symbol] = this.getQuoteJson(quotesResult[symbol]);
         } catch(ex) {
-          console.error(`TrendingStocks - Error processing getQuoteJson for symbol: ${symbol}`);
+          console.error(`TrendingStocks - Error processing getQuoteJson for symbol: ${symbol}, Error: ${ex}`);
         }
       });
 
