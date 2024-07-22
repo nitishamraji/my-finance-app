@@ -201,6 +201,7 @@ export default class MainNavbar extends React.Component {
                 <Nav.Link as={NavLink} to="/crypto">Crypto</Nav.Link>
                 <Nav.Link as={NavLink} to="/settings">Settings</Nav.Link>
                 <Nav.Link as={NavLink} to="/news">News</Nav.Link>
+                <Nav.Link as={NavLink} to="/admin-settings">Admin</Nav.Link>
               </Nav>
             }
 

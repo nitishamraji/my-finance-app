@@ -86,7 +86,7 @@ class StocksLiveData {
             try{
               returnStocksObj[symbol] = this.getQuoteJson(dbStocks[symbol]);
             } catch(ex) {
-                console.error('StocksLiveData - Error processing getQuoteJson from dbStocks - symbol: ' + symbol);
+                console.error(`StocksLiveData - Error processing getQuoteJson from dbStocks - symbol: ${symbol}, Error: ${ex}`);
             }
         });
 
