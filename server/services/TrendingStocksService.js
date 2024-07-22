@@ -5,6 +5,7 @@ const moment = require('moment');
 const MarketHoursService = require('../services/MarketHoursService');
 const rp = require("request-promise");
 const cheerio = require("cheerio");
+const SchwabMarketDataService = require('../services/SchwabMarketDataService');
 
 const sleep = (milliseconds) => {
   return new Promise(resolve => setTimeout(resolve, milliseconds))
@@ -141,7 +142,8 @@ class TrendingStocks {
         symbol: stocks.join(","),
         apikey: ''
       };
-      const quotesResult = await tdaclient.quotes.getQuotes(getQuotesConfig);
+      SchwabMarketDataService schwabMarketDataService = new SchwabMarketDataService();
+      const quotesResult = await schwabMarketDataService.getQuotes(getQuotesConfig.symbol);
 
       //format: {"AAPL":{},"MSFT":{},...}
       Object.keys(quotesResult).map((symbol) => {
