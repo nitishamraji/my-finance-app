@@ -285,7 +285,7 @@ export default class StocksLive extends React.Component {
 
   async handleRefreshClick() {
     if( !this.state.isMarketHours ) {
-      return
+      //return
     }
     try {
       this.setState({
@@ -582,7 +582,7 @@ export default class StocksLive extends React.Component {
                    </Tabs>
                </TabContent>
              </Tab>
-             <Tab  tabClassName={!this.state.isMarketHours ? 'd-none' : ''}
+             <Tab  tabClassName={!this.state.isMarketHours ? '' : ''}
               title={<span style={{color:'black'}} title="refresh">
               <ArrowRepeat onClick={() => this.handleRefreshClick()}/>
               </span>}>
