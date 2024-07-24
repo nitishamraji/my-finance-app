@@ -13,17 +13,17 @@ const parser = new Parser({
 
 class Rss {
 
-  updateRedditFeed(feedData){
+	updateRedditFeed(feedData){
 		let formattedFeedData = {};
 		formattedFeedData.items = [];
-		
+	
 		if(!feedData.data || !feedData.data.children || feedData.data.children.length < 1) {
 			return formattedFeedData;
 		}
 	
 		const formats = ['ddd, DD MMM YYYY HH:mm:ss ZZ', 'ddd, DD MMM YY HH:mm:ss ZZ'];
 		feedData.data.children.forEach(item => {
-      let formattedFeed = {};
+			let formattedFeed = {};
 			formattedFeed.title = item.data.title;
 			formattedFeed.link = item.data.url;
 			formattedFeed.source = item.data.subreddit_name_prefixed;
@@ -32,10 +32,10 @@ class Rss {
 			formattedFeed.pubDateFormatted = formattedFeed.pubDate.format(formats[0]);
 			formattedFeed.pubDateFromNow = formattedFeed.pubDate.fromNow();
 			formattedFeedData.items.push(formattedFeed);
-    });
-    formattedFeedData.items.sort(function(a,b){return b.pubDate - a.pubDate});
-    return formattedFeedData;
-  }
+		});
+		formattedFeedData.items.sort(function(a,b){return b.pubDate - a.pubDate});
+		return formattedFeedData;
+	}
   
   updateFeed(feed){
     const formats = ['ddd, DD MMM YYYY HH:mm:ss ZZ', 'ddd, DD MMM YY HH:mm:ss ZZ'];
