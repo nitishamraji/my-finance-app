@@ -13,6 +13,30 @@ const parser = new Parser({
 
 class Rss {
 
+	updateRedditFeed(feedData){
+		let formattedFeedData = {};
+		formattedFeedData.items = [];
+	
+		if(!feedData.data || !feedData.data.children || feedData.data.children.length < 1) {
+			return formattedFeedData;
+		}
+	
+		const formats = ['ddd, DD MMM YYYY HH:mm:ss ZZ', 'ddd, DD MMM YY HH:mm:ss ZZ'];
+		feedData.data.children.forEach(item => {
+			let formattedFeed = {};
+			formattedFeed.title = item.data.title;
+			formattedFeed.link = item.data.url;
+			formattedFeed.source = item.data.subreddit_name_prefixed;
+			formattedFeed.content = item.data.selftext;
+			formattedFeed.pubDate = moment(item.data.created_utc * 1000);
+			formattedFeed.pubDateFormatted = formattedFeed.pubDate.format(formats[0]);
+			formattedFeed.pubDateFromNow = formattedFeed.pubDate.fromNow();
+			formattedFeedData.items.push(formattedFeed);
+		});
+		formattedFeedData.items.sort(function(a,b){return b.pubDate - a.pubDate});
+		return formattedFeedData;
+	}
+  
   updateFeed(feed){
     const formats = ['ddd, DD MMM YYYY HH:mm:ss ZZ', 'ddd, DD MMM YY HH:mm:ss ZZ'];
 
@@ -85,82 +109,40 @@ class Rss {
   }
 
   async getRedditWallStreetBets(symbol) {
-    const hasSymbol = symbol && symbol.length > 0;
-    const redditWallStreetBetsUrl = hasSymbol ? `https://www.reddit.com/r/wallstreetbets/search.rss?q="${symbol}&source=recent&restrict_sr=1&sort=new` :
-      `https://www.reddit.com/r/wallstreetbets.rss`;
-    const redditWallStreetBetsFeed = await parser.parseURL(redditWallStreetBetsUrl);
-    redditWallStreetBetsFeed.items.forEach(item => {
-      item.source='r/wallstreetbets'
-    });
-    return redditWallStreetBetsFeed;
+    const redditWallStreetBetsFeed = await axios.get((symbol && symbol.length > 0) ? `https://www.reddit.com/r/wallstreetbets/search.json?q="${symbol}"&source=recent&restrict_sr=1&sort=new` :
+      `https://www.reddit.com/r/wallstreetbets.json`);
+	return this.updateRedditFeed(redditWallStreetBetsFeed.data);
   }
 
   async getRedditOptions(symbol) {
-    const hasSymbol = symbol && symbol.length > 0;
-    const redditOptionsUrl = hasSymbol ? `https://www.reddit.com/r/options/search.rss?q="${symbol}&source=recent&restrict_sr=1&sort=new` :
-      `https://www.reddit.com/r/options.rss`;
-    const redditOptionsFeed = await parser.parseURL(redditOptionsUrl);
-    redditOptionsFeed.items.forEach(item => {
-      item.source='r/options'
-    });
-    return redditOptionsFeed;
+    const redditOptionsFeed = await axios.get((symbol && symbol.length > 0) ? `https://www.reddit.com/r/options/search.json?q="${symbol}"&source=recent&restrict_sr=1&sort=new` :
+      `https://www.reddit.com/r/options.json`);
+    return this.updateRedditFeed(redditOptionsFeed.data);
   }
 
   async getRedditStockMarket(symbol) {
-    const hasSymbol = symbol && symbol.length > 0;
-    const redditStockMarketUrl = hasSymbol ? `https://www.reddit.com/r/StockMarket/search.rss?q=$"${symbol}&source=recent&restrict_sr=1&sort=new` :
-      `https://www.reddit.com/r/StockMarket.rss`;
-    const redditStockMarketFeed = await parser.parseURL(redditStockMarketUrl);
-    redditStockMarketFeed.items.forEach(item => {
-      item.source='r/StockMarket'
-    });
-    return redditStockMarketFeed;
+    const redditStockMarketFeed = await axios.get((symbol && symbol.length > 0) ? `https://www.reddit.com/r/StockMarket/search.json?q="${symbol}"&source=recent&restrict_sr=1&sort=new` :
+      `https://www.reddit.com/r/StockMarket.json`);
+    return this.updateRedditFeed(redditStockMarketFeed.data);
   }
 
   async getRedditInvesting(symbol) {
-    const hasSymbol = symbol && symbol.length > 0;
-    const redditInvestingUrl = hasSymbol ? `https://www.reddit.com/r/investing/search.rss?q=$"${symbol}&source=recent&restrict_sr=1&sort=new` :
-      `https://www.reddit.com/r/investing.rss`;
-    const redditInvestingFeed = await parser.parseURL(redditInvestingUrl);
-    redditInvestingFeed.items.forEach(item => {
-      item.source='r/investing'
-    });
-    return redditInvestingFeed;
+    const redditInvestingFeed = await axios.get((symbol && symbol.length > 0) ? `https://www.reddit.com/r/investing/search.json?q="${symbol}"&source=recent&restrict_sr=1&sort=new` :
+      `https://www.reddit.com/r/investing.json`);
+    return this.updateRedditFeed(redditInvestingFeed.data);
   }
 
   async getRedditStocks(symbol) {
-    const hasSymbol = symbol && symbol.length > 0;
-    const redditStocksUrl = hasSymbol ? `https://www.reddit.com/r/stocks/search.rss?q=$"${symbol}&source=recent&restrict_sr=1&sort=new` :
-      `https://www.reddit.com/r/stocks.rss`;
-    const redditStocksFeed = await parser.parseURL(redditStocksUrl);
-    redditStocksFeed.items.forEach(item => {
-      item.source='r/stocks'
-    });
-    return redditStocksFeed;
+    const redditStocksFeed = await axios.get((symbol && symbol.length > 0) ? `https://www.reddit.com/r/stocks/search.json?q="${symbol}"&source=recent&restrict_sr=1&sort=new` :
+      `https://www.reddit.com/r/stocks.json`);
+    return this.updateRedditFeed(redditStocksFeed.data);
   }
 
   async getRedditStocksAndTrading(symbol) {
-    const hasSymbol = symbol && symbol.length > 0;
-    const redditStocksAndTradingUrl = hasSymbol ? `https://www.reddit.com/r/StocksAndTrading/search.rss?q=$"${symbol}&source=recent&restrict_sr=1&sort=new` :
-      `https://www.reddit.com/r/StocksAndTrading.rss`;
-    const redditStocksAndTradingFeed = await parser.parseURL(redditStocksAndTradingUrl);
-    redditStocksAndTradingFeed.items.forEach(item => {
-      item.source='r/StocksAndTrading'
-    });
-    return redditStocksAndTradingFeed;
+    const redditStocksAndTradingFeed = await axios.get((symbol && symbol.length > 0) ? `https://www.reddit.com/r/StocksAndTrading/search.json?q="${symbol}"&source=recent&restrict_sr=1&sort=new` :
+      `https://www.reddit.com/r/StocksAndTrading.json`);
+    return this.updateRedditFeed(redditStocksAndTradingFeed.data);
   }
-
-  async getRedditStockPicksFeed(symbol) {
-    const hasSymbol = symbol && symbol.length > 0;
-    const redditStockPicksUrl = hasSymbol ? `https://www.reddit.com/r/Stock_Picks/search.rss?q=$"${symbol}&source=recent&restrict_sr=1&sort=new` :
-      `https://www.reddit.com/r/Stock_Picks.rss`;
-    const redditStockPicksFeed = await parser.parseURL(redditStockPicksUrl);
-    redditStockPicksFeed.items.forEach(item => {
-      item.source='r/Stock_Picks'
-    });
-    return redditStockPicksFeed;
-  }
-
   async getRedditNews(stockSymbolOrSource) {
     let symbol = stockSymbolOrSource;
     let isSource = false;
@@ -203,7 +185,6 @@ class Rss {
 
     if( ( isSource && stockSymbolOrSource === 'Stock_Picks' ) || !isSource )
       redditStockPicksFeed = await this.getRedditStockPicksFeed(isSource ? null : symbol)
-
 
     const allFeeds = redditOptionsFeed.items
         .concat(redditWallStreetBetsFeed.items)

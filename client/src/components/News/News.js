@@ -112,10 +112,6 @@ export default class News extends React.Component {
           newsSource = "getRedditNews/StocksAndTrading";
           showContentIcon = true;
           break;
-        case "r/Stock_Picks":
-          newsSource = "getRedditNews/Stock_Picks";
-          showContentIcon = true;
-          break;
         default:
           newsSource = "getGoogleNews";
       }
