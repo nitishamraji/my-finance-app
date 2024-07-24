@@ -71,9 +71,6 @@ export default class NewsPage extends React.Component {
       case "StocksAndTrading":
         this.setState({loadRedditStocksAndTrading: true})
         break;
-      case "Stock_Picks":
-        this.setState({loadRedditStockPicks: true})
-        break;
       default:
         this.setState({loadRedditWallstreetBets: true});
         break;
@@ -182,13 +179,6 @@ export default class NewsPage extends React.Component {
                   <TabContent className="p-2">
                     { this.state.loadRedditStocksAndTrading &&
                     <News newsListSize={15} newsSource={'r/StocksAndTrading'}/>
-                    }
-                  </TabContent>
-                </Tab>
-                <Tab eventKey={"Stock_Picks"} title="r/Stock_Picks" tabClassName="d-none">
-                  <TabContent className="p-2">
-                    { this.state.loadRedditStockPicks && false &&
-                    <News newsListSize={15} newsSource={'r/Stock_Picks'}/>
                     }
                   </TabContent>
                 </Tab>
