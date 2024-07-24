@@ -148,7 +148,7 @@ class Rss {
     let isSource = false;
 
     if( stockSymbolOrSource ) {
-      isSource = ["wallstreetbets","options","StockMarket","investing","stocks","StocksAndTrading","Stock_Picks"].indexOf(stockSymbolOrSource) >= 0;
+      isSource = ["wallstreetbets","options","StockMarket","investing","stocks","StocksAndTrading"].indexOf(stockSymbolOrSource) >= 0;
     }
 
     if( !isSource && symbol && symbol.length === 1 ) {
@@ -165,26 +165,47 @@ class Rss {
       redditStocksAndTradingFeed={items:[]},
       redditStockPicksFeed={items:[]};
 
-    if( ( isSource && stockSymbolOrSource === 'options' ) || !isSource )
-      redditOptionsFeed = await this.getRedditOptions(isSource ? null : symbol)
+try {
+			if( ( isSource && stockSymbolOrSource === 'options' ) || !isSource )
+				redditOptionsFeed = await this.getRedditOptions(isSource ? null : symbol)
+		} catch(ex) {
+			console.log('Error: ' + ex);
+		}
+	
+		try {
+			if( ( isSource && stockSymbolOrSource === 'wallstreetbets' ) || !isSource )
+				redditWallStreetBetsFeed = await this.getRedditWallStreetBets(isSource ? null : symbol)
+		} catch(ex) {
+			console.log('Error: ' + ex);
+		}
+	
+		try {	
+			if( ( isSource && stockSymbolOrSource === 'investing' ) || !isSource )
+				redditInvestingFeed = await this.getRedditInvesting(isSource ? null : symbol)
+		} catch(ex) {
+			console.log('Error: ' + ex);
+		}
 
-    if( ( isSource && stockSymbolOrSource === 'wallstreetbets' ) || !isSource )
-      redditWallStreetBetsFeed = await this.getRedditWallStreetBets(isSource ? null : symbol)
-
-    if( ( isSource && stockSymbolOrSource === 'investing' ) || !isSource )
-      redditInvestingFeed = await this.getRedditInvesting(isSource ? null : symbol)
-
-    if( ( isSource && stockSymbolOrSource === 'StockMarket' ) || !isSource )
-      redditStockMarketFeed = await this.getRedditStockMarket(isSource ? null : symbol)
-
-    if( ( isSource && stockSymbolOrSource === 'stocks' ) || !isSource )
-      redditStocksFeed = await this.getRedditStocks(isSource ? null : symbol)
-
-    if( ( isSource && stockSymbolOrSource === 'StocksAndTrading' ) || !isSource )
-      redditStocksAndTradingFeed = await this.getRedditStocksAndTrading(isSource ? null : symbol)
-
-    if( ( isSource && stockSymbolOrSource === 'Stock_Picks' ) || !isSource )
-      redditStockPicksFeed = await this.getRedditStockPicksFeed(isSource ? null : symbol)
+		try {
+			if( ( isSource && stockSymbolOrSource === 'StockMarket' ) || !isSource )
+				redditStockMarketFeed = await this.getRedditStockMarket(isSource ? null : symbol)
+		} catch(ex) {
+			console.log('Error: ' + ex);
+		}
+	
+		try {
+			if( ( isSource && stockSymbolOrSource === 'stocks' ) || !isSource )
+				redditStocksFeed = await this.getRedditStocks(isSource ? null : symbol)
+		} catch(ex) {
+			console.log('Error: ' + ex);
+		}
+	
+		try {
+			if( ( isSource && stockSymbolOrSource === 'StocksAndTrading' ) || !isSource )
+				redditStocksAndTradingFeed = await this.getRedditStocksAndTrading(isSource ? null : symbol)
+		} catch(ex) {
+			console.log('Error: ' + ex);
+		}
 
     const allFeeds = redditOptionsFeed.items
         .concat(redditWallStreetBetsFeed.items)
