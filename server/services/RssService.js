@@ -1,4 +1,5 @@
 const moment = require('moment');
+const axios = require('axios');
 const Parser = require('rss-parser');
 const puppeteer = require('puppeteer');
 const StocksDataService = require('./StocksDataService')
