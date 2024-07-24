@@ -207,16 +207,16 @@ class Rss {
 			console.log('Error: ' + ex);
 		}
 
-    const allFeeds = redditOptionsFeed.items
-        .concat(redditWallStreetBetsFeed.items)
-        .concat(redditStockMarketFeed.items)
-        .concat(redditInvestingFeed.items)
-        .concat(redditStocksFeed.items)
-        .concat(redditStocksAndTradingFeed.items)
-        .concat(redditStockPicksFeed.items);
+		const allFeeds = redditOptionsFeed.items
+			.concat(redditWallStreetBetsFeed.items)
+			.concat(redditStockMarketFeed.items)
+			.concat(redditInvestingFeed.items)
+			.concat(redditStocksFeed.items)
+			.concat(redditStocksAndTradingFeed.items)
+			.concat(redditStockPicksFeed.items);
 
-    const feed = {items: allFeeds}
-    return this.updateFeed(feed);
+		const feed = {items: allFeeds}
+		return this.updateFeed(feed);
   }
 
   async getFinvizNews(stockSymbol) {
