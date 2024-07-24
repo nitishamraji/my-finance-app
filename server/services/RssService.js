@@ -165,7 +165,7 @@ class Rss {
       redditStocksAndTradingFeed={items:[]},
       redditStockPicksFeed={items:[]};
 
-try {
+		try {
 			if( ( isSource && stockSymbolOrSource === 'options' ) || !isSource )
 				redditOptionsFeed = await this.getRedditOptions(isSource ? null : symbol)
 		} catch(ex) {
