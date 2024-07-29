@@ -113,6 +113,14 @@ router.post('/stocks', cors(), async (req, res, next) => {
   res.send("success");
 });
 
+router.get('/test', cors(),  catchErrors( async (req, res, next) => {
+    const used = process.memoryUsage();
+    for (let key in used) {
+      console.log(`Memory: ${key} ${Math.round(used[key] / 1024 / 1024 * 100) / 100} MB`);
+    }
+    res.send({success: true, msg: '', data: ''});
+}));
+
 router.get('/updateUserLastSeenMessages/:userId', cors(),  catchErrors( async (req, res, next) => {
     const service = new MessagesService();
     await service.updateUserLastSeenMessages(req.params.userId);
