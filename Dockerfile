@@ -10,18 +10,20 @@ WORKDIR /app
 COPY package*.json ./
 #RUN npm install --legacy-peer-deps
 
+COPY client client
+COPY server server
+COPY config config
+
 # Stage 1: Build the React frontend
 
 # Change directory to client, install frontend dependencies and build
 WORKDIR /app/client
-COPY . /app/client/
 RUN npm install --legacy-peer-deps
-RUN npm run build --verbose
+RUN npm run build 
 
 # Stage 2: Setup the server environment
 WORKDIR /app/server
-COPY . /app/server/
-RUN npm install --legacy-peer-deps
+RUN npm install 
 
 # Expose the server port
 EXPOSE 5000
