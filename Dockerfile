@@ -25,6 +25,9 @@ RUN npm run build
 WORKDIR /app/server
 RUN npm install 
 
+
+WORKDIR /app
+
 # Expose the server port
 EXPOSE 5000
 
