@@ -51,7 +51,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build_prev": "react-scripts build",
-    "build": "GENERATE_SOURCEMAP=false react-scripts build",
+    "build": "react-scripts build",
     "winBuild": "react-scripts --max_old_space_size build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
