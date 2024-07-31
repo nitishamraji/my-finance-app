@@ -14,16 +14,13 @@ COPY package*.json ./
 
 # Change directory to client, install frontend dependencies and build
 WORKDIR /app/client
-COPY package*.json ./
+COPY . /app/client/
 RUN npm install --legacy-peer-deps
-COPY . .
 RUN npm run build --verbose
 
 # Stage 2: Setup the server environment
-WORKDIR /app
-
-# Copy package.json and package-lock.json (if exists) to install dependencies
-COPY server/package*.json ./
+WORKDIR /app/server
+COPY . /app/server/
 RUN npm install --legacy-peer-deps
 
 # Expose the server port
