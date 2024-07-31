@@ -29,4 +29,4 @@ RUN npm install
 EXPOSE 5000
 
 # Command to run the server
-#CMD ["node", "server/index.js"]
+CMD ["node", "server/index.js"]
