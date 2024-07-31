@@ -1,4 +1,4 @@
-FROM node:18
+FROM node:16.16.0-alpine
 
 ENV NODE_ENV production
 
@@ -13,7 +13,7 @@ RUN npm install
 # Change directory to client, install frontend dependencies and build
 WORKDIR /my-finance-app/client
 COPY client/package*.json ./
-RUN npm install
+RUN npm install --legacy-peer-deps
 RUN npm run build
 
 # Stage 2: Setup the server environment
