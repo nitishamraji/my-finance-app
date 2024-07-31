@@ -8,7 +8,7 @@ WORKDIR /app
 
 # Copy package.json and package-lock.json (if exists) to install dependencies
 COPY package*.json ./
-RUN npm install --legacy-peer-deps
+#RUN npm install --legacy-peer-deps
 
 # Stage 1: Build the React frontend
 
