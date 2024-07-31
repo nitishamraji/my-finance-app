@@ -7,14 +7,14 @@ ENV NODE_ENV production
 WORKDIR /app
 
 # Copy package.json and package-lock.json (if exists) to install dependencies
-COPY client/package*.json ./
+COPY package*.json ./
 RUN npm install --legacy-peer-deps
 
 # Stage 1: Build the React frontend
 
 # Change directory to client, install frontend dependencies and build
 WORKDIR /app/client
-COPY client/package*.json ./
+COPY package*.json ./
 RUN npm install --legacy-peer-deps
 COPY . .
 RUN npm run build --verbose
