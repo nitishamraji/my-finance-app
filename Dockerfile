@@ -2,7 +2,7 @@ FROM node:16.16.0-alpine
 
 ENV NODE_ENV production
 
-RUN ls -l /my-finance-app
+RUN ls -l /app
 
 WORKDIR /my-finance-app
 
