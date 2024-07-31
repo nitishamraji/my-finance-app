@@ -13,7 +13,7 @@
     "start3": "concurrently 'npx nodemon server' 'npm run --prefix client start'",
     "start__4": "concurrently \"npm run start:server\" \"npm run start:client\"",
     "start": "\"npm run start:server\"",
-    "build": "cd client && npm run build",
+    "build_2": "cd client && npm run build",
     "start:server": "npm --prefix server start",
     "start:client": "cd client && NODE_OPTIONS=--openssl-legacy-provider PORT=3000 HOST=0.0.0.0 WDS_SOCKET_PORT=443 npm start",
     "db-migrate": "cd server && npx sequelize-cli db:migrate",
